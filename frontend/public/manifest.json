@@ -1,0 +1,25 @@
+{
+  "name": "SGRail — Singapore MRT Companion",
+  "short_name": "SGRail",
+  "description": "Mobile-first Singapore MRT companion app for train timings, journey planning, crowd heatmaps, and incident reporting.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c0392b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/mrt/singapore-mrt-map.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/mrt/singapore-mrt-map.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

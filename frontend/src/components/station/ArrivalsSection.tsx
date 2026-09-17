@@ -1,0 +1,98 @@
+import React from "react";
+import { LINE_COLORS } from "@/data/lineColors";
+import { DataSourceLabel } from "@/components/common/DataSourceLabel";
+import { formatClock } from "@/utils/timeFormat";
+
+export interface ArrivalEntry {
+  line: string;
+  direction: string;
+  nextTrain: string;
+  subsequentTrain: string;
+  nextTrainMinutes?: number | null;
+  subsequentTrainMinutes?: number | null;
+  nextTrainAt?: string | null;
+  subsequentTrainAt?: string | null;
+  firstTrain?: string | null;
+  firstTrainAt?: string | null;
+  firstTrainLabel?: string | null;
+  serviceNotice?: string | null;
+  headwayBand?: string;
+  operating?: boolean;
+}
+
+export interface ArrivalsSectionProps {
+  arrivals: ArrivalEntry[];
+  source: string;
+  updatedAt: string;
+}
+
+/**
+ * Displays estimated next train arrivals per line and direction.
+ * Shows data source label and last-updated timestamp.
+ *
+ * Validates: Requirements 9.3, 10.1, 10.2, 10.3
+ */
+export function ArrivalsSection({
+  arrivals,
+  source,
+  updatedAt,
+}: ArrivalsSectionProps) {
+  return (
+    <section aria-labelledby="arrivals-heading" className="space-y-3">
+      <h3 id="arrivals-heading" className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        Next Arrivals
+      </h3>
+
+      {arrivals.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No arrival data available.</p>
+      ) : (
+        <ul className="space-y-2" role="list">
+          {arrivals.map((arrival, idx) => (
+            <li
+              key={`${arrival.line}-${arrival.direction}-${idx}`}
+              className={`rounded-md border px-3 py-2 text-sm ${
+                arrival.operating === false ? "border-amber-200 bg-amber-50" : ""
+              }`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span
+                    className="inline-block h-3 w-3 shrink-0 rounded-full"
+                    style={{ backgroundColor: LINE_COLORS[arrival.line] ?? "#6b7280" }}
+                    aria-hidden="true"
+                  />
+                  <span className="shrink-0 font-medium">
+                    {arrival.line} Line
+                  </span>
+                  <span className="truncate text-muted-foreground">to {arrival.direction}</span>
+                </div>
+                <div className="shrink-0 text-right font-mono text-xs leading-tight">
+                  <span className="font-semibold">{arrival.nextTrain}</span>
+                  {arrival.subsequentTrain && (
+                    <span className="text-muted-foreground"> / {arrival.subsequentTrain}</span>
+                  )}
+                </div>
+              </div>
+
+              {arrival.operating === false && (
+                <p className="mt-1.5 text-xs font-medium text-amber-800">
+                  {arrival.serviceNotice ??
+                    `No train service now. First train: ${
+                      arrival.firstTrainLabel ?? arrival.firstTrain ?? "check timings"
+                    }`}
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="flex items-center justify-between pt-1 text-xs text-muted-foreground">
+        <DataSourceLabel source={source} updatedAt={updatedAt} />
+        <time dateTime={updatedAt}>
+          Updated: {formatClock(updatedAt)}
+        </time>
+      </div>
+    </section>
+  );
+}
