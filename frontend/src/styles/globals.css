@@ -50,7 +50,8 @@ button.jm-chip:focus-visible {
 /* Disruption sits above its point and the other route's tag below, so the two never stack. */
 .jm-chip--disruption { transform: translate(-50%, calc(-100% - 8px)); }
 .jm-chip--route-tag { transform: translate(-50%, 10px); }
-.jm-far .jm-chip--leg-walk { display: none; }
+.jm-far .jm-chip--leg-walk,
+.jm-far .jm-chip--short { display: none; }
 .jm-far .jm-chip--crowd .jm-chip-text { display: none; }
 .jm-chip--leg { border-width: 1px; font-weight: 500; }
 .jm-chip--route-tag { border-style: dashed; background: #f8fafc; }

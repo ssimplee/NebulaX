@@ -31,6 +31,7 @@ describe("buildJourneyLayers", () => {
   it("labels legs of the selected route in text, not colour", () => {
     const legs = layers.markers.filter((marker) => marker.kind === "leg").map((marker) => marker.text);
     expect(legs).toEqual(["Walk · 10 min (approx. path)", "DTL · 44 min", "Walk · 8 min (approx. path)"]);
+    expect(layers.markers.filter((marker) => marker.kind === "leg").map((marker) => marker.short)).toEqual([true, false, true]);
   });
 
   it("tags the other route with its arrival for comparison", () => {
@@ -65,6 +66,12 @@ describe("buildJourneyLayers", () => {
     const switched = buildJourneyLayers(model, "disrupted-usual");
     expect(switched.lines[switched.lines.length - 1].candidateId).toBe("disrupted-usual");
     expect(switched.markers.find((marker) => marker.kind === "route-tag")?.candidateId).toBe("disrupted-alternative");
+  });
+
+  it("draws only the recommended and original routes unless another option is picked", () => {
+    const withExtra = { ...model, candidates: [...model.candidates, { ...model.candidates[1], id: "extra", role: "other" as const }] };
+    expect(buildJourneyLayers(withExtra).lines.some((line) => line.candidateId === "extra")).toBe(false);
+    expect(buildJourneyLayers(withExtra, "extra").lines.some((line) => line.candidateId === "extra")).toBe(true);
   });
 
   it("falls back to the recommendation for an unknown selection", () => {

@@ -114,10 +114,26 @@ Journey Map shows:
   a stale-data banner, and a warning when the street map fails. The route
   itself still draws in every case.
 
-Data enters through `features/journey-map/fromJourneySnapshot.ts` (the shared
-Rachel snapshot) or `fromRoutePlan.ts` (Route tab results). Until the live
-impact endpoint is connected, the Journey Map shows Rachel's labelled demo
-replay (`features/journey-map/fixtures/rachel-disrupted.geometry.json`).
+Data enters through adapters in `frontend/src/features/journey-map/`:
+`fromRachelPlan.ts` (the backend's `POST /routes/rachel/plan` plus the
+scenario conditions from `GET /demo/rachel/<scenarioId>`), `fromRoutePlan.ts`
+(Route tab results) and `fromJourneySnapshot.ts` (the shared snapshot
+contract). Routed walking paths are drawn when the plan supplies them: OSRM
+GeoJSON first, then OneMap's encoded polyline.
+
+With no journey planned, the Journey Map shows Rachel's labelled demo replay:
+the backend's plan for the team's fifteen-minute EWL scenario, recorded to
+`fixtures/rachel-plan.fifteen-minute-disruption.json`. To re-record it after
+routing or scenario changes (no network or API key needed), run this from the
+repository root:
+
+```bash
+backend/.venv/Scripts/python frontend/scripts/record_rachel_plan.py
+```
+
+The recording pins Rachel's home and work to the OneMap-verified coordinates in
+`PS2_REQUIREMENTS.md`. Walks use the mock provider, so they draw as labelled
+straight lines.
 
 **Approximations:** rail lines join station coordinates and are not surveyed
 track. Walks without a routed path are straight lines and are labelled

@@ -31,6 +31,7 @@ function chipElement(marker: JourneyMarker, interactive: boolean): HTMLElement {
     `jm-chip--${marker.kind}`,
     marker.crowdLevel && `jm-chip--crowd-${marker.crowdLevel}`,
     marker.legMode && `jm-chip--leg-${marker.legMode}`,
+    marker.short && "jm-chip--short",
   ].filter(Boolean).join(" ");
   if (interactive) {
     (chip as HTMLButtonElement).type = "button";

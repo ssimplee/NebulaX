@@ -1,0 +1,937 @@
+{
+  "recordedWith": "frontend/scripts/record_rachel_plan.py",
+  "note": "Demo replay. Routing and timings from the backend MRT graph; geocodes from a verified OneMap lookup; walking legs are straight-line estimates.",
+  "evaluatedAt": "2026-09-21T07:25:00+08:00",
+  "plan": {
+    "personaId": "rachel",
+    "journey": {
+      "home": {
+        "address": "858C Tampines Walk, Singapore 523858",
+        "postalCode": "523858",
+        "latitude": 1.35449039932647,
+        "longitude": 103.9396874423523,
+        "source": "onemap"
+      },
+      "work": {
+        "address": "1 George St, Singapore 049145",
+        "postalCode": "049145",
+        "latitude": 1.285694084848462,
+        "longitude": 103.8478199704954,
+        "source": "onemap"
+      },
+      "originStationId": "tampines",
+      "destinationStationId": "raffles-place",
+      "departureTime": "2026-09-21T07:40:00+08:00",
+      "arriveBy": "2026-09-21T08:45:00+08:00"
+    },
+    "original": {
+      "id": "EW",
+      "totalMinutes": 55,
+      "railMinutes": 26,
+      "walkingMinutes": 14,
+      "transfers": 0,
+      "estimatedArrival": "2026-09-21T08:35:00+08:00",
+      "arrivalRange": {
+        "earliest": "2026-09-21T08:29:00+08:00",
+        "latest": "2026-09-21T08:41:00+08:00"
+      },
+      "uncertaintyMinutes": 6,
+      "delayMinutes": 15,
+      "steps": [
+        {
+          "type": "board",
+          "station": "Tampines",
+          "stationId": "tampines",
+          "line": "EW",
+          "lineColour": "#009645",
+          "direction": "Tuas Link",
+          "instruction": "Board EW Line towards Tuas Link"
+        },
+        {
+          "type": "ride",
+          "stations": [
+            "EW4",
+            "EW5",
+            "EW8",
+            "EW12",
+            "EW13",
+            "EW14"
+          ],
+          "stops": 6,
+          "minutes": 26
+        },
+        {
+          "type": "alight",
+          "station": "Raffles Place",
+          "stationId": "raffles-place",
+          "instruction": "Alight at Raffles Place"
+        }
+      ],
+      "geometry": {
+        "accessWalkEncoded": "",
+        "accessWalkGeoJson": null,
+        "rail": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              103.9453,
+              1.3545
+            ],
+            [
+              103.9464,
+              1.3272
+            ],
+            [
+              103.93,
+              1.324
+            ],
+            [
+              103.8932,
+              1.3174
+            ],
+            [
+              103.8558,
+              1.3009
+            ],
+            [
+              103.852,
+              1.2931
+            ],
+            [
+              103.8513,
+              1.283
+            ]
+          ]
+        },
+        "egressWalkEncoded": "",
+        "egressWalkGeoJson": null
+      },
+      "provenanceIds": [
+        "onemap:walk",
+        "internal:mrt-graph"
+      ],
+      "confidence": {
+        "level": "medium",
+        "score": 0.7,
+        "basis": "Walking route plus estimated MRT graph timings; uncertainty range applied.",
+        "historicallyCalibrated": false
+      }
+    },
+    "alternatives": [
+      {
+        "id": "DT-CC-NS",
+        "totalMinutes": 57,
+        "railMinutes": 43,
+        "walkingMinutes": 14,
+        "transfers": 2,
+        "estimatedArrival": "2026-09-21T08:37:00+08:00",
+        "arrivalRange": {
+          "earliest": "2026-09-21T08:31:00+08:00",
+          "latest": "2026-09-21T08:43:00+08:00"
+        },
+        "uncertaintyMinutes": 6,
+        "delayMinutes": 0,
+        "steps": [
+          {
+            "type": "board",
+            "station": "Tampines",
+            "stationId": "tampines",
+            "line": "DT",
+            "lineColour": "#005EC4",
+            "direction": "Bukit Panjang",
+            "instruction": "Board DT Line towards Bukit Panjang"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "DT31",
+              "DT30",
+              "DT29",
+              "DT28",
+              "DT27",
+              "DT26"
+            ],
+            "stops": 6,
+            "minutes": 16
+          },
+          {
+            "type": "transfer",
+            "station": "MacPherson",
+            "stationId": "macpherson",
+            "fromLine": "DT",
+            "toLine": "CC",
+            "walkMinutes": 3,
+            "instruction": "Transfer to CC Line (#FA9E0D)"
+          },
+          {
+            "type": "board",
+            "station": "MacPherson",
+            "stationId": "macpherson",
+            "line": "CC",
+            "lineColour": "#FA9E0D",
+            "direction": "Clockwise Loop",
+            "instruction": "Board CC Line towards Clockwise Loop"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "CC9",
+              "CC8",
+              "CC7",
+              "CC6",
+              "CC5",
+              "CC4",
+              "CC34",
+              "CC33"
+            ],
+            "stops": 8,
+            "minutes": 18
+          },
+          {
+            "type": "transfer",
+            "station": "Marina Bay",
+            "stationId": "marina-bay",
+            "fromLine": "CC",
+            "toLine": "NS",
+            "walkMinutes": 4,
+            "instruction": "Transfer to NS Line (#D42E12)"
+          },
+          {
+            "type": "board",
+            "station": "Marina Bay",
+            "stationId": "marina-bay",
+            "line": "NS",
+            "lineColour": "#D42E12",
+            "direction": "Jurong East",
+            "instruction": "Board NS Line towards Jurong East"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "NS26"
+            ],
+            "stops": 1,
+            "minutes": 2
+          },
+          {
+            "type": "alight",
+            "station": "Raffles Place",
+            "stationId": "raffles-place",
+            "instruction": "Alight at Raffles Place"
+          }
+        ],
+        "geometry": {
+          "accessWalkEncoded": "",
+          "accessWalkGeoJson": null,
+          "rail": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.9453,
+                1.3545
+              ],
+              [
+                103.9384,
+                1.3455
+              ],
+              [
+                103.9323,
+                1.3366
+              ],
+              [
+                103.9179,
+                1.3348
+              ],
+              [
+                103.9085,
+                1.335
+              ],
+              [
+                103.8992,
+                1.33
+              ],
+              [
+                103.89,
+                1.3265
+              ],
+              [
+                103.8932,
+                1.3174
+              ],
+              [
+                103.8886,
+                1.3085
+              ],
+              [
+                103.8824,
+                1.3064
+              ],
+              [
+                103.8753,
+                1.3029
+              ],
+              [
+                103.8637,
+                1.2997
+              ],
+              [
+                103.861,
+                1.293
+              ],
+              [
+                103.859,
+                1.2815
+              ],
+              [
+                103.8546,
+                1.2764
+              ],
+              [
+                103.8513,
+                1.283
+              ]
+            ]
+          },
+          "egressWalkEncoded": "",
+          "egressWalkGeoJson": null
+        },
+        "provenanceIds": [
+          "onemap:walk",
+          "internal:mrt-graph"
+        ],
+        "confidence": {
+          "level": "medium",
+          "score": 0.7,
+          "basis": "Walking route plus estimated MRT graph timings; uncertainty range applied.",
+          "historicallyCalibrated": false
+        }
+      },
+      {
+        "id": "DT-NE-NS",
+        "totalMinutes": 63,
+        "railMinutes": 49,
+        "walkingMinutes": 14,
+        "transfers": 2,
+        "estimatedArrival": "2026-09-21T08:43:00+08:00",
+        "arrivalRange": {
+          "earliest": "2026-09-21T08:37:00+08:00",
+          "latest": "2026-09-21T08:49:00+08:00"
+        },
+        "uncertaintyMinutes": 6,
+        "delayMinutes": 0,
+        "steps": [
+          {
+            "type": "board",
+            "station": "Tampines",
+            "stationId": "tampines",
+            "line": "DT",
+            "lineColour": "#005EC4",
+            "direction": "Bukit Panjang",
+            "instruction": "Board DT Line towards Bukit Panjang"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "DT31",
+              "DT30",
+              "DT29",
+              "DT28",
+              "DT27",
+              "DT26",
+              "DT25",
+              "DT24",
+              "DT23",
+              "DT22",
+              "DT21",
+              "DT20",
+              "DT19"
+            ],
+            "stops": 13,
+            "minutes": 33
+          },
+          {
+            "type": "transfer",
+            "station": "Chinatown",
+            "stationId": "chinatown",
+            "fromLine": "DT",
+            "toLine": "NE",
+            "walkMinutes": 4,
+            "instruction": "Transfer to NE Line (#9900AA)"
+          },
+          {
+            "type": "board",
+            "station": "Chinatown",
+            "stationId": "chinatown",
+            "line": "NE",
+            "lineColour": "#9900AA",
+            "direction": "Punggol Coast",
+            "instruction": "Board NE Line towards Punggol Coast"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "NE6"
+            ],
+            "stops": 1,
+            "minutes": 4
+          },
+          {
+            "type": "transfer",
+            "station": "Dhoby Ghaut",
+            "stationId": "dhoby-ghaut",
+            "fromLine": "NE",
+            "toLine": "NS",
+            "walkMinutes": 4,
+            "instruction": "Transfer to NS Line (#D42E12)"
+          },
+          {
+            "type": "board",
+            "station": "Dhoby Ghaut",
+            "stationId": "dhoby-ghaut",
+            "line": "NS",
+            "lineColour": "#D42E12",
+            "direction": "Marina South Pier",
+            "instruction": "Board NS Line towards Marina South Pier"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "NS25",
+              "NS26"
+            ],
+            "stops": 2,
+            "minutes": 4
+          },
+          {
+            "type": "alight",
+            "station": "Raffles Place",
+            "stationId": "raffles-place",
+            "instruction": "Alight at Raffles Place"
+          }
+        ],
+        "geometry": {
+          "accessWalkEncoded": "",
+          "accessWalkGeoJson": null,
+          "rail": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.9453,
+                1.3545
+              ],
+              [
+                103.9384,
+                1.3455
+              ],
+              [
+                103.9323,
+                1.3366
+              ],
+              [
+                103.9179,
+                1.3348
+              ],
+              [
+                103.9085,
+                1.335
+              ],
+              [
+                103.8992,
+                1.33
+              ],
+              [
+                103.89,
+                1.3265
+              ],
+              [
+                103.8833,
+                1.3269
+              ],
+              [
+                103.8719,
+                1.3215
+              ],
+              [
+                103.863,
+                1.3137
+              ],
+              [
+                103.8554,
+                1.3054
+              ],
+              [
+                103.8503,
+                1.2987
+              ],
+              [
+                103.8443,
+                1.2924
+              ],
+              [
+                103.8441,
+                1.2845
+              ],
+              [
+                103.8457,
+                1.2994
+              ],
+              [
+                103.852,
+                1.2931
+              ],
+              [
+                103.8513,
+                1.283
+              ]
+            ]
+          },
+          "egressWalkEncoded": "",
+          "egressWalkGeoJson": null
+        },
+        "provenanceIds": [
+          "onemap:walk",
+          "internal:mrt-graph"
+        ],
+        "confidence": {
+          "level": "medium",
+          "score": 0.7,
+          "basis": "Walking route plus estimated MRT graph timings; uncertainty range applied.",
+          "historicallyCalibrated": false
+        }
+      },
+      {
+        "id": "DT-CC-NS",
+        "totalMinutes": 69,
+        "railMinutes": 55,
+        "walkingMinutes": 14,
+        "transfers": 2,
+        "estimatedArrival": "2026-09-21T08:49:00+08:00",
+        "arrivalRange": {
+          "earliest": "2026-09-21T08:42:00+08:00",
+          "latest": "2026-09-21T08:56:00+08:00"
+        },
+        "uncertaintyMinutes": 7,
+        "delayMinutes": 0,
+        "steps": [
+          {
+            "type": "board",
+            "station": "Tampines",
+            "stationId": "tampines",
+            "line": "DT",
+            "lineColour": "#005EC4",
+            "direction": "Bukit Panjang",
+            "instruction": "Board DT Line towards Bukit Panjang"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "DT31",
+              "DT30",
+              "DT29",
+              "DT28",
+              "DT27",
+              "DT26"
+            ],
+            "stops": 6,
+            "minutes": 16
+          },
+          {
+            "type": "transfer",
+            "station": "MacPherson",
+            "stationId": "macpherson",
+            "fromLine": "DT",
+            "toLine": "CC",
+            "walkMinutes": 3,
+            "instruction": "Transfer to CC Line (#FA9E0D)"
+          },
+          {
+            "type": "board",
+            "station": "MacPherson",
+            "stationId": "macpherson",
+            "line": "CC",
+            "lineColour": "#FA9E0D",
+            "direction": "Clockwise Loop",
+            "instruction": "Board CC Line towards Clockwise Loop"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "CC11",
+              "CC12",
+              "CC13",
+              "CC14",
+              "CC15"
+            ],
+            "stops": 5,
+            "minutes": 12
+          },
+          {
+            "type": "transfer",
+            "station": "Bishan",
+            "stationId": "bishan",
+            "fromLine": "CC",
+            "toLine": "NS",
+            "walkMinutes": 4,
+            "instruction": "Transfer to NS Line (#D42E12)"
+          },
+          {
+            "type": "board",
+            "station": "Bishan",
+            "stationId": "bishan",
+            "line": "NS",
+            "lineColour": "#D42E12",
+            "direction": "Marina South Pier",
+            "instruction": "Board NS Line towards Marina South Pier"
+          },
+          {
+            "type": "ride",
+            "stations": [
+              "NS19",
+              "NS21",
+              "NS22",
+              "NS24",
+              "NS25",
+              "NS26"
+            ],
+            "stops": 6,
+            "minutes": 20
+          },
+          {
+            "type": "alight",
+            "station": "Raffles Place",
+            "stationId": "raffles-place",
+            "instruction": "Alight at Raffles Place"
+          }
+        ],
+        "geometry": {
+          "accessWalkEncoded": "",
+          "accessWalkGeoJson": null,
+          "rail": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.9453,
+                1.3545
+              ],
+              [
+                103.9384,
+                1.3455
+              ],
+              [
+                103.9323,
+                1.3366
+              ],
+              [
+                103.9179,
+                1.3348
+              ],
+              [
+                103.9085,
+                1.335
+              ],
+              [
+                103.8992,
+                1.33
+              ],
+              [
+                103.89,
+                1.3265
+              ],
+              [
+                103.8878,
+                1.3359
+              ],
+              [
+                103.8799,
+                1.3426
+              ],
+              [
+                103.8735,
+                1.3497
+              ],
+              [
+                103.8641,
+                1.3515
+              ],
+              [
+                103.8491,
+                1.3513
+              ],
+              [
+                103.8472,
+                1.3327
+              ],
+              [
+                103.838,
+                1.3138
+              ],
+              [
+                103.8318,
+                1.3043
+              ],
+              [
+                103.8457,
+                1.2994
+              ],
+              [
+                103.852,
+                1.2931
+              ],
+              [
+                103.8513,
+                1.283
+              ]
+            ]
+          },
+          "egressWalkEncoded": "",
+          "egressWalkGeoJson": null
+        },
+        "provenanceIds": [
+          "onemap:walk",
+          "internal:mrt-graph"
+        ],
+        "confidence": {
+          "level": "medium",
+          "score": 0.7,
+          "basis": "Walking route plus estimated MRT graph timings; uncertainty range applied.",
+          "historicallyCalibrated": false
+        }
+      }
+    ],
+    "recommended": {
+      "id": "DT-CC-NS",
+      "totalMinutes": 57,
+      "railMinutes": 43,
+      "walkingMinutes": 14,
+      "transfers": 2,
+      "estimatedArrival": "2026-09-21T08:37:00+08:00",
+      "arrivalRange": {
+        "earliest": "2026-09-21T08:31:00+08:00",
+        "latest": "2026-09-21T08:43:00+08:00"
+      },
+      "uncertaintyMinutes": 6,
+      "delayMinutes": 0,
+      "steps": [
+        {
+          "type": "board",
+          "station": "Tampines",
+          "stationId": "tampines",
+          "line": "DT",
+          "lineColour": "#005EC4",
+          "direction": "Bukit Panjang",
+          "instruction": "Board DT Line towards Bukit Panjang"
+        },
+        {
+          "type": "ride",
+          "stations": [
+            "DT31",
+            "DT30",
+            "DT29",
+            "DT28",
+            "DT27",
+            "DT26"
+          ],
+          "stops": 6,
+          "minutes": 16
+        },
+        {
+          "type": "transfer",
+          "station": "MacPherson",
+          "stationId": "macpherson",
+          "fromLine": "DT",
+          "toLine": "CC",
+          "walkMinutes": 3,
+          "instruction": "Transfer to CC Line (#FA9E0D)"
+        },
+        {
+          "type": "board",
+          "station": "MacPherson",
+          "stationId": "macpherson",
+          "line": "CC",
+          "lineColour": "#FA9E0D",
+          "direction": "Clockwise Loop",
+          "instruction": "Board CC Line towards Clockwise Loop"
+        },
+        {
+          "type": "ride",
+          "stations": [
+            "CC9",
+            "CC8",
+            "CC7",
+            "CC6",
+            "CC5",
+            "CC4",
+            "CC34",
+            "CC33"
+          ],
+          "stops": 8,
+          "minutes": 18
+        },
+        {
+          "type": "transfer",
+          "station": "Marina Bay",
+          "stationId": "marina-bay",
+          "fromLine": "CC",
+          "toLine": "NS",
+          "walkMinutes": 4,
+          "instruction": "Transfer to NS Line (#D42E12)"
+        },
+        {
+          "type": "board",
+          "station": "Marina Bay",
+          "stationId": "marina-bay",
+          "line": "NS",
+          "lineColour": "#D42E12",
+          "direction": "Jurong East",
+          "instruction": "Board NS Line towards Jurong East"
+        },
+        {
+          "type": "ride",
+          "stations": [
+            "NS26"
+          ],
+          "stops": 1,
+          "minutes": 2
+        },
+        {
+          "type": "alight",
+          "station": "Raffles Place",
+          "stationId": "raffles-place",
+          "instruction": "Alight at Raffles Place"
+        }
+      ],
+      "geometry": {
+        "accessWalkEncoded": "",
+        "accessWalkGeoJson": null,
+        "rail": {
+          "type": "LineString",
+          "coordinates": [
+            [
+              103.9453,
+              1.3545
+            ],
+            [
+              103.9384,
+              1.3455
+            ],
+            [
+              103.9323,
+              1.3366
+            ],
+            [
+              103.9179,
+              1.3348
+            ],
+            [
+              103.9085,
+              1.335
+            ],
+            [
+              103.8992,
+              1.33
+            ],
+            [
+              103.89,
+              1.3265
+            ],
+            [
+              103.8932,
+              1.3174
+            ],
+            [
+              103.8886,
+              1.3085
+            ],
+            [
+              103.8824,
+              1.3064
+            ],
+            [
+              103.8753,
+              1.3029
+            ],
+            [
+              103.8637,
+              1.2997
+            ],
+            [
+              103.861,
+              1.293
+            ],
+            [
+              103.859,
+              1.2815
+            ],
+            [
+              103.8546,
+              1.2764
+            ],
+            [
+              103.8513,
+              1.283
+            ]
+          ]
+        },
+        "egressWalkEncoded": "",
+        "egressWalkGeoJson": null
+      },
+      "provenanceIds": [
+        "onemap:walk",
+        "internal:mrt-graph"
+      ],
+      "confidence": {
+        "level": "medium",
+        "score": 0.7,
+        "basis": "Walking route plus estimated MRT graph timings; uncertainty range applied.",
+        "historicallyCalibrated": false
+      }
+    },
+    "decision": {
+      "shouldNotify": true,
+      "action": "Use DT-CC-NS now; estimated arrival 08:37.",
+      "reason": "Estimated disruption impact is 15 minutes; Rachel protects her 08:45 arrival.",
+      "originalArrival": "2026-09-21T08:35:00+08:00",
+      "recommendedArrival": "2026-09-21T08:37:00+08:00",
+      "delayMinutesAvoided": -2,
+      "tradeOffs": {
+        "extraMinutes": 2,
+        "extraTransfers": 2
+      },
+      "provenanceIds": [
+        "internal:mrt-graph",
+        "onemap:walk"
+      ]
+    },
+    "scenarioId": "rachel-fifteen-minute-disruption",
+    "sourceType": "simulated"
+  },
+  "conditions": {
+    "id": "rachel-fifteen-minute-disruption",
+    "label": "Material EWL disruption",
+    "personaId": "rachel",
+    "source": "replayed-demo",
+    "sourceType": "simulated",
+    "serviceAlerts": [
+      {
+        "id": "demo-ewl-major",
+        "lineCode": "EW",
+        "ltaLine": "EWL",
+        "stationIds": [
+          "tampines",
+          "raffles-place"
+        ],
+        "severity": "major",
+        "estimatedDelayMinutes": 15,
+        "message": "Demo: fifteen-minute EWL disruption"
+      }
+    ],
+    "crowdReadings": [],
+    "weather": {
+      "condition": "fair"
+    },
+    "facilityOutages": [],
+    "expected": {
+      "shouldNotify": true
+    }
+  }
+}

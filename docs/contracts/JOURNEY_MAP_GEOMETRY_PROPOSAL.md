@@ -3,6 +3,34 @@
 **From:** Member 3 (Journey Map) · **To:** integration owner, Member 2 (routing), Member 1 (data), Member 4 (Rachel UX)
 **Status:** proposed, awaiting integration-owner approval · **Contract:** `schemaVersion: 1`, additive only
 
+## Status (19 September 2026)
+
+- **Endpoints decided by the team:** home `858C Tampines Walk` and work
+  `1 George St`, verified with OneMap (see `PS2_REQUIREMENTS.md`). This
+  supersedes the landmark endpoints proposed below.
+- **Routing now returns geometry:** `POST /routes/rachel/plan` gives each
+  candidate walking geometry (OSRM GeoJSON or OneMap encoded polyline) and
+  planner rail steps. `frontend/src/features/journey-map/fromRachelPlan.ts`
+  converts that response into this snapshot shape, so the Journey Map
+  already draws it. The per-step fields below remain the recommended
+  long-term contract.
+- **Findings from integrating the endpoint (for Member 2):**
+  1. Under a disruption the original route is dropped from ranking, so the
+     recommendation can arrive later than staying put. With the verified
+     endpoints and the 15-minute scenario, EWL arrives 08:35 (latest 08:41)
+     but DT-CC-NS (08:37) is recommended, and `delayMinutesAvoided` is `-2`.
+  2. Candidate ids can repeat (two `DT-CC-NS` paths). The adapter
+     de-duplicates them; the backend should return unique ids.
+  3. The mock geocoder does not know Rachel's addresses, so mock mode plans
+     from "1 Orchard Road" (212 walking minutes). `_geocode_one` also labels
+     mock results `source: "onemap"`.
+  4. The plan response does not include the service alerts it planned
+     around. The frontend fetches them from `/demo/rachel/<scenarioId>`.
+     Returning them (with a located `affectedSegment`) would make the plan
+     self-describing.
+  5. The team scenario's alert covers `tampines`–`raffles-place`, which is
+     Rachel's whole EWL ride, so no unaffected EWL stretch remains to contrast.
+
 ## Why
 
 The mandatory visualisation needs the route on an OSM map, with the affected

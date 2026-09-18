@@ -44,45 +44,61 @@ export const JourneyMapLegend = forwardRef<HTMLDivElement, Props>(function Journ
   const original = model.candidates.find((candidate) => candidate.id === model.originalCandidateId);
   const approximate = model.candidates.some((candidate) => candidate.legs.some((leg) => leg.geometrySource !== "routed" && leg.path));
   const orderedCandidates = [...model.candidates].sort((a, b) => Number(b.role === "recommended") - Number(a.role === "recommended"));
+  // The recommendation, the original and any picked option stay visible; the rest fold away.
+  const isMain = (candidate: MapCandidate) => candidate.role !== "other" || candidate.id === selectedCandidateId;
+  const mainCandidates = orderedCandidates.filter(isMain);
+  const moreCandidates = orderedCandidates.filter((candidate) => !isMain(candidate));
   const eventLines = model.events.map(eventSummary).filter((line): line is string => line != null);
+
+  const renderCandidate = (candidate: MapCandidate) => {
+    const selected = candidate.id === selectedCandidateId;
+    const delta = tradeOff(candidate, original, model.labels);
+    const summary = candidateSummary(candidate, model.labels);
+    const range = candidate.arrivalRange ? `${formatClock(candidate.arrivalRange.earliest)}–${formatClock(candidate.arrivalRange.latest)}` : null;
+    const walking = walkingMinutes(candidate);
+    const mainLine = candidate.legs.find((leg) => leg.mode === "rail" && leg.lineCode)?.lineCode;
+    const disruptedOn = candidate.legs.find((leg) => leg.affectedEventIds.length)?.lineCode;
+    const swatch = selected ? { ...LEGEND_ITEMS[0].sample, color: (mainLine && LINE_COLORS[mainLine]) || "#334155" } : LEGEND_ITEMS[1].sample;
+    return (
+      <li key={candidate.id}>
+        <button
+          type="button"
+          aria-pressed={selected}
+          onClick={() => onSelectCandidate?.(candidate.id)}
+          disabled={!onSelectCandidate}
+          className={`flex min-h-11 w-full items-center gap-2 rounded-lg border px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 ${selected ? "border-slate-900 bg-slate-50" : "border-transparent"}`}
+        >
+          <Swatch {...swatch} />
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold leading-tight">{summary}</span>
+            <span className="block text-xs text-muted-foreground">
+              {[candidate.label !== roleName(candidate, model.labels) ? candidate.label : null, range ? `range ${range}` : null, walking != null ? `${walking} min walking` : null, delta].filter(Boolean).join(" · ")}
+            </span>
+            {disruptedOn !== undefined && (
+              <span className="mt-0.5 block text-xs font-semibold text-red-900">⚠ Passes the disrupted {disruptedOn ? LINE_NAMES[disruptedOn] : ""} stretch</span>
+            )}
+          </span>
+        </button>
+      </li>
+    );
+  };
 
   return (
     <div ref={ref} className="pointer-events-auto rounded-t-xl border border-b-0 bg-card/95 p-3 text-card-foreground shadow-lg backdrop-blur md:rounded-xl md:border-b">
       <div className="flex items-start gap-2">
-        <ul className="flex min-w-0 flex-1 flex-col gap-1.5" aria-label="Routes on the map">
-          {orderedCandidates.map((candidate) => {
-            const selected = candidate.id === selectedCandidateId;
-            const delta = tradeOff(candidate, original, model.labels);
-            const summary = candidateSummary(candidate, model.labels);
-            const range = candidate.arrivalRange ? `${formatClock(candidate.arrivalRange.earliest)}–${formatClock(candidate.arrivalRange.latest)}` : null;
-            const walking = walkingMinutes(candidate);
-            const mainLine = candidate.legs.find((leg) => leg.mode === "rail" && leg.lineCode)?.lineCode;
-            const disruptedOn = candidate.legs.find((leg) => leg.affectedEventIds.length)?.lineCode;
-            const swatch = selected ? { ...LEGEND_ITEMS[0].sample, color: (mainLine && LINE_COLORS[mainLine]) || "#334155" } : LEGEND_ITEMS[1].sample;
-            return (
-              <li key={candidate.id}>
-                <button
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => onSelectCandidate?.(candidate.id)}
-                  disabled={!onSelectCandidate}
-                  className={`flex min-h-11 w-full items-center gap-2 rounded-lg border px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 ${selected ? "border-slate-900 bg-slate-50" : "border-transparent"}`}
-                >
-                  <Swatch {...swatch} />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-semibold leading-tight">{summary}</span>
-                    <span className="block text-xs text-muted-foreground">
-                      {[candidate.label !== roleName(candidate, model.labels) ? candidate.label : null, range ? `range ${range}` : null, walking != null ? `${walking} min walking` : null, delta].filter(Boolean).join(" · ")}
-                    </span>
-                    {disruptedOn !== undefined && (
-                      <span className="mt-0.5 block text-xs font-semibold text-red-900">⚠ Passes the disrupted {disruptedOn ? LINE_NAMES[disruptedOn] : ""} stretch</span>
-                    )}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="min-w-0 flex-1">
+          <ul className="flex flex-col gap-1.5" aria-label="Routes on the map">
+            {mainCandidates.map(renderCandidate)}
+          </ul>
+          {moreCandidates.length > 0 && (
+            <details className="mt-1 text-xs">
+              <summary className="min-h-8 cursor-pointer font-semibold">More options ({moreCandidates.length})</summary>
+              <ul className="mt-1 flex flex-col gap-1.5" aria-label="More route options">
+                {moreCandidates.map(renderCandidate)}
+              </ul>
+            </details>
+          )}
+        </div>
         <button type="button" onClick={onRecenter} aria-label="Show the whole route"
           className="grid size-11 shrink-0 place-items-center rounded-lg border bg-card focus-visible:outline-2 focus-visible:outline-offset-2">
           <Crosshair size={20} aria-hidden="true" />

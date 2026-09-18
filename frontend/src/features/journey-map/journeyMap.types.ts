@@ -54,6 +54,8 @@ export interface MapCandidate {
   arrivalRange: { earliest: string; latest: string } | null;
   /** Door-to-door minutes when known. */
   durationMinutes: number | null;
+  /** Total walking minutes stated by the source, when known. */
+  walkingMinutes: number | null;
   legs: MapLeg[];
 }
 

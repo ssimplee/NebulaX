@@ -40,6 +40,8 @@ export interface JourneyMarker {
   stationId?: string;
   crowdLevel?: CrowdReading["level"];
   legMode?: LegMode;
+  /** A one-stop or two-point leg whose label only fits once zoomed in. */
+  short?: boolean;
 }
 
 export interface JourneyLayers {
@@ -68,8 +70,9 @@ export function formatClock(iso: string): string {
   return new Intl.DateTimeFormat("en-SG", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(iso));
 }
 
-/** Total walking minutes, when every walk leg states its duration. */
+/** Total walking minutes: the source's figure, else the sum when every walk leg states one. */
 export function walkingMinutes(candidate: MapCandidate): number | null {
+  if (candidate.walkingMinutes != null) return candidate.walkingMinutes;
   const walks = candidate.legs.filter((leg) => leg.mode === "walk");
   if (!walks.length || walks.some((leg) => leg.minutes == null)) return null;
   return walks.reduce((total, leg) => total + (leg.minutes ?? 0), 0);
@@ -106,8 +109,12 @@ export function buildJourneyLayers(model: JourneyMapModel, selectedCandidateId?:
   const selectedId = model.candidates.some((candidate) => candidate.id === selectedCandidateId)
     ? selectedCandidateId!
     : model.recommendedCandidateId;
-  // Unselected routes first so the selected one is drawn on top.
-  const ordered = [...model.candidates].sort((a, b) => Number(a.id === selectedId) - Number(b.id === selectedId));
+  // Only the comparison that matters is drawn: recommended against original,
+  // plus any other option the commuter picked. Unselected first so the
+  // selected route sits on top.
+  const ordered = model.candidates
+    .filter((candidate) => candidate.role !== "other" || candidate.id === selectedId)
+    .sort((a, b) => Number(a.id === selectedId) - Number(b.id === selectedId));
   const lines: JourneyLine[] = [];
   const markers: JourneyMarker[] = [];
   const allPoints: LonLat[] = [];
@@ -116,7 +123,8 @@ export function buildJourneyLayers(model: JourneyMapModel, selectedCandidateId?:
   for (const candidate of ordered) {
     const selected = candidate.id === selectedId;
     const tag = roleName(candidate, model.labels);
-    let longestRail: LonLat[] | null = null;
+    // Assigned inside the forEach below, which TypeScript cannot follow.
+    let longestRail = null as LonLat[] | null;
 
     candidate.legs.forEach((leg) => {
       if (!isDrawable(leg.path)) return;
@@ -171,6 +179,7 @@ export function buildJourneyLayers(model: JourneyMapModel, selectedCandidateId?:
           description: leg.instruction,
           candidateId: candidate.id,
           legMode: leg.mode,
+          short: leg.path.length <= 2,
         });
       }
     });
@@ -179,7 +188,9 @@ export function buildJourneyLayers(model: JourneyMapModel, selectedCandidateId?:
       markers.push({
         id: `tag:${candidate.id}`,
         kind: "route-tag",
-        position: midpoint(longestRail),
+        // A third of the way along: the midpoint tends to sit in the city
+        // centre, where the selected route's own leg labels already are.
+        position: longestRail[Math.floor((longestRail.length - 1) / 3)],
         text: candidateSummary(candidate, model.labels),
         description: `${candidateSummary(candidate, model.labels)}. Select to compare.`,
         candidateId: candidate.id,

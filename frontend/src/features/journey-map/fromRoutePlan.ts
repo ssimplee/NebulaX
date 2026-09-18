@@ -8,7 +8,7 @@ import type { JourneyMapModel } from "./journeyMap.types";
 // so none are drawn. Its step format is converted into the shared snapshot
 // shape so there is a single validation and geometry path.
 
-type SnapshotStep = SnapshotInput["candidates"][number]["steps"][number];
+export type SnapshotStep = SnapshotInput["candidates"][number]["steps"][number];
 
 /** The planner fields the map reads; both route stores' route types satisfy it. */
 export type PlannedRoute = Pick<RouteResult, "steps" | "totalMinutes" | "serviceAlerts">;
@@ -21,14 +21,15 @@ export interface PlannedRoutes {
 const idByCode = new Map(Array.from(MRT_STATIONS.values()).flatMap((station) => station.codes.map((code) => [code, station.id] as const)));
 const resolveStation = (value: string | undefined) => (value && MRT_STATIONS.has(value) ? value : value ? idByCode.get(value) : undefined);
 
-function toSteps(route: PlannedRoute, alertIdsByLine: ReadonlyMap<string, string[]>): SnapshotStep[] {
+/** Convert planner board/ride/transfer/alight steps into rail and transfer legs. */
+export function plannerSteps(plannerSteps: PlannedRoute["steps"], alertIdsByLine: ReadonlyMap<string, string[]>): SnapshotStep[] {
   const steps: SnapshotStep[] = [];
   let rail: { mode: "rail"; instruction: string; minutes: number; lineCode?: string; stationIds: string[]; affectedEventIds: string[] } | null = null;
   const closeRail = () => {
     if (rail) steps.push(rail);
     rail = null;
   };
-  for (const step of route.steps) {
+  for (const step of plannerSteps) {
     if (step.type === "board") {
       closeRail();
       const line = step.line && (MAP_LINE_CODES as readonly string[]).includes(step.line) ? step.line : undefined;
@@ -75,7 +76,7 @@ export function fromRoutePlan(plan: PlannedRoutes, selectedIndex: number): Journ
     id: `route-${index + 1}`,
     label: `Option ${index + 1}`,
     durationMinutes: route.totalMinutes,
-    steps: toSteps(route, alertIdsByLine),
+    steps: plannerSteps(route.steps, alertIdsByLine),
   }));
   const selected = candidates[Math.min(Math.max(selectedIndex, 0), candidates.length - 1)];
   const firstStation = plan.routes[0]?.steps.find((step) => step.type === "board")?.station ?? "Start";

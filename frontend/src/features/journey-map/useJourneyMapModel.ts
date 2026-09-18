@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useJourneyStore } from "@/store/journeyStore";
 import { useMapStore } from "@/store/mapStore";
 import { useRouteStore } from "@/store/routeStore";
-import rachelDisrupted from "./fixtures/rachel-disrupted.geometry.json";
-import { fromJourneySnapshot, type SnapshotInput } from "./fromJourneySnapshot";
+import rachelRecording from "./fixtures/rachel-plan.fifteen-minute-disruption.json";
+import { fromRachelPlan, type RachelConditions, type RachelPlan } from "./fromRachelPlan";
 import { fromRoutePlan, fromStationSequence } from "./fromRoutePlan";
 import type { JourneyMapModel } from "./journeyMap.types";
 
@@ -16,8 +16,15 @@ export interface JourneyMapSelection {
   selectCandidate: (candidateId: string) => void;
 }
 
-/** Rachel's labelled replay, used until the live impact endpoint is connected. */
-export const RACHEL_DEMO_MODEL = fromJourneySnapshot(rachelDisrupted as unknown as SnapshotInput);
+/**
+ * Rachel's labelled replay: the backend's door-to-door plan for the team's
+ * fifteen-minute EWL scenario, recorded by frontend/scripts/record_rachel_plan.py.
+ */
+export const RACHEL_DEMO_MODEL = fromRachelPlan(
+  rachelRecording.plan as unknown as RachelPlan,
+  rachelRecording.conditions as RachelConditions,
+  rachelRecording.evaluatedAt,
+);
 
 /**
  * Chooses what the Map tab's Journey view shows, in priority order: the journey

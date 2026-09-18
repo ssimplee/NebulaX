@@ -39,6 +39,7 @@ export interface SnapshotInput {
     arrivalRange?: { earliest: string; latest: string };
     /** Used when there is no arrival time (for example a station-to-station plan). */
     durationMinutes?: number;
+    walkingMinutes?: number;
     steps: ReadonlyArray<{ mode: LegMode; instruction: string; [key: string]: unknown }>;
   }>;
   sources: ReadonlyArray<{ id: string; type: string; observedAt: string; staleAfterSeconds: number }>;
@@ -200,6 +201,7 @@ export function fromJourneySnapshot(snapshot: SnapshotInput, labels: RoleLabels 
       arrivalAt: candidate.arrivalAt ?? null,
       arrivalRange: candidate.arrivalRange ?? null,
       durationMinutes,
+      walkingMinutes: candidate.walkingMinutes ?? null,
       legs,
     };
   });

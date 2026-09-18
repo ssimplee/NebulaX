@@ -33,6 +33,18 @@ describe("JourneyMap", () => {
     expect(routes[1]).toHaveTextContent("Usual · arrive 08:52");
   });
 
+  it("keeps extra options folded and off the map until one is picked", () => {
+    const withExtra = { ...model, candidates: [...model.candidates, { ...model.candidates[1], id: "extra", label: "Extra route", role: "other" as const }] };
+    const { container, rerender } = render(<JourneyMap model={withExtra} basemap={noBasemap} />);
+    expect(within(screen.getByRole("list", { name: "Routes on the map" })).getAllByRole("button")).toHaveLength(2);
+    expect(within(screen.getByRole("list", { name: "More route options" })).getByRole("button")).toHaveTextContent("Extra route");
+    const tagsBefore = container.querySelectorAll(".jm-chip--route-tag").length;
+    rerender(<JourneyMap model={withExtra} basemap={noBasemap} selectedCandidateId="extra" />);
+    expect(within(screen.getByRole("list", { name: "Routes on the map" })).getAllByRole("button")).toHaveLength(3);
+    expect(screen.queryByRole("list", { name: "More route options" })).not.toBeInTheDocument();
+    expect(container.querySelectorAll(".jm-chip--route-tag").length).toBe(tagsBefore + 1);
+  });
+
   it("lists the located disruption in text, not only as a map label", () => {
     render(<JourneyMap model={model} basemap={noBasemap} />);
     expect(within(screen.getByRole("list", { name: "Disruptions on the map" })).getByText("⚠ Disruption: EWL Bedok–Paya Lebar · +15 min")).toBeInTheDocument();
@@ -48,9 +60,10 @@ describe("JourneyMap", () => {
     render(<JourneyMap model={planned} basemap={noBasemap} />);
     const list = screen.getByRole("list", { name: "Routes on the map" });
     expect(list).toHaveTextContent("Selected · 10 min");
-    expect(list).toHaveTextContent("Option 2 · 14 min");
-    expect(list).toHaveTextContent("4 min later than option 1");
     expect(list).not.toHaveTextContent(/usual|Recommended/);
+    const more = screen.getByRole("list", { name: "More route options" });
+    expect(more).toHaveTextContent("Option 2 · 14 min");
+    expect(more).toHaveTextContent("4 min later than option 1");
   });
 
   it("draws the disruption, crowd and walk labels as text on the map", () => {

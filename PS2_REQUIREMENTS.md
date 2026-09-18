@@ -490,9 +490,9 @@ view switch.
 - [x] Add MapLibre GL JS or Leaflet with an approved OSM-based tile source.
 - [x] Show visible `© OpenStreetMap contributors` attribution.
 - [x] Import/normalise the supplied station GeoJSON and confirm its CRS.
-- [x] Render Rachel's full door-to-door route. (Walk legs are labelled
-      straight-line approximations until Member 2 supplies OSM-routed paths;
-      see `docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md`.)
+- [x] Render Rachel's full door-to-door route. (`fromRachelPlan` draws the
+      OSRM/OneMap-routed walks from `/routes/rachel/plan`; the offline demo
+      recording has none, so its walks are labelled straight-line estimates.)
 - [x] Visually distinguish affected and unaffected portions.
 - [x] Overlay the original and recommended alternatives together.
 - [x] Show walking legs and rail legs with text/icon differences, not colour
