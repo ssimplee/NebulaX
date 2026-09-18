@@ -1,72 +1,74 @@
-# SGRail — Singapore MRT Companion
+# Smart Commuter Companion
 
-> **Nebula X PS2 work:** See [PS2_REQUIREMENTS.md](PS2_REQUIREMENTS.md) for the
-> official challenge translation, scenario checklist, map decision, required
-> APIs, data rules, and implementation priorities.
+A mobile-first web app that gives commuters proactive, personalised journey
+advice during planned and unplanned transport events.
 
-A full-stack Singapore MRT Companion web application that helps commuters locate nearby stations, navigate the MRT system map, plan customised journeys, check train timings and crowd levels, report incidents, and get MRT-focused AI guidance.
+Our selected commuter is **Rachel**, a fixed-schedule traveller who journeys
+from Tampines to Raffles Place. She leaves at 7:40am and needs to reach her
+desk by 8:45am. The app stays quiet when a small delay does not threaten her
+deadline. When conditions create a meaningful impact, it recommends a route
+Rachel can follow and explains why the recommendation changed.
 
-Built with a **React + TypeScript + Vite** frontend and a **Python Flask** REST backend.
+## PS2 mandatory capabilities
 
----
+### 1. Route planning
 
-## Features
+- Plans Rachel's journey from **858C Tampines Walk** to
+  **1 George Street** at a specified departure time.
+- Covers the full door-to-door journey, including both walking legs.
+- Supports walking, rail, and OneMap bus candidates when available.
+- Recalculates when disruption conditions affect the usual route.
+- Shows estimated arrival ranges instead of one overconfident time.
+- Explains the recommendation using Rachel's 8:45am deadline.
 
-- **Network and Journey Maps** — Schematic MRT Network Map plus a geographic OpenStreetMap Journey Map that overlays the recommended and original routes, the disrupted stretch, walking legs and three-level crowding
-- **GPS Nearest Station** — Detect current location and find the closest MRT stations with walking distance
-- **Journey Tracking** — Real-time progress tracking along a route with transfer and alighting reminders
-- **Multi-Preference Route Planning** — Dijkstra-based engine supporting fastest, least crowded, fewest transfers, least walking, wheelchair-accessible, and last-train-safe modes
-- **Crowd Heatmap** — Colour-coded station crowd levels from official, historical, and community sources
-- **Community Incident Reporting** — Report and interact with MRT incidents; moderation pipeline filters spam and abuse
-- **Reporter Reliability Scoring** — Trust badges based on reporting history
-- **AI Assistant** — MRT-focused chat with grounded responses and UI actions (rule-based fallback when no AI key is configured)
-- **Multi-Language** — English, 中文, Bahasa Melayu, தமிழ்
-- **Accessibility** — Keyboard navigation, screen-reader labels, high-contrast mode, colour-blind labels, scalable text
-- **Responsive Layout** — Mobile-first bottom-sheet UI; side-panel layout on desktop
+The fixed judging scenario demonstrates a 15-minute EWL disruption. Rachel's
+usual route reaches work at an estimated 8:50am. The recommended alternative
+reaches work at an estimated 8:37am, which is 13 minutes earlier. These figures
+come from the deterministic scenario fixture and routing tests in this
+repository.
 
----
+### 2. GIS on OpenStreetMap
 
-## Architecture Summary
+- Uses an OpenStreetMap-based geographic Journey Map.
+- Displays `© OpenStreetMap contributors` on the map.
+- Uses OpenFreeMap by default and rejects the public
+  `tile.openstreetmap.org` server for application traffic.
+- Supports OSM-routed walking geometry through an OSRM-compatible adapter.
+- Uses the supplied station GeoJSON after coordinate-system validation.
 
-```
-Browser (React + Vite)
-  └── API Client (Axios) ──► Flask Backend (/api/v1)
-                                  ├── Services (Route Engine, Crowd, Incidents, AI, etc.)
-                                  ├── Integrations (OneMap, LTA DataMall, AI Provider)
-                                  ├── Mock Adapter (demo fallback for all providers)
-                                  └── Data Layer (SQLAlchemy + SQLite)
-```
+### 3. Visualisation
 
-Transit APIs are called through the backend. The Journey Map loads its OpenStreetMap basemap directly in the browser from [OpenFreeMap](https://openfreemap.org) (free, no key, no request limit) and never uses the public `tile.openstreetmap.org` server.
+- Shows the complete route on a geographic map.
+- Distinguishes affected and unaffected route sections.
+- Shows the recommended alternative against the original route.
+- Displays crowding using Low, Moderate, and High labels, icons, and size.
+- Makes arrival time, uncertainty, delay, and minutes saved visible.
+- Preserves a schematic Network Map for station-level exploration.
 
----
+## Rachel decision behaviour
 
-## Prerequisites
+| Situation | App behaviour |
+|---|---|
+| Normal conditions | Keep Rachel's usual route and avoid an unnecessary alert. |
+| 5-minute impact | Stay quiet because Rachel's deadline remains protected. |
+| 15-minute disruption | Warn Rachel, recalculate the journey, and recommend the viable alternative. |
+| Live provider failure | Show an error and offer a clearly labelled recorded replay. |
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| Node.js | 20+ | Frontend toolchain |
-| npm | 9+ | Comes with Node.js |
-| Python | 3.11+ | Backend runtime |
-| pip | Latest | Python package manager |
-| Git | 2.x | Version control |
+Live and simulated information are never silently mixed. The interface labels
+live, estimated, stale, forecast, and simulated information.
 
----
+## Run locally on Windows
 
-## Installation
+### Prerequisites
 
-Clone the repository:
+- Python 3.12
+- Node.js 20 or later
+- npm
+- Git
 
-```bash
-git clone <repository-url>
-cd SGRail
-```
+### Backend
 
-### Windows PowerShell quick start
-
-Open two PowerShell terminals from the repository root.
-
-Backend terminal:
+Open PowerShell in the repository root:
 
 ```powershell
 cd backend
@@ -77,7 +79,18 @@ Copy-Item .env.example .env -ErrorAction SilentlyContinue
 .\.venv\Scripts\python.exe run.py
 ```
 
-Frontend terminal:
+The backend runs at `http://localhost:5000`.
+
+For later runs:
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe run.py
+```
+
+### Frontend
+
+Open a second PowerShell terminal in the repository root:
 
 ```powershell
 cd frontend
@@ -86,390 +99,235 @@ Copy-Item .env.example .env -ErrorAction SilentlyContinue
 npm run dev
 ```
 
-Open `http://localhost:5173`. The rule-based assistant works without a paid AI
-key. Live Rachel routing needs OneMap credentials. Live operational conditions
-need an LTA DataMall AccountKey. The labelled recorded demo needs neither key.
+Open `http://localhost:5173`.
 
----
+For later runs:
 
-## Frontend Setup
-
-```bash
+```powershell
 cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env
-
-# Start the development server
 npm run dev
 ```
 
-The frontend dev server runs at **http://localhost:5173**.
+## Run locally on macOS or Linux
 
-### Frontend Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `VITE_API_BASE_URL` | `http://localhost:5000/api/v1` | Base URL for the Flask backend API |
-| `VITE_ENABLE_MOCK_FALLBACK` | `true` | Enable client-side mock data fallback when backend is unavailable |
-| `VITE_MAP_STYLE_URL` | OpenFreeMap Positron | Optional MapLibre vector style URL (self-hosted or keyed OSM-based provider) |
-| `VITE_MAP_TILE_URL` | *(unset)* | Optional OSM-based `{z}/{x}/{y}` raster template; `tile.openstreetmap.org` is refused (usage policy) |
-| `VITE_MAP_ATTRIBUTION` | *(unset)* | Extra provider credit shown beside `© OpenStreetMap contributors` |
-| `VITE_MAP_BASEMAP` | *(unset)* | `none` draws routes without a street map (used by tests) |
-
-### Journey Map
-
-The Map tab has a **Network Map** (the schematic MRT diagram) and a **Journey
-Map** (geographic, on OpenStreetMap). The Journey Map is
-`frontend/src/components/journey-map/JourneyMap.tsx`. It takes route
-candidates and conditions only through typed props and never calls transit
-APIs. The Network Map keeps the original MRT map image with station, crowd,
-location and zoom controls. Its crowd layer shows the backend's platform crowd
-readings (`GET /operational-conditions`) on three levels, with marker size and
-colour both showing the level. The layer is labelled live, forecast or simulated
-from the readings' source. The Journey Map shows:
-
-- the recommended route (solid, in its line colour) and the original route
-  (grey, dashed), with a legend card comparing arrival, range, walking time
-  and minutes saved;
-- the disrupted stretch as a broken line with a `⚠ Disrupted EWL · +15 min`
-  label; only the affected station pairs are marked;
-- door-to-door walking legs (dotted, with minutes), start and end markers,
-  station outlines at street zoom, and crowding as 1–3 bars plus a word,
-  labelled with its signal (platform now or forecast);
-- a `Demo replay · not live` label for simulated data, an offline banner,
-  a stale-data banner, and a warning when the street map fails. The route
-  itself still draws in every case.
-
-Data enters through adapters in `frontend/src/features/journey-map/`:
-`fromRachelPlan.ts` (the backend's `POST /routes/rachel/plan` plus the
-scenario conditions from `GET /demo/rachel/<scenarioId>`), `fromRoutePlan.ts`
-(Route tab results) and `fromJourneySnapshot.ts` (the shared snapshot
-contract). Routed walking paths are drawn when the plan supplies them: OSRM
-GeoJSON first, then OneMap's encoded polyline.
-
-**Data modes.** One map and one card serve every mode. Pick the mode from the
-"Rachel's commute" selector in the card:
-
-| Mode | Plan | Conditions | Label shown |
-|---|---|---|---|
-| **Live** (default) | `POST /routes/rachel/plan` | `GET /operational-conditions` | `Live conditions · updated HH:MM` |
-| Your planned route (explicit selection only) | A previously planned or tracked journey | Route alerts | Estimated times |
-| Demo: 5-minute delay / 15-minute disruption / planned change | `POST /routes/rachel/recalculate` with the scenario | `GET /demo/rachel/<scenario>` | `Demo scenario · simulated` |
-| Demo: recorded replay (offline) | Recorded fixture | Recorded scenario | `Demo replay · simulated disruption` |
-
-The plan and its conditions always come from the same mode, so live and
-simulated data never mix. If a live request fails, the card says so and offers
-**Use recorded demo**. It never substitutes simulated data on its own. A live
-response is also refused when the backend could not geocode Rachel's verified
-home and work postal codes. That happens when it runs without OneMap
-credentials (mock geocoding).
-
-The card leads with the backend's decision (the action, or "stay on your usual
-route"), then the recommended and usual routes with arrival range and minutes
-gained or lost. It also labels live, estimated, stale and simulated inputs.
-Every rail candidate begins with the walk from 858C Tampines Walk to Tampines
-MRT and ends with the walk from Raffles Place MRT to 1 George Street. Both
-steps show their estimated duration.
-
-The recorded replay is the backend's plan for the team's fifteen-minute EWL
-scenario, stored in `fixtures/rachel-plan.fifteen-minute-disruption.json`
-alongside recordings of the other scenarios, which the tests use. To re-record
-them after routing or scenario changes (no network or API key needed), run this
-from the repository root:
-
-```bash
-backend/.venv/Scripts/python frontend/scripts/record_rachel_plan.py
-```
-
-The recording pins Rachel's home and work to the OneMap-verified coordinates in
-`PS2_REQUIREMENTS.md`. Walks use the mock provider, so they draw as labelled
-straight lines.
-
-**Approximations:** rail lines join station coordinates and are not surveyed
-track. Walks without a routed path are straight lines and are labelled
-approximate. The route geometry fields the map needs are proposed in
-[docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md](docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md).
-
----
-
-## Backend Setup
+Backend:
 
 ```bash
 cd backend
-
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# Windows PowerShell:
-.venv\Scripts\Activate.ps1
-# macOS / Linux:
+python3 -m venv .venv
 source .venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Create environment file
+python -m pip install -r requirements.txt
 cp .env.example .env
-
-# Seed the database with station data
 python seed.py
-
-# Run the development server
 python run.py
 ```
 
-The backend server runs at **http://localhost:5000**.
-API base: **http://localhost:5000/api/v1**
+Frontend, in a second terminal:
 
-### Updating Local Seed Data After Pulling Changes
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
 
-The app uses a local SQLite database at `backend/instance/mrt_app.db`. If you
-pull changes that update station data, route graph data, train timings, seed
-logic, or the bundled database, reseed your local backend DB before testing.
+## API configuration
 
-From the project root:
+The labelled recorded demo does not require external API credentials. Add
+credentials to `backend/.env` for live operation.
+
+| Variable | Purpose | Required for recorded demo |
+|---|---|---|
+| `ONEMAP_EMAIL` | OneMap account email for token creation | No |
+| `ONEMAP_PASSWORD` | OneMap account password | No |
+| `ONEMAP_TOKEN` | Optional short-lived token instead of account credentials | No |
+| `LTA_ACCOUNT_KEY` | LTA DataMall live alerts, crowding, and transport data | No |
+| `OSRM_BASE_URL` | Optional approved or self-hosted OSM routing service | No |
+| `AI_PROVIDER` | AI provider, or `rule_based` for the local fallback | No |
+| `AI_API_KEY` | Optional provider key | No |
+
+Set `DATA_PROVIDER=live` to use configured live providers. Keep
+`DATA_PROVIDER=mock` for deterministic local development.
+
+Never commit `.env` files or credentials. Both frontend and backend `.env`
+files are ignored by Git.
+
+## Data sources
+
+### LTA DataMall
+
+- `TrainServiceAlerts` supplies official structured train disruption state.
+- `PlatformCrowdDensityRealTime` supplies current platform crowding.
+- `PlatformCrowdDensityForecast` supplies forecast platform crowding.
+- Bus stops, services, routes, and Bus Arrival v3 support bus alternatives.
+- The backend normalises inconsistent line and station identifiers.
+
+DataMall requires a free AccountKey. Responses that exceed 500 records are
+retrieved using `$skip` pagination.
+
+### OneMap
+
+- Geocodes Rachel's home and workplace.
+- Supplies walking and public-transport route candidates.
+- Provides routed geometry where available.
+
+### OpenStreetMap
+
+- Provides the required geospatial base.
+- Supports walking-route geometry through an OSRM-compatible service.
+- Uses OpenFreeMap for the default map style.
+
+### data.gov.sg
+
+- Supplies the 2-hour weather nowcast and rainfall information.
+- Weather is displayed with its source and freshness status.
+
+The 15-minute judging scenario demonstrates disruption-responsive routing.
+The current demo does not claim that rain alone causes a reroute.
+
+## Application modes
+
+| Mode | Plan source | Condition source | UI treatment |
+|---|---|---|---|
+| Live | `POST /api/v1/routes/rachel/plan` | `GET /api/v1/operational-conditions` | Live status and timestamps |
+| Demo: 5-minute delay | Rachel recalculation endpoint | Labelled scenario fixture | Simulated label; no notification |
+| Demo: 15-minute disruption | Rachel recalculation endpoint | Labelled scenario fixture | Original and alternative routes |
+| Demo: planned change | Rachel recalculation endpoint | Labelled planned-event fixture | Simulated planned-event label |
+| Recorded replay | Checked-in recording | Checked-in recording | Offline simulated-replay label |
+
+A failed live request does not silently load demo data. The commuter chooses
+the recorded fallback explicitly.
+
+## Architecture
+
+```text
+Mobile or desktop browser
+  |
+  +-- React 18 + TypeScript + Vite
+  |     +-- Network Map
+  |     +-- Leaflet/MapLibre Journey Map
+  |     +-- Rachel feed and scenario selector
+  |     +-- Community and MRT assistant interfaces
+  |
+  +-- Flask API (/api/v1)
+        +-- Rachel decision and ranking service
+        +-- Disruption-aware route engine
+        +-- OperationalConditions aggregation
+        +-- OneMap, LTA DataMall, data.gov.sg, and OSM adapters
+        +-- Recorded and deterministic scenario fixtures
+        +-- SQLite application data
+```
+
+The frontend keeps the selected data mode consistent across the route plan and
+operational conditions. This prevents live plans from being paired with
+simulated alerts.
+
+## Five-minute judging flow
+
+1. Open **Map** and show the **Network Map**.
+2. Select Tampines, enable **Crowd density**, and show source labelling.
+3. Open the alert control when an active alert exists.
+4. Switch to **Journey Map** and show Rachel's live door-to-door route.
+5. Point out both walking legs, ETA range, crowd scale, and OSM attribution.
+6. Select **Demo: 5-minute delay** and show that the app stays quiet.
+7. Select **Demo: 15-minute disruption**.
+8. Compare the affected usual route with the recommended alternative.
+9. Point out 8:50am versus 8:37am and the 13-minute improvement.
+10. Briefly show Community and the MRT-focused assistant.
+
+If live services fail, select **Demo: recorded replay (offline)** and state
+that it is simulated.
+
+## Supporting features
+
+- Interactive MRT Network Map and station search
+- Station information, first and last train times, and operating-state checks
+- Three-level Network Map crowd layer with source and observation time
+- Service-alert panel with affected line and official or simulated source
+- Community incident reports, moderation, voting, and reporter reliability
+- MRT-focused assistant with a rule-based fallback
+- Accessible labels, non-colour status cues, and mobile touch targets
+
+The generic MRT Route page and the separate Rachel development page are hidden
+from production navigation. The PS2 journey runs through **Map**, then
+**Journey Map**.
+
+## Privacy and resilience
+
+- API credentials stay in ignored environment files.
+- Demo fixtures contain no secret keys.
+- Journey sources include timestamps and staleness thresholds.
+- Failed live requests produce an honest error state.
+- A recorded replay keeps the judging flow reproducible without payment.
+- The app caches selected user and journey state locally where required.
+
+Rachel is a supplied problem-statement persona. Her fixed demo addresses and
+routine are used only for this scenario.
+
+## Verification
+
+Backend tests:
 
 ```powershell
 cd backend
-$env:PYTHONIOENCODING="utf-8"
-.\.venv\Scripts\python.exe seed.py
+.\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Then start the backend:
+Frontend tests and build:
 
 ```powershell
-.\.venv\Scripts\python.exe run.py
-```
-
-You do not need to reseed every time you start the app. Reseed when your local
-database may be stale, especially after pulling map/station/routing changes.
-
-### Backend Environment Variables
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `FLASK_ENV` | `development` | Flask environment mode |
-| `SECRET_KEY` | *(replace)* | Flask secret key for sessions — generate a random value |
-| `DATABASE_URL` | `sqlite:///mrt_app.db` | Database connection string |
-| `FRONTEND_ORIGIN` | `http://localhost:5173` | Allowed CORS origin for the frontend |
-| `DATA_PROVIDER` | `mock` | Data provider mode: `mock` or `live` |
-| `ONEMAP_EMAIL` | *(empty)* | OneMap API registered email |
-| `ONEMAP_PASSWORD` | *(empty)* | OneMap API password |
-| `LTA_ACCOUNT_KEY` | *(empty)* | LTA DataMall API account key |
-| `AI_PROVIDER` | `rule_based` | AI provider: `rule_based`, `openai`, `gemini`, `anthropic`, or `groq` |
-| `AI_API_KEY` | *(empty)* | API key for the configured AI provider |
-| `UPLOAD_PROVIDER` | `local` | File upload destination: `local` |
-| `UPLOAD_MAX_MB` | `5` | Maximum upload file size in MB |
-| `RATE_LIMIT_INCIDENTS` | `10/hour` | Rate limit for incident submission |
-| `RATE_LIMIT_AI` | `30/hour` | Rate limit for AI chat requests |
-| `AI_DAILY_CALL_CAP` | `900` | Max paid LLM calls per day before falling back to the free rule-based assistant |
-| `AI_CACHE_TTL_SECONDS` | `900` | How long a cached LLM response is reused for an identical message |
-| `ALERTS_CACHE_TTL_SECONDS` | `60` | How long train service alerts are cached before refetching from LTA |
-
----
-
-## Mock Mode
-
-By default, the backend runs with `DATA_PROVIDER=mock`. In this mode:
-
-- All external API calls (OneMap, LTA DataMall, AI) return realistic demo data from the Mock Adapter
-- No API keys or internet connection are required
-- The app is fully functional for development, demos, and testing
-- Data is labelled as "Demo" or "Estimated" in the UI so users know it's not live
-
-To switch to live external APIs, set `DATA_PROVIDER=live` and provide the relevant API credentials.
-
-If a live provider fails at runtime, the system automatically falls back to mock data with a visible indicator rather than crashing.
-
----
-
-## External API Setup
-
-### OneMap (Location, Search, Walking Routes)
-
-1. Register for a free account at [https://www.onemap.gov.sg](https://www.onemap.gov.sg)
-2. Set `ONEMAP_EMAIL` and `ONEMAP_PASSWORD` in `.env`
-3. Token management is handled automatically by the backend
-
-### LTA DataMall (Service Alerts, Passenger Volume)
-
-1. Request an API key at [https://datamall.lta.gov.sg](https://datamall.lta.gov.sg)
-2. Set `LTA_ACCOUNT_KEY` in `.env`
-
-### AI Provider (Optional)
-
-1. Obtain an API key from OpenAI, Google Gemini, Anthropic, or Groq (Groq
-   offers a free tier for open-weight models — see [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-   or [console.groq.com/keys](https://console.groq.com/keys))
-2. Set `AI_PROVIDER` to `openai`, `gemini`, `anthropic`, or `groq`
-3. Set `AI_API_KEY` to your key
-
-Without an AI key, the assistant uses a built-in rule-based engine that handles common intents (routes, last trains, crowd, transfers, accessibility, facilities, incidents).
-
----
-
-## Running Tests
-
-### Frontend
-
-```bash
 cd frontend
 npm test
-```
-
-Uses Vitest as the test runner.
-
-### Backend
-
-```bash
-cd backend
-
-# Activate venv first
-pytest
-```
-
----
-
-## Production Build
-
-```bash
-cd frontend
 npm run build
 ```
 
-The production bundle is output to `frontend/dist/`. Serve it with any static file host and point it to the backend API.
+Verified locally:
 
----
+- 282 backend tests pass.
+- 200 frontend tests pass.
+- The production frontend build succeeds.
+- The test suite proves the 5-minute quiet boundary.
+- The test suite proves the 15-minute reroute and notification.
+- The test suite checks live/demo separation, source labels, OSM attribution,
+  and the recorded fallback.
 
-## GPS HTTPS Requirement
+## Assumptions and known limitations
 
-The Browser Geolocation API (`navigator.geolocation`) requires a **secure context** (HTTPS) in deployed environments. This means:
+- The current product is intentionally optimised for Rachel. It is not yet a
+  general door-to-door planner for every commuter.
+- Rail timing uses an estimated, calibrated Rachel baseline. It is never
+  labelled as a live train-arrival prediction.
+- Walking geometry falls back to a labelled straight-line approximation when
+  a routing provider does not return a path.
+- A real disruption may not occur during judging. The app therefore includes
+  labelled planned and unplanned scenario replays.
+- Live crowd and weather availability depends on upstream services and valid
+  credentials.
+- Historical ETA calibration remains future work.
+- A physical-phone rehearsal is still required before final submission.
 
-- **localhost** works without HTTPS during development
-- **Deployed environments** must serve the frontend over HTTPS for GPS features (nearest station, journey tracking) to function
-- If the site is served over plain HTTP in production, the browser will block geolocation requests silently
+## Repository guide
 
-Ensure your production deployment uses HTTPS (e.g., via a reverse proxy with TLS, or a hosting platform that provides it automatically).
+- `backend/app/services/rachel_routing.py`: Rachel's door-to-door planning and
+  deterministic recommendation logic
+- `backend/app/services/operational_conditions.py`: alerts, crowding, weather,
+  source, freshness, and scenario aggregation
+- `frontend/src/components/journey-map/`: geographic Journey Map UI
+- `frontend/src/features/journey-map/`: route adapters, map models, and fixtures
+- `frontend/src/components/map/`: Network Map and shared map controls
+- `PS2_REQUIREMENTS.md`: verified requirement mapping and team backlog
+- `OLD_README.md`: previous repository documentation retained for reference
 
----
+## Submission evidence
 
-## MRT Map Asset & Attribution
+The judges can verify the three mandatory capabilities directly in the running
+app:
 
-The MRT map image is stored locally in `frontend/public/mrt/`. The application does **not** hotlink external map images.
+1. **Route planning:** change from Live to the 15-minute disruption and inspect
+   the revised door-to-door journey.
+2. **GIS:** inspect the Journey Map and its OpenStreetMap attribution.
+3. **Visualisation:** compare the affected original route, recommended
+   alternative, crowd level, ETA range, and delay saving on a phone screen.
 
-- Replace `singapore-mrt-map.png` with your own MRT map asset, keeping the filename (it is referenced directly in `MRTMapComponent.tsx`)
-- Update `frontend/public/mrt/attribution.txt` with the appropriate licence or attribution for the map image you use
-- Ensure the image is optimised for web delivery (compressed; the current asset is a 2000×1332 PNG)
-- The SVG overlay coordinates in the Station Coordinate Dataset are calibrated to the specific map image — if you replace the map, you must recalibrate
-
-### Station Footprints
-
-`frontend/src/data/stationFootprints.json` is generated from the supplied
-`data/AmendmenttoMP2014RailStation.geojson` (URA Master Plan 2014 rail station
-footprints, 208 polygons). Regenerate it with `npm run data:footprints` in
-`frontend/`; `npm run data:footprints -- --check` fails if the checked-in file is stale.
-
-- **CRS:** the file declares none. It is confirmed as WGS84 (EPSG:4326),
-  longitude/latitude order: every vertex lies inside Singapore, and areas
-  recomputed from those coordinates match the recorded SVY21 `SHAPE_1.AREA`
-  within 0.46%. `stationFootprints.test.ts` enforces both checks.
-- **Join:** 159 footprints are matched to `stations.json` IDs by name, by a
-  reviewed alias for planning-stage names, or by position (within 200 m) for
-  unnamed footprints. Every join must lie near the station point.
-- **Limits:** the 2014 data predates 14 stations (mostly TEL stages 4–5 and
-  CCL6), which have no footprint. LRT-only stations are not joined.
-
----
-
-## Overlay Coordinate Calibration
-
-The SVG interaction overlay uses a viewBox coordinate system (0–1600 × 0–1000) mapped to the base MRT map image. When the map image changes, station hit areas need recalibration.
-
-### Dev-Only Calibration Mode
-
-A calibration tool is available in development builds (`src/components/map/CalibrationMode.tsx`). To use it:
-
-1. Start the frontend dev server (`npm run dev`)
-2. Append `?calibrate=1` to the URL (e.g. `http://localhost:5173/?calibrate=1`) — the overlay is hidden without it
-3. Click on station positions on the map to record new (x, y) coordinates
-4. Export the updated coordinate dataset
-5. Replace the station coordinate data in `src/data/stations.ts`
-
-This tool is excluded from production builds.
-
----
-
-## Troubleshooting
-
-### CORS Errors
-
-**Symptom:** Browser console shows `Access-Control-Allow-Origin` errors.
-
-**Fix:**
-- Ensure the backend is running on port 5000
-- Check that `FRONTEND_ORIGIN` in the backend `.env` matches your frontend URL exactly (default: `http://localhost:5173`)
-- Do not include a trailing slash in the origin URL
-
-### Port Conflicts
-
-**Symptom:** "Port already in use" when starting the dev server.
-
-**Fix:**
-- Frontend: Vite will auto-increment the port (5174, 5175, etc.) — update `VITE_API_BASE_URL` if you change the backend port
-- Backend: Kill the existing process on port 5000, or change the port in `run.py` and update `FRONTEND_ORIGIN` accordingly
-
-### GPS Not Working
-
-**Symptom:** Location features don't work in deployed environments.
-
-**Fix:**
-- Ensure the frontend is served over **HTTPS** (required for Geolocation API outside localhost)
-- Check browser permissions — the user must explicitly grant location access
-- On mobile, ensure location services are enabled at the OS level
-- Underground/indoor locations may have degraded GPS accuracy — the app falls back to route-based estimation
-
-### Build Failures
-
-**Symptom:** `npm run build` fails with TypeScript errors.
-
-**Fix:**
-- Run `npm install` to ensure all dependencies are up to date
-- Check for TypeScript errors with `npx tsc --noEmit`
-- Ensure your Node.js version is 20+
-
-### Backend Won't Start
-
-**Symptom:** `python run.py` throws import errors.
-
-**Fix:**
-- Ensure the virtual environment is activated
-- Run `pip install -r requirements.txt` again
-- Check your Python version is 3.11+
-
----
-
-## Ports Reference
-
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Frontend (Vite dev) | http://localhost:5173 | React development server with HMR |
-| Backend (Flask) | http://localhost:5000 | REST API server |
-| API Base | http://localhost:5000/api/v1 | All API endpoints are prefixed here |
-
----
-
-## License
-
-See individual asset attribution files for third-party resources.
-#   N e b u l a X 
- 
- #   N e b u l a X 
- 
- #   N e b u l a X 
- 
- "# NebulaX" 
+The full source problem statement is stored as
+`Problem_Statement_2_Specification.docx`.
