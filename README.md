@@ -1,5 +1,9 @@
 # SGRail — Singapore MRT Companion
 
+> **Nebula X PS2 work:** See [PS2_REQUIREMENTS.md](PS2_REQUIREMENTS.md) for the
+> official challenge translation, scenario checklist, map decision, required
+> APIs, data rules, and implementation priorities.
+
 A full-stack Singapore MRT Companion web application that helps commuters locate nearby stations, navigate the MRT system map, plan customised journeys, check train timings and crowd levels, report incidents, and get MRT-focused AI guidance.
 
 Built with a **React + TypeScript + Vite** frontend and a **Python Flask** REST backend.
