@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 _cache: list[dict] | None = None
 _cache_fetched_at: float = 0.0
 _cache_lock = threading.Lock()
+_last_error: str | None = None
 
 
 def _cache_ttl() -> int:
@@ -31,11 +32,12 @@ def _cache_ttl() -> int:
 
 def clear_cache() -> None:
     """Drop the cached alerts. Used by tests and after config changes."""
-    global _cache, _cache_fetched_at
+    global _cache, _cache_fetched_at, _last_error
 
     with _cache_lock:
         _cache = None
         _cache_fetched_at = 0.0
+        _last_error = None
 
 
 def get_active_alerts(force_refresh: bool = False) -> list[dict]:
@@ -49,20 +51,37 @@ def get_active_alerts(force_refresh: bool = False) -> list[dict]:
         or the provider is unreachable — an alert feed that fails should
         degrade to "nothing to report", never to an error page.
     """
-    global _cache, _cache_fetched_at
+    global _cache, _cache_fetched_at, _last_error
 
     with _cache_lock:
         fresh = _cache is not None and (time.monotonic() - _cache_fetched_at) < _cache_ttl()
         if fresh and not force_refresh:
             return list(_cache or [])
 
-    alerts = _fetch_and_resolve()
+    try:
+        alerts = _fetch_and_resolve()
+        error = None
+    except Exception as exc:  # provider failure must not break callers
+        logger.warning("Service alerts unavailable: %s", exc)
+        alerts = []
+        error = str(exc)
 
     with _cache_lock:
         _cache = alerts
         _cache_fetched_at = time.monotonic()
+        _last_error = error
 
     return list(alerts)
+
+
+def alert_provider_health() -> dict:
+    """Expose whether the last official-alert refresh succeeded."""
+    with _cache_lock:
+        return {
+            "available": _last_error is None,
+            "error": _last_error,
+            "cached": _cache is not None,
+        }
 
 
 def get_alerts_for_station(station_id: str) -> list[dict]:
@@ -117,11 +136,7 @@ def _fetch_and_resolve() -> list[dict]:
     """Fetch alerts from the provider and map LTA identifiers to internal ones."""
     from app.integrations import get_rail_data_provider
 
-    try:
-        raw_alerts = get_rail_data_provider().get_service_alerts()
-    except Exception as exc:  # noqa: BLE001 - provider failure must not break callers
-        logger.warning("Service alerts unavailable: %s", exc)
-        return []
+    raw_alerts = get_rail_data_provider().get_service_alerts()
 
     resolved: list[dict] = []
     for raw in raw_alerts:
@@ -164,4 +179,7 @@ def _resolve_alert(raw: dict) -> dict | None:
         "message": raw.get("message", ""),
         "createdAt": raw.get("createdAt", ""),
         "source": raw.get("source", "simulated"),
+        "sourceType": raw.get("sourceType", "simulated"),
+        "fetchedAt": raw.get("fetchedAt", ""),
+        "isStale": bool(raw.get("isStale", False)),
     }

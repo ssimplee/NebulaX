@@ -26,9 +26,9 @@ _TIMEOUT_SECONDS = 10
 class LTADataMallClient:
     """RailDataProvider implementation backed by LTA DataMall APIs."""
 
-    def __init__(self) -> None:
-        self._account_key: str = os.getenv("LTA_ACCOUNT_KEY", "")
-        self._base_url: str = "https://datamall2.mytransport.sg/ltaodataservice"
+    def __init__(self, account_key: str | None = None, base_url: str | None = None) -> None:
+        self._account_key = account_key if account_key is not None else os.getenv("LTA_ACCOUNT_KEY", "")
+        self._base_url = base_url or "https://datamall2.mytransport.sg/ltaodataservice"
 
     # ------------------------------------------------------------------
     # RailDataProvider protocol methods
@@ -41,15 +41,12 @@ class LTADataMallClient:
         single response (API User Guide v6.8, section 2.11), so one
         normalised alert is returned per affected segment.
 
-        Returns a normalised list of alert dicts.  Falls back to the
-        mock adapter on connection failure or timeout.
+        Returns a normalised list of alert dicts. Provider failures propagate
+        to the service layer, which reports the source as unavailable. Live
+        mode must never silently replace official state with simulated alerts.
         """
-        try:
-            data = self._get("/TrainServiceAlerts")
-            return self._normalise_alert_payload(data)
-        except (requests.ConnectionError, requests.Timeout, requests.RequestException) as exc:
-            logger.warning("LTA service alerts unavailable, falling back to mock: %s", exc)
-            return self._fallback().get_service_alerts()
+        data = self._get("/TrainServiceAlerts")
+        return self._normalise_alert_payload(data)
 
     def get_passenger_volume(self, station_id: str) -> dict | None:
         """Fetch passenger volume data for a station.
@@ -89,6 +86,8 @@ class LTADataMallClient:
 
     def _get(self, endpoint: str, params: dict | None = None) -> dict:
         """Execute authenticated GET request against LTA DataMall."""
+        if not self._account_key:
+            raise ValueError("LTA_ACCOUNT_KEY is not configured")
         url = f"{self._base_url}{endpoint}"
         headers = {
             "AccountKey": self._account_key,
@@ -142,14 +141,17 @@ class LTADataMallClient:
             logger.warning("Unexpected TrainServiceAlerts payload shape: %s", type(body))
             return []
 
+        fetched_at = datetime.now(tz=_SGT).isoformat()
         status = cls._coerce_status(body.get("Status"))
         message, created_at = cls._extract_message(body.get("Message"))
         segments = body.get("AffectedSegments") or []
         if not segments:
-            return cls._normalise_message_only_alerts(status, body.get("Message"))
+            return cls._normalise_message_only_alerts(
+                status, body.get("Message"), fetched_at
+            )
 
         return [
-            cls._normalise_segment(segment, status, message, created_at)
+            cls._normalise_segment(segment, status, message, created_at, fetched_at)
             for segment in segments
             if isinstance(segment, dict)
         ]
@@ -196,7 +198,9 @@ class LTADataMallClient:
         return []
 
     @classmethod
-    def _normalise_message_only_alerts(cls, status: int, raw_messages) -> list[dict]:
+    def _normalise_message_only_alerts(
+        cls, status: int, raw_messages, fetched_at: str
+    ) -> list[dict]:
         """Preserve official advisories that have no affected station segment.
 
         LTA can publish planned service adjustments in the Message field while
@@ -222,6 +226,9 @@ class LTADataMallClient:
                     "message": content,
                     "createdAt": str(entry.get("CreatedDate", "")),
                     "source": "lta_datamall",
+                    "sourceType": "live",
+                    "fetchedAt": fetched_at,
+                    "isStale": False,
                 }
             )
         return alerts
@@ -244,7 +251,7 @@ class LTADataMallClient:
 
     @staticmethod
     def _normalise_segment(
-        segment: dict, status: int, message: str, created_at: str
+        segment: dict, status: int, message: str, created_at: str, fetched_at: str
     ) -> dict:
         """Convert one AffectedSegments entry to the internal alert shape.
 
@@ -256,8 +263,8 @@ class LTADataMallClient:
 
         return {
             "status": status,
-            "ltaLine": str(segment.get("Line", "")),
-            "direction": str(segment.get("Direction", "")),
+            "ltaLine": str(segment.get("Line", "")).strip().upper(),
+            "direction": str(segment.get("Direction", "")).strip(),
             "stationCodes": split_station_codes(segment.get("Stations", "")),
             "freePublicBusCodes": split_station_codes(segment.get("FreePublicBus", "")),
             "freeMrtShuttleCodes": split_station_codes(segment.get("FreeMRTShuttle", "")),
@@ -265,6 +272,9 @@ class LTADataMallClient:
             "message": message,
             "createdAt": created_at,
             "source": "lta_datamall",
+            "sourceType": "live",
+            "fetchedAt": fetched_at,
+            "isStale": False,
         }
 
     @staticmethod

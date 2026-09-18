@@ -1,0 +1,20 @@
+{
+  "id": "rachel-fifteen-minute-disruption",
+  "label": "Material EWL disruption",
+  "personaId": "rachel",
+  "source": "replayed-demo",
+  "sourceType": "simulated",
+  "serviceAlerts": [{
+    "id": "demo-ewl-major",
+    "lineCode": "EW",
+    "ltaLine": "EWL",
+    "stationIds": ["tampines", "raffles-place"],
+    "severity": "major",
+    "estimatedDelayMinutes": 15,
+    "message": "Demo: fifteen-minute EWL disruption"
+  }],
+  "crowdReadings": [],
+  "weather": {"condition": "fair"},
+  "facilityOutages": [],
+  "expected": {"shouldNotify": true}
+}

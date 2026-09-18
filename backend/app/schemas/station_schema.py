@@ -77,5 +77,8 @@ class CrowdReadingSchema(Schema):
     level = fields.String(required=True)
     confidence = fields.Float(required=True)
     source = fields.String(required=True)
+    sourceType = fields.String(load_default="estimated")
     observedAt = fields.DateTime(required=True)
     expiresAt = fields.DateTime(required=True)
+    fetchedAt = fields.DateTime(allow_none=True, load_default=None)
+    isStale = fields.Boolean(load_default=False)

@@ -2,7 +2,6 @@
 
 import os
 
-from dotenv import load_dotenv
 from flask import Flask
 
 from .config import config_by_name
@@ -17,8 +16,6 @@ def create_app(config_name: str | None = None) -> Flask:
         config_name: One of 'development', 'testing', or 'production'.
                      Defaults to the FLASK_ENV environment variable or 'development'.
     """
-    load_dotenv()
-
     if config_name is None:
         config_name = os.getenv("FLASK_ENV", "development")
 
@@ -64,9 +61,11 @@ def _register_blueprints(app: Flask) -> None:
     """Register route blueprints with the app."""
     from .routes.alerts import alerts_bp
     from .routes.assistant import assistant_bp
+    from .routes.buses import buses_bp
     from .routes.crowd import crowd_bp
     from .routes.health import health_bp
     from .routes.incidents import incidents_bp
+    from .routes.operations import operations_bp
     from .routes.routes import routes_bp
     from .routes.stations import stations_bp
     from .routes.users import users_bp
@@ -77,5 +76,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(crowd_bp, url_prefix="/api/v1")
     app.register_blueprint(incidents_bp, url_prefix="/api/v1")
     app.register_blueprint(assistant_bp, url_prefix="/api/v1")
+    app.register_blueprint(buses_bp, url_prefix="/api/v1")
     app.register_blueprint(alerts_bp, url_prefix="/api/v1")
+    app.register_blueprint(operations_bp, url_prefix="/api/v1")
     app.register_blueprint(users_bp)  # users_bp already has url_prefix="/api/v1/users"

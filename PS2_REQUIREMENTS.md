@@ -380,22 +380,36 @@ operational-data tests.
 
 #### P0 tasks
 
-- [ ] Correct and harden `TrainServiceAlerts` ingestion.
-- [ ] Normalise LTA line codes, station codes, direction and affected segments.
-- [ ] Create labelled Rachel fixtures for an EWL disruption and a planned
+- [x] Correct and harden `TrainServiceAlerts` ingestion.
+- [x] Normalise LTA line codes, station codes, direction and affected segments.
+- [x] Create labelled Rachel fixtures for an EWL disruption and a planned
       service change.
-- [ ] Implement `PCDRealTime` and `PCDForecast` adapters.
-- [ ] Integrate data.gov.sg weather forecasts.
-- [ ] Emit consistent source type, timestamps, staleness and simulated flags.
-- [ ] Provide one aggregated `OperationalConditions` service for Member 2.
-- [ ] Add contract tests using recorded fixtures; tests must not require a live
+- [x] Implement `PCDRealTime` and `PCDForecast` adapters.
+- [x] Integrate data.gov.sg weather forecasts.
+- [x] Emit consistent source type, timestamps, staleness and simulated flags.
+- [x] Provide one aggregated `OperationalConditions` service for Member 2.
+- [x] Add contract tests using recorded fixtures; tests must not require a live
       API or secret.
+
+Current verification (18 September 2026): the LTA AccountKey successfully
+returned and normalised 32 EWL crowd readings, the backend loads
+`backend/.env` from either the repository root or backend directory, and all
+266 backend tests pass. Live-provider failures are not
+replaced with simulated alerts, and operational records now carry source type,
+fetch time and staleness state for the aggregated quality summary.
 
 #### P1 tasks
 
-- [ ] Add bus stop, route, service and Bus Arrival v3 ingestion.
-- [ ] Add retry, caching, pagination and provider-health status.
-- [ ] Add lift-maintenance ingestion if time remains.
+- [x] Add bus stop, route, service and Bus Arrival v3 ingestion.
+- [x] Add retry, caching, pagination and provider-health status.
+- [x] Add lift-maintenance ingestion if time remains.
+
+Bus reference endpoints use `$skip` pagination, retry transient HTTP failures
+and cache slow-changing topology for six hours. Bus Arrival v3 is cached for
+15 seconds. Operational sources expose provider health, use source-appropriate
+TTL caches, and return explicitly stale last-known data when a refresh fails.
+Live verification returned 22 services at Tampines Bus Interchange (`75009`)
+and four current facilities-maintenance records.
 
 #### Handoff
 

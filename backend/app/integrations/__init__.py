@@ -60,6 +60,22 @@ class RailDataProvider(Protocol):
         ...
 
 
+class WeatherProvider(Protocol):
+    """Interface for weather products used by commute decisions."""
+
+    def get_commute_weather(self) -> dict:
+        """Return immediate observations/forecasts with provenance."""
+        ...
+
+
+class FacilityProvider(Protocol):
+    """Interface for station facility outages."""
+
+    def get_outages(self) -> list[dict]:
+        """Return current station facility outages."""
+        ...
+
+
 class AIProvider(Protocol):
     """Interface for AI assistant backend providers."""
 
@@ -85,13 +101,38 @@ def _config_value(name: str, default=None):
 
 def get_crowd_provider() -> CrowdProvider:
     """Return the configured CrowdProvider implementation."""
-    if _config_value("DATA_PROVIDER") == "live":
-        # Future: return LTACrowdClient()
-        pass
+    if _config_value("DATA_PROVIDER") == "live" and _config_value("LTA_ACCOUNT_KEY"):
+        from app.integrations.lta_crowd_client import LTACrowdClient
+
+        return LTACrowdClient(account_key=_config_value("LTA_ACCOUNT_KEY"))
 
     from app.integrations.mock_adapter import MockCrowdProvider
 
     return MockCrowdProvider()
+
+
+def get_weather_provider() -> WeatherProvider:
+    """Return keyless live weather in live mode, otherwise demo weather."""
+    if _config_value("DATA_PROVIDER") == "live":
+        from app.integrations.weather_client import DataGovWeatherClient
+
+        return DataGovWeatherClient()
+
+    from app.integrations.mock_adapter import MockWeatherProvider
+
+    return MockWeatherProvider()
+
+
+def get_facility_provider() -> FacilityProvider:
+    """Return live LTA lift maintenance in live mode, otherwise no outages."""
+    if _config_value("DATA_PROVIDER") == "live" and _config_value("LTA_ACCOUNT_KEY"):
+        from app.integrations.lta_facilities_client import LTAFacilitiesClient
+
+        return LTAFacilitiesClient(account_key=_config_value("LTA_ACCOUNT_KEY"))
+
+    from app.integrations.mock_adapter import MockFacilityProvider
+
+    return MockFacilityProvider()
 
 
 def get_location_provider() -> LocationProvider:

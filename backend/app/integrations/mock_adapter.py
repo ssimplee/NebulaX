@@ -106,8 +106,11 @@ class MockCrowdProvider:
             "level": _deterministic_crowd_level(station_id),
             "confidence": 0.7,
             "source": "simulated",
+            "sourceType": "simulated",
             "observedAt": now.isoformat(),
+            "fetchedAt": now.isoformat(),
             "expiresAt": (now + timedelta(minutes=15)).isoformat(),
+            "isStale": False,
         }
 
     def get_all_crowd(self) -> list[dict]:
@@ -119,6 +122,32 @@ class MockCrowdProvider:
             }
             for s in _MOCK_STATIONS
         ]
+
+
+class MockWeatherProvider:
+    """Deterministic weather used when live providers are disabled."""
+
+    def get_commute_weather(self) -> dict:
+        now = _now_sgt().isoformat()
+        return {
+            "products": {
+                "twoHour": {"condition": "Fair"},
+                "rainfall": {"condition": "No significant rain"},
+                "twentyFourHour": {"condition": "Fair with isolated showers"},
+            },
+            "source": "replayed-demo",
+            "sourceType": "simulated",
+            "fetchedAt": now,
+            "isStale": False,
+            "errors": [],
+        }
+
+
+class MockFacilityProvider:
+    """No simulated outage is invented unless a demo fixture requests one."""
+
+    def get_outages(self) -> list[dict]:
+        return []
 
 
 # ---------------------------------------------------------------------------
@@ -233,6 +262,9 @@ class MockRailDataProvider:
                 ),
                 "createdAt": created_at,
                 "source": "simulated",
+                "sourceType": "simulated",
+                "fetchedAt": created_at,
+                "isStale": False,
             },
             {
                 "status": 1,
@@ -248,6 +280,9 @@ class MockRailDataProvider:
                 ),
                 "createdAt": created_at,
                 "source": "simulated",
+                "sourceType": "simulated",
+                "fetchedAt": created_at,
+                "isStale": False,
             },
         ]
 

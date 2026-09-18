@@ -1,0 +1,20 @@
+{
+  "id": "rachel-five-minute-delay",
+  "label": "Minor EWL delay",
+  "personaId": "rachel",
+  "source": "replayed-demo",
+  "sourceType": "simulated",
+  "serviceAlerts": [{
+    "id": "demo-ewl-minor",
+    "lineCode": "EW",
+    "ltaLine": "EWL",
+    "stationIds": ["tampines", "raffles-place"],
+    "severity": "minor",
+    "estimatedDelayMinutes": 5,
+    "message": "Demo: five-minute EWL delay"
+  }],
+  "crowdReadings": [],
+  "weather": {"condition": "fair"},
+  "facilityOutages": [],
+  "expected": {"shouldNotify": false}
+}
