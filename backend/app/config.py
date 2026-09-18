@@ -1,6 +1,7 @@
 """Environment-based configuration for the Flask backend."""
 
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -8,7 +9,8 @@ from dotenv import load_dotenv
 # than only in create_app()) guarantees it happens before this module's
 # class attributes are evaluated at import time, regardless of import
 # order or Werkzeug reloader subprocess timing.
-load_dotenv()
+_BACKEND_DIR = Path(__file__).resolve().parents[1]
+load_dotenv(_BACKEND_DIR / ".env")
 
 
 class BaseConfig:
@@ -26,6 +28,8 @@ class BaseConfig:
     # OneMap integration
     ONEMAP_EMAIL = os.getenv("ONEMAP_EMAIL", "")
     ONEMAP_PASSWORD = os.getenv("ONEMAP_PASSWORD", "")
+    ONEMAP_TOKEN = os.getenv("ONEMAP_TOKEN", "")
+    OSRM_BASE_URL = os.getenv("OSRM_BASE_URL", "")
 
     # LTA DataMall integration
     LTA_ACCOUNT_KEY = os.getenv("LTA_ACCOUNT_KEY", "")

@@ -5,6 +5,7 @@ Covers the DataMall response contract (API User Guide v6.8, section
 """
 
 import pytest
+import requests
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -126,6 +127,35 @@ class TestAlertPayloadNormalisation:
         assert alert["direction"] == "HarbourFront"
         assert alert["stationCodes"] == ["NE6", "NE4", "NE3", "NE1"]
         assert alert["source"] == "lta_datamall"
+        assert alert["sourceType"] == "live"
+        assert alert["fetchedAt"]
+        assert alert["isStale"] is False
+
+    def test_line_and_direction_are_normalised(self):
+        payload = {
+            "value": {
+                "Status": 2,
+                "AffectedSegments": [
+                    {"Line": " ewl ", "Direction": "  Pasir Ris  ", "Stations": " ew2 "}
+                ],
+                "Message": [],
+            }
+        }
+
+        alert = LTADataMallClient._normalise_alert_payload(payload)[0]
+
+        assert alert["ltaLine"] == "EWL"
+        assert alert["direction"] == "Pasir Ris"
+        assert alert["stationCodes"] == ["EW2"]
+
+    def test_live_failure_is_not_replaced_with_simulated_alerts(self, monkeypatch):
+        def _fail(*args, **kwargs):
+            raise requests.ConnectionError("offline")
+
+        monkeypatch.setattr("app.integrations.lta_client.requests.get", _fail)
+
+        with pytest.raises(requests.ConnectionError):
+            LTADataMallClient(account_key="test-key").get_service_alerts()
 
     def test_message_content_and_date_come_from_message_field(self):
         """Content and CreatedDate live under Message, not AffectedSegments."""

@@ -1,0 +1,12 @@
+{
+  "id": "rachel-normal",
+  "label": "Normal weekday commute",
+  "personaId": "rachel",
+  "source": "replayed-demo",
+  "sourceType": "simulated",
+  "serviceAlerts": [],
+  "crowdReadings": [],
+  "weather": {"condition": "fair"},
+  "facilityOutages": [],
+  "expected": {"shouldNotify": false}
+}

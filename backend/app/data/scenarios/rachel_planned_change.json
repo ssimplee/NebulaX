@@ -1,0 +1,20 @@
+{
+  "id": "rachel-planned-change",
+  "label": "Planned EWL service change",
+  "personaId": "rachel",
+  "source": "replayed-demo",
+  "sourceType": "simulated",
+  "serviceAlerts": [{
+    "id": "demo-ewl-planned",
+    "kind": "planned",
+    "lineCode": "EW",
+    "ltaLine": "EWL",
+    "stationIds": ["tampines", "raffles-place"],
+    "severity": "major",
+    "message": "Demo: planned EWL service change"
+  }],
+  "crowdReadings": [],
+  "weather": {"condition": "fair"},
+  "facilityOutages": [],
+  "expected": {"shouldNotify": true}
+}

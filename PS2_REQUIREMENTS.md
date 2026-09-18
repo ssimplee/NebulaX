@@ -34,23 +34,36 @@ her 08:45 arrival deadline, and proactively recommend one useful action.
 | Mdm Lim — accessibility constrained | Bedok to Singapore General Hospital for a fortnightly appointment | Door-to-door step-free route, working lifts, sheltered walking, large text, advance planning and a day-before warning |
 
 - [x] Select Rachel as the primary persona and explain why.
-- [ ] Confirm the normal door-to-door route from Rachel's home/origin point in
+- [x] Confirm the normal door-to-door route from Rachel's home/origin point in
       Tampines to her workplace/destination point at Raffles Place.
-- [ ] Define the exact EWL disruption used in the demo.
-- [ ] Define the expected original route and revised recommendation.
-- [ ] Define and document the team's behaviour for impacts between the two
+- [x] Define the exact EWL disruption used in the demo.
+- [x] Define the expected original route and revised recommendation.
+- [x] Define and document the team's behaviour for impacts between the two
       official examples: 5 minutes is noise; 15 minutes is material.
 
 Rachel's fixed facts for the demo are:
 
 - Journey: Tampines to Raffles Place
+- Home: `858C Tampines Walk, Singapore 523858`
+- Workplace: `1 George St, Singapore 049145`
+- Door-to-door anchors: home to Tampines MRT, then Raffles Place MRT to work
 - Normal line: East West Line
 - Normal departure: 07:40
 - Required arrival: by 08:45
 - Five-minute delay: noise; do not interrupt her
 - Fifteen-minute delay: material because it risks her meeting
+- Team decision for intermediate impacts: remain quiet below 15 minutes unless
+  the calculated latest-arrival estimate already exceeds 08:45.
 - Product behaviour: notify only when the impact matters and lead with a
   one-line action
+
+Live OneMap verification (18 September 2026) resolved home to
+`1.35449039932647, 103.9396874423523` and work to
+`1.285694084848462, 103.8478199704954`. The current baseline is 44 minutes
+door-to-door, including 18 walking minutes, with an estimated 08:24 arrival
+from a 07:40 departure. Both walking-leg geometries and two rail alternatives
+were returned. These values are estimates and must retain their source and
+freshness labels in the demo.
 
 The app may retain the other personas as future extensions, but P0 decisions,
 ranking, notifications and UX must be evaluated against Rachel first.
@@ -383,22 +396,36 @@ operational-data tests.
 
 #### P0 tasks
 
-- [ ] Correct and harden `TrainServiceAlerts` ingestion.
-- [ ] Normalise LTA line codes, station codes, direction and affected segments.
-- [ ] Create labelled Rachel fixtures for an EWL disruption and a planned
+- [x] Correct and harden `TrainServiceAlerts` ingestion.
+- [x] Normalise LTA line codes, station codes, direction and affected segments.
+- [x] Create labelled Rachel fixtures for an EWL disruption and a planned
       service change.
-- [ ] Implement `PCDRealTime` and `PCDForecast` adapters.
-- [ ] Integrate data.gov.sg weather forecasts.
-- [ ] Emit consistent source type, timestamps, staleness and simulated flags.
-- [ ] Provide one aggregated `OperationalConditions` service for Member 2.
-- [ ] Add contract tests using recorded fixtures; tests must not require a live
+- [x] Implement `PCDRealTime` and `PCDForecast` adapters.
+- [x] Integrate data.gov.sg weather forecasts.
+- [x] Emit consistent source type, timestamps, staleness and simulated flags.
+- [x] Provide one aggregated `OperationalConditions` service for Member 2.
+- [x] Add contract tests using recorded fixtures; tests must not require a live
       API or secret.
+
+Current verification (18 September 2026): the LTA AccountKey successfully
+returned and normalised 32 EWL crowd readings, the backend loads
+`backend/.env` from either the repository root or backend directory, and all
+266 backend tests pass. Live-provider failures are not
+replaced with simulated alerts, and operational records now carry source type,
+fetch time and staleness state for the aggregated quality summary.
 
 #### P1 tasks
 
-- [ ] Add bus stop, route, service and Bus Arrival v3 ingestion.
-- [ ] Add retry, caching, pagination and provider-health status.
-- [ ] Add lift-maintenance ingestion if time remains.
+- [x] Add bus stop, route, service and Bus Arrival v3 ingestion.
+- [x] Add retry, caching, pagination and provider-health status.
+- [x] Add lift-maintenance ingestion if time remains.
+
+Bus reference endpoints use `$skip` pagination, retry transient HTTP failures
+and cache slow-changing topology for six hours. Bus Arrival v3 is cached for
+15 seconds. Operational sources expose provider health, use source-appropriate
+TTL caches, and return explicitly stale last-known data when a refresh fails.
+Live verification returned 22 services at Tampines Bus Interchange (`75009`)
+and four current facilities-maintenance records.
 
 #### Handoff
 
@@ -412,27 +439,39 @@ routing tests.
 
 #### P0 tasks
 
-- [ ] Extend the route request from station-to-station to door-to-door points.
-- [ ] Integrate an OSM routing engine or adapter for walking access legs.
-- [ ] Make affected rail edges unavailable or apply disruption delay costs.
-- [ ] Replace the pass-through `/routes/recalculate` behaviour with genuine
+- [x] Extend the route request from station-to-station to door-to-door points.
+- [x] Integrate an OSM routing engine or adapter for walking access legs.
+- [x] Make affected rail edges unavailable or apply disruption delay costs.
+- [x] Replace the pass-through `/routes/recalculate` behaviour with genuine
       condition-aware recalculation.
-- [ ] Produce the original route plus at least one viable alternative.
-- [ ] Calculate ETA ranges and expose uncertainty.
-- [ ] Implement deterministic Rachel ranking: protect the 08:45 arrival first,
+- [x] Produce the original route plus at least one viable alternative.
+- [x] Calculate ETA ranges and expose uncertainty.
+- [x] Implement deterministic Rachel ranking: protect the 08:45 arrival first,
       then minimise transfers/walking among routes that arrive on time.
-- [ ] Implement the official boundary examples: 5-minute impact stays quiet;
+- [x] Implement the official boundary examples: 5-minute impact stays quiet;
       15-minute impact produces a recommendation. Document behaviour between
       those values as a product decision.
-- [ ] Return `shouldNotify`, action, reason, original/recommended arrivals,
+- [x] Return `shouldNotify`, action, reason, original/recommended arrivals,
       trade-offs and provenance IDs.
-- [ ] Add unit and scenario tests proving 5 minutes stays quiet and 15 minutes
+- [x] Add unit and scenario tests proving 5 minutes stays quiet and 15 minutes
       produces a recommendation.
 
 #### P1 tasks
 
-- [ ] Add normal bus alternatives once Member 1 exposes bus data.
-- [ ] Add historical calibration and better confidence scoring.
+- [x] Add normal bus alternatives once Member 1 exposes bus data.
+- [x] Add confidence scoring that distinguishes real-time from scheduled or
+      estimated legs and states its evidence basis.
+- [ ] Calibrate ETA/confidence against historical observed journey times when
+      a suitable dataset has been collected; do not imply calibration before
+      then.
+
+The walking contract supports a configured OSRM-compatible OSM router through
+`OSRM_BASE_URL`, with authenticated OneMap routing as the live fallback. Live
+OneMap verification returned three door-to-door bus alternatives. Under the
+15-minute EWL disruption fixture, deterministic ranking selected the
+`DT-CC-NS` rail alternative with an estimated 08:41 arrival and an 08:47 upper
+range. Bus alternatives remain visible for comparison rather than being forced
+as the recommendation.
 
 #### Handoff
 
