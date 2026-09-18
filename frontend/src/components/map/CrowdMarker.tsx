@@ -1,6 +1,13 @@
 import { CROWD_COLORS } from "@/data/lineColors";
 
-export type CrowdLevel = "low" | "moderate" | "crowded" | "very_crowded";
+export type CrowdLevel = "low" | "moderate" | "high";
+
+/** Size grows with the level, so the scale reads without colour. */
+const SIZES: Record<CrowdLevel, { glow: number; dot: number }> = {
+  low: { glow: 9, dot: 3 },
+  moderate: { glow: 13, dot: 5 },
+  high: { glow: 18, dot: 7 },
+};
 
 interface CrowdMarkerProps {
   /** SVG viewBox x coordinate of the station */
@@ -27,7 +34,7 @@ export function CrowdMarker({ cx, cy, level, stationName }: CrowdMarkerProps) {
   const gradientId = `crowd-glow-${cx}-${cy}`;
 
   return (
-    <g aria-label={stationName ? `${stationName}: ${level.replace("_", " ")} crowd` : undefined}>
+    <g aria-label={stationName ? `${stationName}: ${level} crowd` : undefined}>
       <defs>
         <radialGradient id={gradientId}>
           <stop offset="0%" stopColor={color} stopOpacity={0.8} />
@@ -39,7 +46,7 @@ export function CrowdMarker({ cx, cy, level, stationName }: CrowdMarkerProps) {
       <circle
         cx={cx}
         cy={cy}
-        r={14}
+        r={SIZES[level].glow}
         fill={`url(#${gradientId})`}
         pointerEvents="none"
       />
@@ -47,7 +54,7 @@ export function CrowdMarker({ cx, cy, level, stationName }: CrowdMarkerProps) {
       <circle
         cx={cx}
         cy={cy}
-        r={5}
+        r={SIZES[level].dot}
         fill={color}
         opacity={0.9}
         pointerEvents="none"

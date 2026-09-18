@@ -15,6 +15,13 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 
 import { MRTMapComponent } from "../components/map/MRTMapComponent";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+/** The map reads crowd data through React Query, as it does inside the app's providers. */
+function renderMap() {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={client}><MRTMapComponent /></QueryClientProvider>);
+}
 import { MapControls } from "../components/map/MapControls";
 import { LocationErrorCard } from "../components/map/LocationErrorCard";
 import { RouteInputForm } from "../components/route/RouteInputForm";
@@ -155,20 +162,20 @@ describe("LocationErrorCard", () => {
 
 describe("MRTMapComponent GPS wiring", () => {
   it("exposes a locate button on the map", () => {
-    render(<MRTMapComponent />);
+    renderMap();
     expect(
       screen.getByRole("button", { name: /locate me/i }),
     ).toBeInTheDocument();
   });
 
   it("does not request location until the button is pressed", () => {
-    render(<MRTMapComponent />);
+    renderMap();
     expect(getCurrentPosition).not.toHaveBeenCalled();
   });
 
   it("shows the nearest station and marks it on the overlay after a fix", async () => {
     grantLocation(BISHAN);
-    render(<MRTMapComponent />);
+    renderMap();
     clickLocate();
 
     const card = await screen.findByRole("region", {
@@ -185,7 +192,7 @@ describe("MRTMapComponent GPS wiring", () => {
 
   it("warns when GPS accuracy is too poor to trust the result", async () => {
     grantLocation(BISHAN, 250);
-    render(<MRTMapComponent />);
+    renderMap();
     clickLocate();
 
     expect(await screen.findByText(/GPS accuracy is low/i)).toBeInTheDocument();
@@ -193,7 +200,7 @@ describe("MRTMapComponent GPS wiring", () => {
 
   it("opens the station panel from the details button", async () => {
     grantLocation(BISHAN);
-    render(<MRTMapComponent />);
+    renderMap();
     clickLocate();
 
     fireEvent.click(
@@ -205,7 +212,7 @@ describe("MRTMapComponent GPS wiring", () => {
 
   it("clears the result when the card is dismissed", async () => {
     grantLocation(BISHAN);
-    render(<MRTMapComponent />);
+    renderMap();
     clickLocate();
 
     fireEvent.click(
@@ -230,7 +237,7 @@ describe("MRTMapComponent GPS wiring", () => {
     "surfaces failure code %i instead of failing silently",
     async (code, expected) => {
       denyLocation(code);
-      render(<MRTMapComponent />);
+      renderMap();
       clickLocate();
 
       expect(await screen.findByRole("alert")).toHaveTextContent(expected);
@@ -240,7 +247,7 @@ describe("MRTMapComponent GPS wiring", () => {
   it("reports a location outside Singapore rather than picking a station", async () => {
     // London — well outside the Singapore bounding box.
     grantLocation({ latitude: 51.5074, longitude: -0.1278 });
-    render(<MRTMapComponent />);
+    renderMap();
     clickLocate();
 
     expect(await screen.findByRole("alert")).toHaveTextContent(

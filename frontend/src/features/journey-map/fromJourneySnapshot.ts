@@ -109,6 +109,7 @@ export function fromJourneySnapshot(snapshot: SnapshotInput, labels: RoleLabels 
       kind: event.kind,
       title: event.title,
       lineCode: segment?.lineCode ?? null,
+      severity: geometry.severity ?? null,
       stationIds: span ?? [],
       delayMinutes: geometry.delayMinutes ?? null,
     };

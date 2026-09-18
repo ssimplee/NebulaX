@@ -9,7 +9,7 @@ import { NearestStationMarker } from "./NearestStationMarker";
  */
 export interface StationCrowdData {
   stationId: string;
-  level: "low" | "moderate" | "crowded" | "very_crowded";
+  level: "low" | "moderate" | "high";
 }
 
 interface SVGOverlayProps {

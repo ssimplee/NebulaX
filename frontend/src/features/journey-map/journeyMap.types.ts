@@ -64,6 +64,8 @@ export interface MapEvent {
   kind: "planned" | "unplanned";
   title: string;
   lineCode: MapLineCode | null;
+  /** Operator severity when known; a minor delay is shown less loudly. */
+  severity: "major" | "minor" | null;
   /** Stations inside the affected stretch, in line order; empty when not located. */
   stationIds: string[];
   delayMinutes: number | null;
@@ -75,6 +77,23 @@ export interface MapDataState {
   /** Earliest moment any contributing source becomes stale. */
   staleAt: string;
   simulated: boolean;
+  /** Where the journey came from, when a source says: live services, a backend demo scenario or a recorded replay. */
+  feed?: "live" | "demo-scenario" | "recorded";
+  /** Journey times are estimates (static network graph), not live arrivals. */
+  estimatedTimes?: boolean;
+  /** Condition sources the backend reported as stale. */
+  staleSources?: string[];
+  /** Live conditions could not be fetched; the route is shown without them. */
+  conditionsUnavailable?: boolean;
+  /** Some inputs in a live request came from the backend's simulated providers. */
+  includesSimulated?: boolean;
+}
+
+/** The backend's decision for this journey, shown before any detail. */
+export interface JourneyDecision {
+  shouldNotify: boolean;
+  action: string;
+  reason: string;
 }
 
 /** Words for the two roles; they differ between Rachel's scenario and a route planner. */
@@ -95,6 +114,7 @@ export interface JourneyMapModel {
   originalCandidateId: string;
   recommendedCandidateId: string;
   labels: RoleLabels;
+  decision?: JourneyDecision | null;
   events: MapEvent[];
   crowd: CrowdReading[];
   dataState: MapDataState;

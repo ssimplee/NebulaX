@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Hand } from "lucide-react";
@@ -27,14 +27,18 @@ export interface JourneyMapProps {
   cooperativeGestures?: boolean;
   /** Injectable for other providers or tests; defaults to configuration. */
   basemap?: BasemapProvider;
+  /** Controls shown at the top of the legend card, such as a data-mode picker. */
+  legendHeader?: ReactNode;
   className?: string;
 }
 
 const SINGAPORE_CENTRE: L.LatLngTuple = [1.3521, 103.8198];
 const EDGE_PADDING = 24;
+/** Smallest height, in pixels, the route is fitted into however much the overlays cover. */
+const MIN_ROUTE_HEIGHT = 180;
 
 export function JourneyMap({
-  model, selectedCandidateId, onSelectCandidate, onSelectStation, insets, cooperativeGestures = false, basemap, className,
+  model, selectedCandidateId, onSelectCandidate, onSelectStation, insets, cooperativeGestures = false, basemap, legendHeader, className,
 }: JourneyMapProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
@@ -117,9 +121,21 @@ export function JourneyMap({
   const fitRoute = useCallback(() => {
     if (!map || !layers.bounds) return;
     const [[west, south], [east, north]] = layers.bounds;
+    // On a short screen the overlays can cover almost everything; shrink the
+    // padding so the route keeps a usable area rather than zooming out to the
+    // whole island.
+    const height = map.getSize().y;
+    let top = topInset + EDGE_PADDING;
+    let bottom = bottomInset + EDGE_PADDING;
+    const shortfall = top + bottom + MIN_ROUTE_HEIGHT - height;
+    if (height > 0 && shortfall > 0) {
+      const scale = Math.max(0, (top + bottom - shortfall) / (top + bottom));
+      top *= scale;
+      bottom *= scale;
+    }
     map.fitBounds([[south, west], [north, east]], {
-      paddingTopLeft: [EDGE_PADDING, topInset + EDGE_PADDING],
-      paddingBottomRight: [EDGE_PADDING, bottomInset + EDGE_PADDING],
+      paddingTopLeft: [EDGE_PADDING, top],
+      paddingBottomRight: [EDGE_PADDING, bottom],
       maxZoom: 15,
       animate: false,
     });
@@ -140,28 +156,25 @@ export function JourneyMap({
     <div className={`relative h-full w-full overflow-hidden bg-slate-100 ${className ?? ""}`}>
       <div ref={hostRef} className="h-full w-full" role="region" aria-label="Journey Map: your routes on a street map" />
 
-      <div className="pointer-events-none absolute inset-x-3 z-[500]" style={{ top: topInset + 8 }}>
-        <JourneyMapStatus dataState={model.dataState} basemapStatus={basemapStatus} online={online} now={now} hasDrawableRoute={layers.lines.length > 0} />
-      </div>
-
       {!unlocked && (
         <button type="button" onClick={() => setUnlocked(true)}
           className="absolute right-3 z-[500] flex min-h-11 items-center gap-1.5 rounded-full border bg-card px-3 text-sm font-semibold shadow-md focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ top: topInset + 44 }}>
+          style={{ top: topInset + 8 }}>
           <Hand size={16} aria-hidden="true" /> Move map
         </button>
       )}
       {unlocked && cooperativeGestures && (
         <button type="button" onClick={() => setUnlocked(false)}
           className="absolute right-3 z-[500] min-h-11 rounded-full border bg-card px-3 text-sm font-semibold shadow-md focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ top: topInset + 44 }}>
+          style={{ top: topInset + 8 }}>
           Done moving
         </button>
       )}
 
       <div className="pointer-events-none absolute inset-x-0 z-[600] md:inset-x-auto md:left-4 md:w-[26rem]" style={{ bottom: insets?.bottom ?? 0 }}>
         <JourneyMapLegend ref={legendRef} model={model} selectedCandidateId={layers.selectedCandidateId}
-          onSelectCandidate={onSelectCandidate} onRecenter={fitRoute} attribution={provider.attribution} />
+          onSelectCandidate={onSelectCandidate} onRecenter={fitRoute} attribution={provider.attribution} header={legendHeader}
+          status={<JourneyMapStatus dataState={model.dataState} basemapStatus={basemapStatus} online={online} now={now} hasDrawableRoute={layers.lines.length > 0} />} />
       </div>
     </div>
   );

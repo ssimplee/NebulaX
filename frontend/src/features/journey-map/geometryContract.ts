@@ -37,6 +37,8 @@ export const eventGeometrySchema = z.object({
   affectedSegment: z.object({ lineCode: z.enum(MAP_LINE_CODES), fromStationId: id, toStationId: id }).strict().optional(),
   /** Expected extra minutes for a journey through the affected stretch. */
   delayMinutes: z.number().nonnegative().optional(),
+  /** Operator severity; a minor delay is drawn less loudly than a disruption. */
+  severity: z.enum(["major", "minor"]).optional(),
 });
 export type EventGeometry = z.infer<typeof eventGeometrySchema>;
 

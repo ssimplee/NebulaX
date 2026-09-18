@@ -1,6 +1,6 @@
 import { MAP_LINE_CODES, type MapLineCode } from "./geometryContract";
 import { fromJourneySnapshot, RACHEL_LABELS, type SnapshotInput } from "./fromJourneySnapshot";
-import { plannerSteps, type PlannedRoute, type SnapshotStep } from "./fromRoutePlan";
+import { plannerSteps, resolveStation, type PlannedRoute, type SnapshotStep } from "./fromRoutePlan";
 import type { JourneyMapModel, LonLat } from "./journeyMap.types";
 import { LINE_NAMES } from "./journeyLayers";
 import { decodePolyline } from "./polyline";
@@ -53,6 +53,7 @@ export interface RachelPlan {
   original: RachelPlanCandidate;
   alternatives: RachelPlanCandidate[];
   recommended: RachelPlanCandidate;
+  decision?: { shouldNotify: boolean; action: string; reason: string };
   scenarioId?: string | null;
   sourceType?: string;
 }
@@ -60,10 +61,15 @@ export interface RachelPlan {
 export interface RachelConditions {
   observedAt?: string;
   serviceAlerts?: ReadonlyArray<{
-    id: string;
+    /** Scenario alerts carry an id; live LTA alerts do not. */
+    id?: string;
     kind?: string;
     lineCode?: string;
     stationIds?: string[];
+    /** Live alerts locate themselves by LTA station code instead of stationIds. */
+    stationCodes?: string[];
+    severity?: string;
+    sourceType?: string;
     estimatedDelayMinutes?: number;
     message?: string;
   }>;
@@ -75,6 +81,11 @@ export interface RachelConditions {
     validFrom?: string;
     fetchedAt?: string;
   }>;
+  dataQuality?: {
+    staleSources?: string[];
+    simulatedSources?: string[];
+    errors?: ReadonlyArray<{ source: string; error: string | null }>;
+  };
 }
 
 const isBusCandidate = (candidate: RachelPlanCandidate) => "legs" in candidate.geometry;
@@ -123,20 +134,46 @@ function busCandidateSteps(candidate: RachelPlanCandidate): SnapshotStep[] {
   });
 }
 
-export function fromRachelPlan(plan: RachelPlan, conditions: RachelConditions = {}, evaluatedAt = new Date().toISOString()): JourneyMapModel {
-  const simulated = plan.sourceType === "simulated";
+export interface RachelPlanOptions {
+  /** When the plan was fetched or recorded; drives freshness. */
+  evaluatedAt?: string;
+  /** Live services, a backend demo scenario or a recorded replay. */
+  feed?: "live" | "demo-scenario" | "recorded";
+  /** Live conditions failed to load; show the plan without them, and say so. */
+  conditionsUnavailable?: boolean;
+}
 
-  const alerts = conditions.serviceAlerts ?? [];
+/** Crowded and very crowded (mock) or high (LTA) all display as the top of the three levels. */
+const CROWD_LEVELS: Record<string, "low" | "moderate" | "high"> = {
+  low: "low", l: "low", moderate: "moderate", m: "moderate", high: "high", h: "high", crowded: "high", very_crowded: "high",
+};
+
+export function fromRachelPlan(plan: RachelPlan, conditions: RachelConditions = {}, options: RachelPlanOptions = {}): JourneyMapModel {
+  const evaluatedAt = options.evaluatedAt ?? new Date().toISOString();
+  const feed = options.feed ?? (plan.sourceType === "simulated" ? "demo-scenario" : "live");
+  const simulated = feed !== "live";
+  const planned = [plan.original, ...plan.alternatives];
+  const plannerStepsOf = (candidate: RachelPlanCandidate) =>
+    (isBusCandidate(candidate) ? [] : candidate.steps) as PlannedRoute["steps"];
+
+  // Only alerts on lines this journey could use are relevant to Rachel.
+  const linesUsed = new Set(planned.flatMap((candidate) => plannerStepsOf(candidate).flatMap((step) => (step.line ? [step.line] : []))));
+  const alerts = (conditions.serviceAlerts ?? [])
+    .map((alert, index) => ({ ...alert, id: alert.id ?? `alert-${index + 1}` }))
+    .filter((alert) => !alert.lineCode || linesUsed.has(alert.lineCode));
   const events = alerts.map((alert) => {
-    const stations = alert.stationIds ?? [];
-    const locatable = alert.lineCode && (MAP_LINE_CODES as readonly string[]).includes(alert.lineCode) && stations.length >= 2;
+    const listed = alert.stationIds?.length
+      ? alert.stationIds
+      : (alert.stationCodes ?? []).map(resolveStation).filter((id): id is string => Boolean(id));
+    const locatable = alert.lineCode && (MAP_LINE_CODES as readonly string[]).includes(alert.lineCode) && listed.length >= 2;
     return {
       id: alert.id,
       kind: alert.kind === "planned" ? "planned" as const : "unplanned" as const,
       title: alert.message ?? "Service alert",
       sourceId: "rachel-conditions",
-      ...(locatable ? { affectedSegment: { lineCode: alert.lineCode, fromStationId: stations[0], toStationId: stations[stations.length - 1] } } : {}),
+      ...(locatable ? { affectedSegment: { lineCode: alert.lineCode, fromStationId: listed[0], toStationId: listed[listed.length - 1] } } : {}),
       ...(alert.estimatedDelayMinutes != null ? { delayMinutes: alert.estimatedDelayMinutes } : {}),
+      ...(alert.severity === "major" || alert.severity === "minor" ? { severity: alert.severity } : {}),
     };
   });
   const alertIdsByLine = new Map<string, string[]>();
@@ -146,14 +183,17 @@ export function fromRachelPlan(plan: RachelPlan, conditions: RachelConditions = 
 
   // The backend can return the same route id twice (for example two DT-CC-NS
   // paths); the map selects by id, so make each one unique.
-  const planned = [plan.original, ...plan.alternatives];
   const seen = new Map<string, number>();
   const ids = planned.map((candidate) => {
     const count = (seen.get(candidate.id) ?? 0) + 1;
     seen.set(candidate.id, count);
     return count === 1 ? candidate.id : `${candidate.id} (option ${count})`;
   });
-  const recommendedIndex = Math.max(0, planned.findIndex((candidate) => sameCandidate(candidate, plan.recommended)));
+  // The decision is what Rachel is told. When it says stay (shouldNotify false),
+  // emphasise her usual route even if the ranking preferred another; that
+  // option stays available for comparison.
+  const quiet = plan.decision?.shouldNotify === false;
+  const recommendedIndex = quiet ? 0 : Math.max(0, planned.findIndex((candidate) => sameCandidate(candidate, plan.recommended)));
 
   const candidates = planned.map((candidate, index) => ({
     id: ids[index],
@@ -164,14 +204,24 @@ export function fromRachelPlan(plan: RachelPlan, conditions: RachelConditions = 
     steps: isBusCandidate(candidate) ? busCandidateSteps(candidate) : railCandidateSteps(candidate, alertIdsByLine),
   }));
 
+  // Crowding only where Rachel boards, changes or alights: the whole-network feed would bury the route.
+  const keyStations = new Set(planned.flatMap((candidate) => plannerStepsOf(candidate).flatMap((step) =>
+    step.stationId && (step.type === "board" || step.type === "transfer" || step.type === "alight") ? [step.stationId] : [])));
   const conditionsObservedAt = withOffset(conditions.observedAt) ?? evaluatedAt;
-  const crowd = (conditions.crowdReadings ?? []).map((reading) => ({
+  const crowdReadings = (conditions.crowdReadings ?? []).filter((reading) => keyStations.has(reading.stationId));
+  const crowd = crowdReadings.map((reading) => ({
     stationId: reading.stationId,
-    level: reading.level,
+    level: CROWD_LEVELS[reading.level] ?? reading.level,
     signal: reading.sourceType === "forecast" ? "platform-forecast" : "platform-realtime",
     sourceId: "rachel-conditions",
     observedAt: withOffset(reading.observedAt) ?? withOffset(reading.validFrom) ?? withOffset(reading.fetchedAt) ?? conditionsObservedAt,
   }));
+
+  const quality = conditions.dataQuality;
+  const includesSimulated = feed === "live" && (
+    (quality?.simulatedSources?.length ?? 0) > 0
+    || alerts.some((alert) => alert.sourceType === "simulated")
+    || crowdReadings.some((reading) => reading.sourceType === "simulated"));
 
   const home: LonLat = [plan.journey.home.longitude, plan.journey.home.latitude];
   const work: LonLat = [plan.journey.work.longitude, plan.journey.work.latitude];
@@ -187,5 +237,17 @@ export function fromRachelPlan(plan: RachelPlan, conditions: RachelConditions = 
     ],
     recommendation: { originalCandidateId: ids[0], recommendedCandidateId: ids[recommendedIndex] },
   };
-  return fromJourneySnapshot(snapshot, RACHEL_LABELS);
+  const model = fromJourneySnapshot(snapshot, RACHEL_LABELS);
+  return {
+    ...model,
+    decision: plan.decision ? { shouldNotify: plan.decision.shouldNotify, action: plan.decision.action, reason: plan.decision.reason } : null,
+    dataState: {
+      ...model.dataState,
+      feed,
+      estimatedTimes: true,
+      staleSources: quality?.staleSources ?? [],
+      conditionsUnavailable: options.conditionsUnavailable ?? false,
+      includesSimulated,
+    },
+  };
 }

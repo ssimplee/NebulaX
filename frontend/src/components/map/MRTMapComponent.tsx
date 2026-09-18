@@ -6,6 +6,7 @@ import { CalibrationMode } from "./CalibrationMode";
 import { NearestStationInfo } from "./NearestStationInfo";
 import { LocationErrorCard } from "./LocationErrorCard";
 import { useMapStore } from "@/store/mapStore";
+import { useNetworkCrowd } from "@/features/map/useNetworkCrowd";
 import { STATIONS } from "@/data/stations";
 import type { MapStation } from "@/data/stations";
 import type { StationCrowdData } from "./SVGOverlay";
@@ -19,30 +20,13 @@ import type { NearestStation } from "@/features/geolocation/geolocation.types";
  */
 const LOCATION_CARD_POSITION = "top-20";
 
-/**
- * Generate demo crowd data for all stations.
- * In production this would come from the backend API.
- */
-function generateDemoCrowdData(): StationCrowdData[] {
-  const levels: StationCrowdData["level"][] = [
-    "low",
-    "moderate",
-    "crowded",
-    "very_crowded",
-  ];
-  return STATIONS.map((station, idx) => ({
-    stationId: station.id,
-    level: levels[idx % levels.length],
-  }));
-}
-
-const demoCrowdData = generateDemoCrowdData();
-
 export function MRTMapComponent() {
   const selectedStation = useMapStore((state) => state.selectedStation);
   const selectStation = useMapStore((state) => state.selectStation);
   const crowdLayerActive = useMapStore((state) => state.crowdLayerActive);
   const toggleCrowdLayer = useMapStore((state) => state.toggleCrowdLayer);
+  const crowd = useNetworkCrowd(crowdLayerActive);
+  const crowdData: StationCrowdData[] | undefined = crowdLayerActive && crowd.status === "ready" ? crowd.readings : undefined;
   const showStationLabels = useMapStore((state) => state.showStationLabels);
   const toggleStationLabels = useMapStore((state) => state.toggleStationLabels);
 
@@ -106,7 +90,7 @@ export function MRTMapComponent() {
         >
           <img src="/mrt/singapore-mrt-map.png" alt="Singapore MRT network map" className="absolute inset-0 h-full w-full select-none object-contain" draggable={false} />
           <SVGOverlay onStationSelect={handleStationSelect} selectedStationId={selectedStation?.id ?? null}
-            crowdLayerActive={crowdLayerActive} crowdData={crowdLayerActive ? demoCrowdData : undefined}
+            crowdLayerActive={crowdLayerActive} crowdData={crowdData}
             nearestStationId={nearest?.station.id ?? null} showStationLabels={showStationLabels} />
         </div>
       </TransformContainer>
@@ -137,7 +121,7 @@ export function MRTMapComponent() {
       )}
 
       {/* Crowd legend — only visible when crowd layer is active */}
-      {crowdLayerActive && <CrowdLegend />}
+      {crowdLayerActive && <CrowdLegend crowd={crowd} />}
 
       {/* Dev-only calibration overlay */}
       <CalibrationMode />

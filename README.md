@@ -99,8 +99,10 @@ Map** (geographic, on OpenStreetMap). The Journey Map is
 `frontend/src/components/journey-map/JourneyMap.tsx`. It takes route
 candidates and conditions only through typed props and never calls transit
 APIs. The Network Map keeps the original MRT map image with station, crowd,
-location and zoom controls; its crowd overlay is labelled demo data. The
-Journey Map shows:
+location and zoom controls. Its crowd layer shows the backend's platform crowd
+readings (`GET /operational-conditions`) on three levels, with marker size and
+colour both showing the level. The layer is labelled live, forecast or simulated
+from the readings' source. The Journey Map shows:
 
 - the recommended route (solid, in its line colour) and the original route
   (grey, dashed), with a legend card comparing arrival, range, walking time
@@ -121,11 +123,32 @@ scenario conditions from `GET /demo/rachel/<scenarioId>`), `fromRoutePlan.ts`
 contract). Routed walking paths are drawn when the plan supplies them: OSRM
 GeoJSON first, then OneMap's encoded polyline.
 
-With no journey planned, the Journey Map shows Rachel's labelled demo replay:
-the backend's plan for the team's fifteen-minute EWL scenario, recorded to
-`fixtures/rachel-plan.fifteen-minute-disruption.json`. To re-record it after
-routing or scenario changes (no network or API key needed), run this from the
-repository root:
+**Data modes.** One map and one card serve every mode. Pick the mode from the
+"Rachel's commute" selector in the card:
+
+| Mode | Plan | Conditions | Label shown |
+|---|---|---|---|
+| Your planned route (default when one exists) | Route tab or tracked journey | Route alerts | Estimated times |
+| **Live** (default otherwise) | `POST /routes/rachel/plan` | `GET /operational-conditions` | `Live conditions · updated HH:MM` |
+| Demo: 5-minute delay / 15-minute disruption / planned change | `POST /routes/rachel/recalculate` with the scenario | `GET /demo/rachel/<scenario>` | `Demo scenario · simulated` |
+| Demo: recorded replay (offline) | Recorded fixture | Recorded scenario | `Demo replay · simulated disruption` |
+
+The plan and its conditions always come from the same mode, so live and
+simulated data never mix. If a live request fails, the card says so and offers
+**Use recorded demo**. It never substitutes simulated data on its own. A live
+response is also refused when the backend could not geocode Rachel's verified
+home and work postal codes. That happens when it runs without OneMap
+credentials (mock geocoding).
+
+The card leads with the backend's decision (the action, or "stay on your usual
+route"), then the recommended and usual routes with arrival range and minutes
+gained or lost. It also labels live, estimated, stale and simulated inputs.
+
+The recorded replay is the backend's plan for the team's fifteen-minute EWL
+scenario, stored in `fixtures/rachel-plan.fifteen-minute-disruption.json`
+alongside recordings of the other scenarios, which the tests use. To re-record
+them after routing or scenario changes (no network or API key needed), run this
+from the repository root:
 
 ```bash
 backend/.venv/Scripts/python frontend/scripts/record_rachel_plan.py

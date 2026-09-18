@@ -31,7 +31,7 @@ from app.services.rachel_routing import plan_rachel_journey  # noqa: E402
 SGT = timezone(timedelta(hours=8))
 DEPARTURE = datetime(2026, 9, 21, 7, 40, tzinfo=SGT)  # a Monday
 EVALUATED_AT = datetime(2026, 9, 21, 7, 25, tzinfo=SGT)
-SCENARIOS = ["fifteen-minute-disruption"]
+SCENARIOS = ["normal", "five-minute-delay", "fifteen-minute-disruption", "planned-change"]
 VERIFIED_GEOCODES = {
     "523858": ("858C Tampines Walk, Singapore 523858", 1.35449039932647, 103.9396874423523),
     "049145": ("1 George St, Singapore 049145", 1.285694084848462, 103.8478199704954),

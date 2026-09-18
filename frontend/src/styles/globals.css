@@ -47,6 +47,12 @@ button.jm-chip:focus-visible {
   font-size: 13px;
 }
 .jm-chip--disruption::before { content: "⚠"; }
+.jm-chip--disruption.jm-chip--minor {
+  border-color: #92400e;
+  background: #fffbeb;
+  color: #78350f;
+  font-size: 12px;
+}
 /* Disruption sits above its point and the other route's tag below, so the two never stack. */
 .jm-chip--disruption { transform: translate(-50%, calc(-100% - 8px)); }
 .jm-chip--route-tag { transform: translate(-50%, 10px); }

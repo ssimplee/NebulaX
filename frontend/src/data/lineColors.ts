@@ -33,6 +33,7 @@ export const LINE_COLORS: Record<string, string> = {
 export const CROWD_COLORS: Record<string, string> = {
   low: "#22c55e", // Green
   moderate: "#eab308", // Yellow
+  high: "#dc2626", // Red: top of the three-level scale used on maps
   crowded: "#f97316", // Orange
   very_crowded: "#ef4444", // Red
 };

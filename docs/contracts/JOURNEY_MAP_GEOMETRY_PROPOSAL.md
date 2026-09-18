@@ -30,6 +30,17 @@
      self-describing.
   5. The team scenario's alert covers `tampines`–`raffles-place`, which is
      Rachel's whole EWL ride, so no unaffected EWL stretch remains to contrast.
+  6. In the planned-change scenario `decision.shouldNotify` is `false` and the
+     action says "Stay on your usual route", but `recommended` is DT-CC-NS.
+     The map follows the decision (it emphasises the usual route) and keeps
+     DT-CC-NS under "More options". The backend should make the two agree.
+  7. Live alerts arrive without an `id`, and they are located by
+     `stationCodes` rather than `stationIds`. The adapter handles both;
+     consistent ids and `stationIds` would simplify clients.
+  8. Without `backend/.env`, both live mode and the demo scenarios geocode
+     Rachel to "1 Orchard Road". The Journey Map refuses those plans and offers
+     the recorded replay. To let the scenarios run on a clean machine, add
+     Rachel's two verified addresses to the mock geocoder.
 
 ## Why
 

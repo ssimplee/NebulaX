@@ -19,7 +19,8 @@ export interface PlannedRoutes {
 }
 
 const idByCode = new Map(Array.from(MRT_STATIONS.values()).flatMap((station) => station.codes.map((code) => [code, station.id] as const)));
-const resolveStation = (value: string | undefined) => (value && MRT_STATIONS.has(value) ? value : value ? idByCode.get(value) : undefined);
+/** A stations.json id from either an id or an LTA station code. */
+export const resolveStation = (value: string | undefined) => (value && MRT_STATIONS.has(value) ? value : value ? idByCode.get(value) : undefined);
 
 /** Convert planner board/ride/transfer/alight steps into rail and transfer legs. */
 export function plannerSteps(plannerSteps: PlannedRoute["steps"], alertIdsByLine: ReadonlyMap<string, string[]>): SnapshotStep[] {

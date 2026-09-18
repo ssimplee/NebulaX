@@ -40,6 +40,8 @@ export interface JourneyMarker {
   stationId?: string;
   crowdLevel?: CrowdReading["level"];
   legMode?: LegMode;
+  /** Disruption markers: a minor delay is drawn less loudly. */
+  minor?: boolean;
   /** A one-stop or two-point leg whose label only fits once zoomed in. */
   short?: boolean;
 }
@@ -82,13 +84,16 @@ export function roleName(candidate: MapCandidate, labels: RoleLabels): string {
   return candidate.role === "recommended" ? labels.recommended : candidate.role === "original" ? labels.original : candidate.label;
 }
 
+const eventWord = (event: MapEvent) => (event.kind === "planned" ? "Planned works" : event.severity === "minor" ? "Minor delay" : "Disrupted");
+
 /** One-line summary of a located event, for the legend and screen readers. */
 export function eventSummary(event: MapEvent): string | null {
   if (!event.lineCode || event.stationIds.length < 2) return null;
   const from = stationName(event.stationIds[0]);
   const to = stationName(event.stationIds[event.stationIds.length - 1]);
   const delay = event.delayMinutes != null ? ` · +${event.delayMinutes} min` : "";
-  return `${event.kind === "planned" ? "Planned works" : "Disruption"}: ${LINE_NAMES[event.lineCode]} ${from}–${to}${delay}`;
+  const word = event.kind === "planned" ? "Planned works" : event.severity === "minor" ? "Minor delay" : "Disruption";
+  return `${word}: ${LINE_NAMES[event.lineCode]} ${from}–${to}${delay}`;
 }
 
 /** One-line headline for a candidate: role, then arrival or duration. */
@@ -217,7 +222,8 @@ export function buildJourneyLayers(model: JourneyMapModel, selectedCandidateId?:
       id: `event:${event.id}`,
       kind: "disruption",
       position: midpoint(event.stationIds.map(stationPoint)),
-      text: `${event.kind === "planned" ? "Planned works" : "Disrupted"} ${LINE_NAMES[event.lineCode]}${delay}`,
+      text: `${eventWord(event)} ${LINE_NAMES[event.lineCode]}${delay}`,
+      minor: event.kind !== "planned" && event.severity === "minor",
       description: `${event.title}. Affects ${LINE_NAMES[event.lineCode]} between ${from} and ${to}${delay}.`,
     });
   }
