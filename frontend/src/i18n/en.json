@@ -46,6 +46,10 @@
     "towards": "towards {{direction}}",
     "freeBus": "Free bus rides at {{count}} affected stations",
     "freeShuttle": "Free MRT shuttle at {{count}} stations",
-    "dismiss": "Dismiss alert"
+    "dismiss": "Dismiss alert",
+    "count_one": "{{count}} service alert",
+    "count_other": "{{count}} service alerts",
+    "show": "Show",
+    "hide": "Hide"
   }
 }

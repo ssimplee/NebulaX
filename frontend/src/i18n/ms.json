@@ -46,6 +46,10 @@
     "towards": "ke arah {{direction}}",
     "freeBus": "Perjalanan bas percuma di {{count}} stesen terjejas",
     "freeShuttle": "Perkhidmatan ulang-alik MRT percuma di {{count}} stesen",
-    "dismiss": "Tutup makluman"
+    "dismiss": "Tutup makluman",
+    "count_one": "{{count}} makluman perkhidmatan",
+    "count_other": "{{count}} makluman perkhidmatan",
+    "show": "Tunjuk",
+    "hide": "Sembunyi"
   }
 }

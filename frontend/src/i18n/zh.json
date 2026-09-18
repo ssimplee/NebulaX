@@ -46,6 +46,9 @@
     "towards": "往{{direction}}方向",
     "freeBus": "{{count}} 个受影响车站提供免费巴士服务",
     "freeShuttle": "{{count}} 个车站提供免费地铁接驳服务",
-    "dismiss": "关闭通知"
+    "dismiss": "关闭通知",
+    "count_other": "{{count}} 条服务通告",
+    "show": "显示",
+    "hide": "隐藏"
   }
 }

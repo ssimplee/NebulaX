@@ -1,4 +1,4 @@
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import { AppProviders } from "./providers";
 import { AppRoutes } from "./router";
 import { useResponsive } from "@/hooks/useResponsive";
@@ -15,6 +15,8 @@ import { AlertBanner } from "@/components/common/AlertBanner";
  */
 function AppLayout() {
   const { isMobile } = useResponsive();
+  // The map shows alerts as an overlay button, so nothing pushes its controls down.
+  const onMap = useLocation().pathname === "/";
 
   return (
     <div className="flex h-dvh w-full overflow-hidden">
@@ -27,7 +29,7 @@ function AppLayout() {
           isMobile ? "pb-16" : "pl-20"
         }`}
       >
-        <AlertBanner />
+        {!onMap && <AlertBanner />}
         <div className="flex-1 overflow-hidden">
           <AppRoutes />
         </div>

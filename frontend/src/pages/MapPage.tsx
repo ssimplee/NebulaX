@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { MRTMapComponent } from "@/components/map/MRTMapComponent";
 import { MapViewToolbar } from "@/components/map/MapViewToolbar";
+import { ServiceAlertsButton } from "@/components/common/AlertBanner";
 import { SearchBar } from "@/components/map/SearchBar";
 import { MapIntroDialog } from "@/components/map/MapIntroDialog";
 import { StationPanel } from "@/components/station/StationPanel";
@@ -144,6 +145,10 @@ export function MapPage() {
           </Suspense>}
 
       <MapViewToolbar view={view} onViewChange={setView} />
+      {/* Network alerts sit beside the view switch instead of pushing the map down. */}
+      <div className="absolute right-3 top-20 z-[700] md:right-4">
+        <ServiceAlertsButton />
+      </div>
 
       {/* First-run intro. Suppressed mid-journey, where a modal over the map
           would be actively unhelpful. */}
