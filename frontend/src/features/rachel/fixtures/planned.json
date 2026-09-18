@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "rachel-planned-v1",
+  "revision": 1,
+  "mode": "demo",
+  "evaluatedAt": "2026-09-21T07:25:00+08:00",
+  "state": "planned",
+  "persona": {
+    "id": "rachel",
+    "priorities": [
+      "arrive-by-08:45",
+      "avoid-unnecessary-interruptions",
+      "receive-one-clear-action"
+    ]
+  },
+  "journey": {
+    "routineId": "rachel-morning",
+    "origin": {
+      "label": "Demo home area, Tampines",
+      "coordinates": null
+    },
+    "destination": {
+      "label": "Demo workplace, Raffles Place",
+      "coordinates": null
+    },
+    "departAt": "2026-09-21T07:40:00+08:00",
+    "arriveBy": "2026-09-21T08:45:00+08:00",
+    "timeZone": "Asia/Singapore"
+  },
+  "conditions": {
+    "observedAt": "2026-09-21T07:24:00+08:00",
+    "events": [
+      {
+        "id": "demo-planned-event",
+        "kind": "planned",
+        "title": "Illustrative scheduled EWL works",
+        "sourceId": "demo-planned-source"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "id": "planned-usual",
+      "label": "Usual EWL journey",
+      "arrivalAt": "2026-09-21T08:57:00+08:00",
+      "arrivalRange": {
+        "earliest": "2026-09-21T08:54:00+08:00",
+        "latest": "2026-09-21T09:00:00+08:00"
+      },
+      "walkingMinutes": 14,
+      "transfers": 0,
+      "steps": [
+        {
+          "mode": "walk",
+          "instruction": "Walk from the demo origin in Tampines to Tampines MRT."
+        },
+        {
+          "mode": "rail",
+          "instruction": "Take the EWL towards Raffles Place."
+        },
+        {
+          "mode": "walk",
+          "instruction": "Walk from Raffles Place MRT to the demo workplace."
+        }
+      ],
+      "sourceIds": [
+        "demo-planned-source"
+      ]
+    },
+    {
+      "id": "planned-alternative",
+      "label": "DTL via Downtown — illustrative",
+      "arrivalAt": "2026-09-21T08:42:00+08:00",
+      "arrivalRange": {
+        "earliest": "2026-09-21T08:39:00+08:00",
+        "latest": "2026-09-21T08:45:00+08:00"
+      },
+      "walkingMinutes": 18,
+      "transfers": 0,
+      "steps": [
+        {
+          "mode": "walk",
+          "instruction": "Walk from the demo origin to Tampines DTL station."
+        },
+        {
+          "mode": "rail",
+          "instruction": "Use the supplied DTL alternative towards Downtown."
+        },
+        {
+          "mode": "walk",
+          "instruction": "Walk to the demo workplace near Raffles Place."
+        }
+      ],
+      "sourceIds": [
+        "demo-planned-source"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "demo-planned-source",
+      "label": "Scheduled works replay",
+      "type": "simulated",
+      "observedAt": "2026-09-21T07:24:00+08:00",
+      "staleAfterSeconds": 300
+    }
+  ],
+  "recommendation": {
+    "id": "recommendation-planned",
+    "version": 1,
+    "shouldNotify": true,
+    "action": "For the scheduled EWL works, use the DTL alternative and arrive around 08:42.",
+    "reason": "The planned service change affects your usual morning journey. The supplied alternative avoids 15 minutes of delay.",
+    "originalCandidateId": "planned-usual",
+    "recommendedCandidateId": "planned-alternative",
+    "originalArrival": "2026-09-21T08:57:00+08:00",
+    "recommendedArrival": "2026-09-21T08:42:00+08:00",
+    "delayMinutesAvoided": 15,
+    "confidence": null,
+    "confidenceDescription": "Confidence has not been assessed for this illustrative replay.",
+    "sourceIds": [
+      "demo-planned-source"
+    ],
+    "warnings": [
+      "Illustrative routes and travel times; not validated for navigation."
+    ]
+  }
+}

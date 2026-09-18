@@ -50,3 +50,19 @@ def chat():
     response = provider.chat(message, context)
 
     return jsonify(response), 200
+
+
+@assistant_bp.route("/assistant/explain-journey", methods=["POST"])
+@limiter.limit("30/hour")
+def explain_journey():
+    """Optional Member 4 explanation endpoint with a strict snapshot boundary."""
+    from app.schemas.journey_explanation_schema import ExplanationRequestSchema
+    from app.services.journey_explanation import explain_snapshot
+
+    if len(request.get_data()) > 65_536:
+        return jsonify({"error": "context_too_large"}), 413
+    try:
+        data = ExplanationRequestSchema().load(request.get_json())
+    except ValidationError as err:
+        return jsonify({"error": "validation_error", "details": err.messages}), 400
+    return jsonify(explain_snapshot(data["context"])), 200

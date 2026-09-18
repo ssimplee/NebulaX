@@ -33,6 +33,8 @@ class BaseConfig:
     # AI provider: "rule_based" | "openai" | "gemini" | "anthropic" | "groq"
     AI_PROVIDER = os.getenv("AI_PROVIDER", "rule_based")
     AI_API_KEY = os.getenv("AI_API_KEY", "")
+    # Explicit opt-in for optional Rachel explanation calls; demo needs no key.
+    RACHEL_AI_ENABLED = os.getenv("RACHEL_AI_ENABLED", "false").lower() == "true"
 
     # Upload settings
     UPLOAD_PROVIDER = os.getenv("UPLOAD_PROVIDER", "local")

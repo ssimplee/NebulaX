@@ -1,10 +1,11 @@
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import { AppProviders } from "./providers";
 import { AppRoutes } from "./router";
 import { useResponsive } from "@/hooks/useResponsive";
 import { BottomNav } from "@/components/common/BottomNav";
 import { SideNav } from "@/components/common/SideNav";
 import { AlertBanner } from "@/components/common/AlertBanner";
+import { RachelShell } from "@/features/rachel/RachelShell";
 
 /**
  * App layout shell that renders navigation and route content.
@@ -15,6 +16,7 @@ import { AlertBanner } from "@/components/common/AlertBanner";
  */
 function AppLayout() {
   const { isMobile } = useResponsive();
+  const { pathname } = useLocation();
 
   return (
     <div className="flex h-dvh w-full overflow-hidden">
@@ -27,9 +29,10 @@ function AppLayout() {
           isMobile ? "pb-16" : "pl-20"
         }`}
       >
-        <AlertBanner />
+        {/* Rachel's journey uses the personalised decision, not network-wide alerts. */}
+        {!pathname.startsWith("/journey") && <AlertBanner />}
         <div className="flex-1 overflow-hidden">
-          <AppRoutes />
+          <RachelShell><AppRoutes /></RachelShell>
         </div>
       </main>
 

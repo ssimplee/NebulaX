@@ -4,6 +4,7 @@ import { RoutePage } from "@/pages/RoutePage";
 import { CommunityPage } from "@/pages/CommunityPage";
 import { AssistantPage } from "@/pages/AssistantPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { RachelJourneyPage } from "@/pages/RachelJourneyPage";
 
 /**
  * App routes component defining the 5 main pages:
@@ -21,6 +22,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<MapPage />} />
+      <Route path="/journey" element={<RachelJourneyPage />} />
       <Route path="/route" element={<RoutePage />} />
       <Route path="/community" element={<CommunityPage />} />
       <Route path="/assistant" element={<AssistantPage />} />

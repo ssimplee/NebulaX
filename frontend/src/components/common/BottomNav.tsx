@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { Map, Navigation, Users, MessageSquare, User, type LucideIcon } from "lucide-react";
+import { Map, Navigation, Users, MessageSquare, User, CalendarClock, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
  * Mobile bottom navigation bar (< 768px viewport).
- * Displays 5 nav items with icons and labels: Map, Route, Community, AI, Profile.
+ * Displays 6 nav items with icons and labels: Journey, Map, Route, Community, AI, Profile.
  * Uses react-router-dom NavLink for navigation with active route highlighting.
  *
  * Validates: Requirements 28.1, 28.6
@@ -17,6 +17,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { to: "/journey", labelKey: "nav.journey", icon: CalendarClock },
   { to: "/", labelKey: "nav.map", icon: Map },
   { to: "/route", labelKey: "nav.route", icon: Navigation },
   { to: "/community", labelKey: "nav.community", icon: Users },

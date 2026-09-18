@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Map, Navigation, Users, MessageSquare, User, type LucideIcon } from "lucide-react";
+import { Map, Navigation, Users, MessageSquare, User, CalendarClock, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -17,6 +17,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  { to: "/journey", labelKey: "nav.journey", icon: CalendarClock },
   { to: "/", labelKey: "nav.map", icon: Map },
   { to: "/route", labelKey: "nav.route", icon: Navigation },
   { to: "/community", labelKey: "nav.community", icon: Users },
