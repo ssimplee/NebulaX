@@ -4,6 +4,12 @@ This checklist is verified against
 `Problem_Statement_2_Specification.docx` in this repository. When this file and
 the official specification differ, the official specification wins.
 
+Labels used in this file:
+
+- **Official requirement** — explicitly required by the PS2 specification.
+- **Rachel decision** — this team's chosen focus or implementation approach.
+- **Optional enhancement** — useful only after the mandatory flow works.
+
 ## The mandate
 
 Build a **mobile-first commuter web app** that provides **proactive decision
@@ -32,7 +38,8 @@ her 08:45 arrival deadline, and proactively recommend one useful action.
       Tampines to her workplace/destination point at Raffles Place.
 - [ ] Define the exact EWL disruption used in the demo.
 - [ ] Define the expected original route and revised recommendation.
-- [ ] Define the delay threshold below which Rachel should not be interrupted.
+- [ ] Define and document the team's behaviour for impacts between the two
+      official examples: 5 minutes is noise; 15 minutes is material.
 
 Rachel's fixed facts for the demo are:
 
@@ -72,7 +79,7 @@ do not automatically require cycling, but still require door-to-door routing.
 but must not replace it as the base required by the brief.
 
 - [ ] Render the geographic Journey Map using OSM data.
-- [ ] Display `(c) OpenStreetMap contributors` wherever the map or derived OSM
+- [ ] Display `© OpenStreetMap contributors` wherever the map or derived OSM
       data appears.
 - [ ] Do not use the public OSM tile server for heavy application traffic.
 - [ ] Use a suitable tile provider, self-hosted tiles, or a static extract.
@@ -122,7 +129,7 @@ confirmed before joining it to other data.
 
 1. Load the selected persona, journey, arrival requirement and preferences.
 2. Plan the normal door-to-door journey.
-3. Inject or replay a clearly labelled planned/unplanned event.
+3. Inject or replay a clearly labelled planned or unplanned event.
 4. Determine whether and how it affects this commuter.
 5. Recalculate alternatives using current operational conditions.
 6. Rank alternatives for the selected persona.
@@ -179,16 +186,28 @@ visible GIS base still needs to satisfy the OSM requirement.
 
 ### Weather
 
-Use the data.gov.sg 24-hour and four-day weather forecast APIs described by
-the supplied OpenAPI documents. Heavy rain must be capable of changing advice
-where it changes Rachel's door-to-door walking time, transfer risk or ability
-to reach her desk by 08:45. Do not add weather decoration that cannot affect a
-decision.
+Use the keyless data.gov.sg weather APIs:
+
+- 2-hour nowcast:
+  `https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast`
+- 24-hour forecast:
+  `https://api-open.data.gov.sg/v2/real-time/api/twenty-four-hr-forecast`
+- 4-day outlook:
+  `https://api-open.data.gov.sg/v2/real-time/api/four-day-outlook`
+- Rainfall observations:
+  `https://api-open.data.gov.sg/v2/real-time/api/rainfall`
+
+For Rachel's immediate commute, prioritise the 2-hour nowcast and rainfall
+observations. Use the 24-hour forecast for advance advice. The four-day outlook
+is lower priority. Heavy rain must affect the recommendation only when it
+changes Rachel's walking time, transfer risk, or ability to arrive by 08:45.
 
 ### Planned and replayed events
 
 `TrainServiceAlerts` is normally quiet. The specification permits a replayed
-or injected major disruption during judging when it is labelled as such.
+or injected major disruption during judging when it is labelled as such. The
+app must support both planned events and unplanned disruptions, even though the
+final demo only needs to walk through one disruption end to end.
 
 ```json
 {
@@ -210,21 +229,23 @@ AI is optional. Routing and disruption impact must work deterministically
 without an LLM. If AI explains or ranks recommendations, provide structured,
 source-backed context rather than asking it to guess.
 
+Any AI feature shown to judges must be demonstrably useful and measurable. A
+judge must be able to verify the feature without paying for a model/API call.
+
 ```json
 {
   "persona": {
     "id": "rachel",
     "mobilityNeeds": [],
-    "priorityWeights": {
-      "arrivalReliability": 1.0,
-      "comfort": 0.3,
-      "crowding": 0.3,
-      "walking": 0.4,
-      "transfers": 0.6,
-      "shelter": 0.3,
-      "cycling": 0.0
-    },
-    "notificationThresholdMinutes": 10
+    "priorities": [
+      "arrive-by-08:45",
+      "avoid-unnecessary-interruptions",
+      "receive-one-clear-action"
+    ],
+    "officialDelayExamples": {
+      "fiveMinutes": "noise",
+      "fifteenMinutes": "material"
+    }
   },
   "journey": {
     "origin": {},
@@ -266,20 +287,21 @@ Rachel-specific response contract:
 ```json
 {
   "shouldNotify": true,
-  "action": "Leave 12 minutes earlier and use the DTL interchange route.",
-  "reason": "The EWL disruption puts your 08:45 arrival at risk.",
-  "originalArrival": "08:52",
-  "recommendedArrival": "08:42",
-  "delayMinutesAvoided": 10,
-  "confidence": 0.82,
+  "action": "Action generated from the selected candidate route.",
+  "reason": "The disruption puts Rachel's 08:45 arrival at risk.",
+  "originalArrival": "HH:MM",
+  "recommendedArrival": "HH:MM",
+  "delayMinutesAvoided": 0,
+  "confidence": 0.0,
   "sourceIds": ["alert-id", "route-candidate-id"],
   "warnings": []
 }
 ```
 
-If projected impact is below Rachel's configured threshold, return
-`shouldNotify: false`; the app should not interrupt her merely because an alert
-exists.
+For the official boundary examples, a 5-minute impact returns
+`shouldNotify: false`, while a 15-minute impact that threatens the 08:45
+arrival returns `shouldNotify: true`. Behaviour between those values is a team
+decision and must be documented as such, not presented as an official fact.
 
 ## Privacy and operational requirements
 
@@ -295,8 +317,8 @@ exists.
 
 ### P0 — mandatory submission path
 
-- [x] Select Rachel as the primary persona; finalise her exact door-to-door
-      endpoints and end-to-end demo journey.
+- [x] Select Rachel as the primary persona.
+- [ ] Finalise Rachel's exact door-to-door endpoints and demo journey.
 - [ ] Add OSM geographic Journey Map with attribution.
 - [ ] Keep the schematic map as a secondary Network Map.
 - [ ] Import and validate the supplied station GeoJSON and its CRS.
@@ -307,13 +329,15 @@ exists.
 - [ ] Add the travel modes required by the selected persona.
 - [ ] Add weather and crowd signals that change recommendations.
 - [ ] Show original versus alternative route, ETA, delay and uncertainty.
-- [ ] Create a labelled deterministic disruption replay.
+- [ ] Create labelled deterministic fixtures for one planned event and one
+      unplanned disruption; use one disruption for the final demo.
+- [ ] Implement Rachel's saved routine and meaningful-interruption behaviour
+      as part of the proactive experience.
 - [ ] Verify the full flow on a real phone.
 - [ ] Rewrite README for clean-machine setup and the selected persona.
 
 ### P1 — high-value improvements
 
-- [ ] Saved routine and meaningful-interruption threshold
 - [ ] In-app proactive notification inbox
 - [ ] Web push if reliable within hackathon time
 - [ ] Live lift maintenance and step-free routing
@@ -337,11 +361,13 @@ conflicts. Work through the backlog from top to bottom within each stream.
 ### Shared contract freeze — whole team, first 60–90 minutes
 
 - [ ] Agree on Rachel's exact door-to-door origin and destination coordinates.
-- [ ] Agree on the disruption replay: affected EWL segment, start time,
-      expected delay and expected recommendation.
+- [ ] Agree on the unplanned disruption replay: affected EWL segment, start
+      time, expected delay and expected recommendation.
+- [ ] Agree on one planned-event fixture, such as scheduled works or an early
+      closure, and its expected recommendation.
 - [ ] Freeze TypeScript/Python shapes for `JourneyRequest`, `RouteCandidate`,
       `OperationalConditions`, `Recommendation` and `DataProvenance`.
-- [ ] Add one checked-in replay fixture and one expected result fixture.
+- [ ] Add checked-in planned/unplanned fixtures and expected result fixtures.
 - [ ] Assign one integration owner for final merges; do not let every member
       independently change shared schemas.
 - [ ] Agree on branch names: `feature/rachel-data`, `feature/rachel-routing`,
@@ -356,7 +382,8 @@ operational-data tests.
 
 - [ ] Correct and harden `TrainServiceAlerts` ingestion.
 - [ ] Normalise LTA line codes, station codes, direction and affected segments.
-- [ ] Create the labelled Rachel EWL disruption replay fixture.
+- [ ] Create labelled Rachel fixtures for an EWL disruption and a planned
+      service change.
 - [ ] Implement `PCDRealTime` and `PCDForecast` adapters.
 - [ ] Integrate data.gov.sg weather forecasts.
 - [ ] Emit consistent source type, timestamps, staleness and simulated flags.
@@ -391,7 +418,9 @@ routing tests.
 - [ ] Calculate ETA ranges and expose uncertainty.
 - [ ] Implement deterministic Rachel ranking: protect the 08:45 arrival first,
       then minimise transfers/walking among routes that arrive on time.
-- [ ] Implement the 10-minute default meaningful-interruption threshold.
+- [ ] Implement the official boundary examples: 5-minute impact stays quiet;
+      15-minute impact produces a recommendation. Document behaviour between
+      those values as a product decision.
 - [ ] Return `shouldNotify`, action, reason, original/recommended arrivals,
       trade-offs and provenance IDs.
 - [ ] Add unit and scenario tests proving 5 minutes stays quiet and 15 minutes
@@ -417,7 +446,7 @@ view switch.
 #### P0 tasks
 
 - [ ] Add MapLibre GL JS or Leaflet with an approved OSM-based tile source.
-- [ ] Show visible `(c) OpenStreetMap contributors` attribution.
+- [ ] Show visible `© OpenStreetMap contributors` attribution.
 - [ ] Import/normalise the supplied station GeoJSON and confirm its CRS.
 - [ ] Render Rachel's full door-to-door route.
 - [ ] Visually distinguish affected and unaffected portions.
@@ -479,7 +508,8 @@ operational conditions as inputs, not recomputing them in the frontend.
 
 #### Checkpoint 1 — contracts and fixtures
 
-- All four streams can load the same Rachel journey and disruption fixtures.
+- All four streams can load the same Rachel journey and planned/unplanned
+  event fixtures.
 - Frontend can develop against fixture JSON before backend endpoints are ready.
 
 #### Checkpoint 2 — vertical slice
