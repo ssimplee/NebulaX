@@ -1,5 +1,5 @@
 // SGRail Offline Service Worker for Underground MRT Access
-const CACHE_NAME = "sgrail-cache-v1";
+const CACHE_NAME = "sgrail-cache-v2";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
@@ -56,5 +56,27 @@ self.addEventListener("fetch", (event) => {
         });
       })
   );
+});
+
+self.addEventListener("push", (event) => {
+  let message = {};
+  try { message = event.data ? event.data.json() : {}; } catch { message = {}; }
+  event.waitUntil(self.registration.showNotification(message.title || "SGRail journey update", {
+    body: message.body || "Open SGRail to review your saved journey.",
+    tag: message.tag || "sgrail-journey-update",
+    icon: "/mrt/singapore-mrt-map.png",
+    badge: "/mrt/singapore-mrt-map.png",
+    data: { url: message.url || "/journey" },
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/journey", self.location.origin).href;
+  event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+    const existing = clients.find((client) => client.url.startsWith(self.location.origin));
+    if (existing) return existing.navigate(target).then(() => existing.focus());
+    return self.clients.openWindow(target);
+  }));
 });
 

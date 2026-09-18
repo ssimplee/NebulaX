@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { FileCheck, FileText, Loader2, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -22,17 +23,6 @@ function getBadgeColour(badge: string): string {
 /**
  * Format badge name for display.
  */
-function formatBadgeName(badge: string): string {
-  switch (badge) {
-    case "super_reporter":
-      return "Super Reporter";
-    case "trusted_commuter":
-      return "Trusted Commuter";
-    default:
-      return "Regular";
-  }
-}
-
 /**
  * ReporterStats — displays the user's reliability score, badge, and report counts.
  *
@@ -45,6 +35,7 @@ function formatBadgeName(badge: string): string {
  * Validates: Requirements 25.1, 25.2
  */
 export function ReporterStats() {
+  const { t } = useTranslation();
   const {
     data: user,
     isLoading,
@@ -70,7 +61,7 @@ export function ReporterStats() {
       <Card>
         <CardContent className="py-6">
           <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-center text-sm text-destructive">
-            Failed to load reporter stats. Please try again later.
+            {t("profile.reporter.loadError")}
           </div>
         </CardContent>
       </Card>
@@ -78,12 +69,14 @@ export function ReporterStats() {
   }
 
   const badgeColour = getBadgeColour(user.badge);
-  const badgeName = formatBadgeName(user.badge);
+  const badgeName = t(`profile.reporter.badges.${user.badge}`, {
+    defaultValue: t("profile.reporter.badges.regular"),
+  });
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Reporter Stats</CardTitle>
+        <CardTitle className="text-base font-semibold">{t("profile.reporter.title")}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
         {/* Badge and score */}
@@ -103,7 +96,7 @@ export function ReporterStats() {
             </div>
             <Progress
               value={user.reliabilityScore}
-              aria-label={`Reliability score: ${user.reliabilityScore} out of 100`}
+              aria-label={t("profile.reporter.reliability", { score: user.reliabilityScore })}
             />
           </div>
         </div>
@@ -117,7 +110,7 @@ export function ReporterStats() {
                 {user.reportCount}
               </span>
               <span className="text-xs text-muted-foreground">
-                reports submitted
+                {t("profile.reporter.submitted", { count: user.reportCount })}
               </span>
             </div>
           </div>
@@ -128,7 +121,7 @@ export function ReporterStats() {
                 {user.confirmCount}
               </span>
               <span className="text-xs text-muted-foreground">
-                reports confirmed
+                {t("profile.reporter.confirmed", { count: user.confirmCount })}
               </span>
             </div>
           </div>

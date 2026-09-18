@@ -1,22 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, Check, Clock3, ArrowRight, RotateCcw, ShieldCheck, WifiOff, Info } from "lucide-react";
+import { Bell, Check, Clock3, ArrowRight, RotateCcw, ShieldCheck, WifiOff, Info, ThumbsUp, ThumbsDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useRachelStore, notificationKey } from "@/features/rachel/store";
 import { useRachelStatus } from "@/features/rachel/RachelShell";
 import { explainJourney } from "@/features/rachel/api";
 import { JourneyComparison, clockLabel } from "@/features/rachel/JourneyComparison";
 import type { ScenarioId } from "@/features/rachel/contract";
 import { usePreferencesStore } from "@/store/preferencesStore";
+import { recommendationCopy, inboxActionCopy } from "@/features/rachel/recommendationCopy";
+import { recordNotificationEvent } from "@/features/rachel/analytics";
+import { PushControls } from "@/features/rachel/PushControls";
 import "@/features/rachel/rachel.css";
 
-const scenarios: { id: ScenarioId; label: string; description: string }[] = [
-  { id: "normal", label: "Normal day", description: "No interruption" },
-  { id: "minor", label: "5-minute delay", description: "Stay quiet" },
-  { id: "disrupted", label: "15-minute disruption", description: "Recommend an alternative" },
-  { id: "planned", label: "Planned works", description: "Advice before departure" },
-];
+const scenarios: ScenarioId[] = ["normal", "minor", "disrupted", "planned"];
+
+export function sourceStatus(type: string, mode: "demo" | "live", observedAt: string, staleAfterSeconds: number, referenceTime: number) {
+  if (type === "simulated" || mode === "demo") return "simulated" as const;
+  if (referenceTime - Date.parse(observedAt) > staleAfterSeconds * 1000) return "stale" as const;
+  return "live" as const;
+}
 
 export function RachelJourneyPage() {
-  const { saved, routine, snapshot, inbox, scenario, mode, selectedCandidateId, saveRoutine, forgetRoutine, replay, resetReplay, markRead, dismiss, selectCandidate } = useRachelStore();
+  const { t } = useTranslation();
+  const { saved, routine, snapshot, inbox, scenario, mode, selectedCandidateId, saveRoutine, forgetRoutine, replay, resetReplay, markRead, dismiss, setFeedback, selectCandidate } = useRachelStore();
   const { online, loading, error } = useRachelStatus();
   const { textScale, highContrast, reducedMotion } = usePreferencesStore();
   const [now, setNow] = useState(Date.now());
@@ -41,11 +47,15 @@ export function RachelJourneyPage() {
   const unread = visibleInbox.filter((n) => !n.read).length;
   const showAdvice = !!rec?.shouldNotify;
   const currentNotice = snapshot ? inbox.find((n) => n.key === notificationKey(snapshot) && !n.dismissed) : null;
+  const localized = snapshot ? recommendationCopy(snapshot, t) : null;
 
   const showRecommended = () => {
     if (!rec) return;
     selectCandidate(rec.recommendedCandidateId);
-    if (currentNotice) markRead(currentNotice.key);
+    if (currentNotice) {
+      markRead(currentNotice.key);
+      void recordNotificationEvent(currentNotice, "opened");
+    }
     comparisonRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
   };
   const requestExplanation = async () => {
@@ -57,7 +67,7 @@ export function RachelJourneyPage() {
     const result = await explainJourney(snapshot, controller.signal);
     const current = useRachelStore.getState().snapshot;
     if (!controller.signal.aborted && current?.snapshotId === snapshot.snapshotId && current.revision === snapshot.revision) {
-      setExplanation({ ...result, snapshotId: snapshot.snapshotId });
+      setExplanation({ ...result, reason: result.enhanced ? result.reason : localized?.reason ?? result.reason, snapshotId: snapshot.snapshotId });
       setExplaining(false);
     }
   };
@@ -81,11 +91,13 @@ export function RachelJourneyPage() {
           {!saved ? <><button className="rachel-button" onClick={saveRoutine}>Save morning routine</button><p className="rachel-small">Saves this routine, up to 20 inbox entries and the latest journey in this browser until you clear them. No GPS history is collected by this feature.</p></> : <details className="rachel-privacy"><summary>Storage and privacy</summary><p className="rachel-small">Stored only in this browser until you clear it. No GPS history is collected by this feature.</p><button className="rachel-button rachel-button-secondary" onClick={forgetRoutine}>Clear saved routine and inbox</button></details>}
         </section>
 
+        {saved && <PushControls />}
+
         {!snapshot && <section className="rachel-panel" role="status"><h2>{loading ? "Checking your journey…" : "Your journey is not available yet"}</h2><p>{saved ? "We’ll show advice when the journey service returns a valid recommendation." : "Save your routine to start checking for relevant journey updates."}</p></section>}
         {snapshot && rec && <section className={`rachel-panel rachel-recommendation ${showAdvice ? "needs-action" : "on-track"}`} aria-labelledby="recommendation-title">
           <div className="rachel-state-label">{showAdvice ? <Bell size={18} aria-hidden="true" /> : <Check size={18} aria-hidden="true" />}<span>{showAdvice ? (snapshot.state === "planned" ? "PLAN AHEAD" : "YOUR JOURNEY HAS CHANGED") : "NO ACTION NEEDED"}</span></div>
-          <h2 id="recommendation-title">{rec.action}</h2>
-          <p>{rec.reason}</p>
+          <h2 id="recommendation-title">{localized?.action ?? rec.action}</h2>
+          <p>{localized?.reason ?? rec.reason}</p>
           <dl className="rachel-metrics">
             <div><dt>Usual route now</dt><dd>{clockLabel(rec.originalArrival)}</dd></div>
             <div><dt>{showAdvice ? "Recommended arrival" : "Estimated arrival"}</dt><dd>{clockLabel(rec.recommendedArrival)}</dd></div>
@@ -96,21 +108,21 @@ export function RachelJourneyPage() {
           {rec.warnings.length > 0 && <ul className="rachel-warnings" aria-label="Journey warnings">{rec.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul>}
           <button className="rachel-button" onClick={showRecommended}>{showAdvice ? "View recommended journey" : "View journey steps"}<ArrowRight size={18} aria-hidden="true" /></button>
           {saved && showAdvice && currentNotice && !currentNotice.read && <p role="status" className="rachel-small">A journey update has been added to your inbox.</p>}
-          <details className="rachel-sources"><summary>Sources and freshness</summary><ul>{snapshot.sources.map((source) => <li key={source.id}><strong>{source.label}</strong><span className="rachel-tag">{source.type === "simulated" ? "Demo replay" : source.type}</span><p>Observed {clockLabel(source.observedAt)} SGT · {Math.max(0, Math.floor((referenceTime - Date.parse(source.observedAt)) / 60_000))} min old{snapshot.mode === "demo" ? " at replay time" : ""}</p></li>)}</ul></details>
-          <details className="rachel-explanation"><summary>Why this advice?</summary><p>{explanation?.snapshotId === snapshot.snapshotId ? explanation.reason : rec.reason}</p><button className="rachel-button rachel-button-secondary" disabled={explaining || !online || stale || !!error} onClick={() => void requestExplanation()}>{explaining ? "Checking explanation…" : "Request an AI explanation"}</button>{explanation && <p role="status" className="rachel-small">{explanation.enhanced ? "AI-assisted wording. The route, decision and figures are unchanged." : "Using the deterministic explanation. AI is unavailable, disabled or returned an invalid response."}</p>}</details>
+          <details className="rachel-sources"><summary>Sources and freshness</summary><ul>{snapshot.sources.map((source) => { const status = sourceStatus(source.type, snapshot.mode, source.observedAt, source.staleAfterSeconds, referenceTime); return <li key={source.id}><strong>{source.label}</strong><span className={`rachel-tag rachel-source-${status}`}>{t(`rachel.sources.${status}`)}</span><p>Observed {clockLabel(source.observedAt)} SGT · {Math.max(0, Math.floor((referenceTime - Date.parse(source.observedAt)) / 60_000))} min old{snapshot.mode === "demo" ? " at replay time" : ""}</p></li>; })}</ul></details>
+          <details className="rachel-explanation"><summary>Why this advice?</summary><p>{explanation?.snapshotId === snapshot.snapshotId ? explanation.reason : localized?.reason ?? rec.reason}</p><button className="rachel-button rachel-button-secondary" disabled={explaining || !online || stale || !!error} onClick={() => void requestExplanation()}>{explaining ? "Checking explanation…" : "Request an AI explanation"}</button>{explanation && <p role="status" className="rachel-small">{explanation.enhanced ? "AI-assisted wording. The route, decision and figures are unchanged." : "Using the deterministic explanation. AI is unavailable, disabled or returned an invalid response."}</p>}</details>
         </section>}
 
         <div ref={comparisonRef}>{snapshot && <JourneyComparison snapshot={snapshot} selectedCandidateId={selectedCandidateId} onSelectCandidate={selectCandidate} />}</div>
 
         <section className="rachel-panel" id="rachel-inbox" aria-labelledby="inbox-title">
           <div className="rachel-section-heading"><h2 id="inbox-title">Journey inbox</h2><span className="rachel-tag">{unread} unread</span></div>
-          {visibleInbox.length === 0 ? <p className="rachel-muted">No journey notifications. Minor changes stay quiet.</p> : <ul className="rachel-inbox-list">{visibleInbox.map((notice) => <li key={notice.key}><div className="rachel-inbox-meta"><span className="rachel-tag">{notice.mode === "demo" ? "Demo replay" : "Journey update"}</span><span>{notice.read ? "Read" : "Unread"} · {clockLabel(notice.receivedAt)}</span></div><p>{notice.action}</p><div className="rachel-inbox-actions">{!notice.read && <button className="rachel-button rachel-button-secondary" onClick={() => markRead(notice.key)}>Mark read</button>}<button className="rachel-button rachel-button-secondary" onClick={() => dismiss(notice.key)}>Dismiss</button></div></li>)}</ul>}
+          {visibleInbox.length === 0 ? <p className="rachel-muted">{t("rachel.inbox.empty")}</p> : <ul className="rachel-inbox-list">{visibleInbox.map((notice) => <li key={notice.key}><div className="rachel-inbox-meta"><span className="rachel-tag">{notice.mode === "demo" ? t("rachel.demoReplay") : t("rachel.journeyUpdate")}</span><span>{notice.read ? t("rachel.inbox.read") : t("rachel.inbox.unread")} · {clockLabel(notice.receivedAt)}</span></div><p>{inboxActionCopy(notice, t)}</p><div className="rachel-inbox-actions">{!notice.read && <button className="rachel-button rachel-button-secondary" onClick={() => { markRead(notice.key); void recordNotificationEvent(notice, "opened"); }}>{t("rachel.inbox.markRead")}</button>}<button className="rachel-button rachel-button-secondary" onClick={() => { dismiss(notice.key); void recordNotificationEvent(notice, "dismissed"); }}>{t("rachel.inbox.dismiss")}</button></div><div className="rachel-feedback" aria-label={t("rachel.feedback.question")}><span>{t("rachel.feedback.question")}</span><button aria-pressed={notice.feedback === "useful"} disabled={notice.feedback !== null} onClick={() => { setFeedback(notice.key, "useful"); void recordNotificationEvent(notice, "useful"); }}><ThumbsUp size={18} aria-hidden="true" />{t("rachel.feedback.yes")}</button><button aria-pressed={notice.feedback === "not_useful"} disabled={notice.feedback !== null} onClick={() => { setFeedback(notice.key, "not_useful"); void recordNotificationEvent(notice, "not_useful"); }}><ThumbsDown size={18} aria-hidden="true" />{t("rachel.feedback.no")}</button>{notice.feedback && <strong role="status">{t("rachel.feedback.thanks")}</strong>}</div></li>)}</ul>}
         </section>
 
         {mode === "demo" && <section className="rachel-panel rachel-replay" aria-labelledby="replay-title">
           <div className="rachel-section-heading"><h2 id="replay-title">Try the judging scenarios</h2><span className="rachel-tag">Demo controls</span></div>
           <p className="rachel-muted">Replay the same morning with different supplied conditions. Save the routine to test the inbox.</p>
-          <div className="rachel-scenarios">{scenarios.map((option) => <button key={option.id} className="rachel-scenario" aria-pressed={scenario === option.id} onClick={() => replay(option.id)}><strong>{option.label}</strong><span>{option.description}</span></button>)}</div>
+          <div className="rachel-scenarios">{scenarios.map((id) => <button key={id} className="rachel-scenario" aria-pressed={scenario === id} onClick={() => replay(id)}><strong>{t(`rachel.scenarios.${id}.label`)}</strong><span>{t(`rachel.scenarios.${id}.description`)}</span></button>)}</div>
           <button className="rachel-button rachel-button-secondary" onClick={resetReplay}><RotateCcw size={17} aria-hidden="true" />Reset replay and inbox</button>
         </section>}
       </div>

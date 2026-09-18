@@ -65,7 +65,8 @@
       ],
       "sourceIds": [
         "demo-planned-source"
-      ]
+      ],
+      "crowdLevel": "high"
     },
     {
       "id": "planned-alternative",
@@ -93,7 +94,8 @@
       ],
       "sourceIds": [
         "demo-planned-source"
-      ]
+      ],
+      "crowdLevel": "moderate"
     }
   ],
   "sources": [

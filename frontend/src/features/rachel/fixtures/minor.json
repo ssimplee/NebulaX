@@ -65,7 +65,8 @@
       ],
       "sourceIds": [
         "demo-minor-source"
-      ]
+      ],
+      "crowdLevel": "moderate"
     }
   ],
   "sources": [

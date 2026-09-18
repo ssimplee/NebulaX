@@ -4,6 +4,7 @@ import { LanguageSelector } from "@/components/profile/LanguageSelector";
 import { PrivacyControls } from "@/components/profile/PrivacyControls";
 import { ReporterStats } from "@/components/profile/ReporterStats";
 import { SavedRoutes } from "@/components/profile/SavedRoutes";
+import { useTranslation } from "react-i18next";
 
 /**
  * ProfilePage — full profile page with reporter stats, saved routes,
@@ -18,9 +19,10 @@ import { SavedRoutes } from "@/components/profile/SavedRoutes";
  * Validates: Requirements 25.1–25.5, 29.5
  */
 export function ProfilePage() {
+  const { t } = useTranslation();
   return (
     <div className="mx-auto w-full max-w-4xl p-4 md:p-6">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">Profile</h1>
+      <h1 className="mb-6 text-2xl font-bold text-foreground">{t("profile.title")}</h1>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Left column: Stats + Saved Routes */}
@@ -30,7 +32,7 @@ export function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base font-semibold">
-                Saved Routes
+                {t("profile.savedRoutes.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -44,7 +46,7 @@ export function ProfilePage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base font-semibold">
-                Settings
+                {t("profile.settings")}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-6">

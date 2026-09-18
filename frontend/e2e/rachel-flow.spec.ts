@@ -32,3 +32,11 @@ test("five-minute impact does not create an inbox notification", async ({ page }
   await expect(page.getByRole("heading", { name: "Keep your usual journey." })).toBeVisible();
   await expect(page.getByText("No journey notifications. Minor changes stay quiet.")).toBeVisible();
 });
+
+test("recommendation templates follow the saved interface language", async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem("sgrail-preferences", JSON.stringify({ state: { language: "zh" }, version: 0 })));
+  await page.reload();
+  await page.getByRole("button", { name: /中断15分钟/ }).click();
+  await expect(page.getByRole("heading", { name: /改搭滨海市区线/ })).toBeVisible();
+  await expect(page.getByText(/08:42/).first()).toBeVisible();
+});

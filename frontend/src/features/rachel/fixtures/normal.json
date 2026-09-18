@@ -58,7 +58,8 @@
       ],
       "sourceIds": [
         "demo-normal-source"
-      ]
+      ],
+      "crowdLevel": "moderate"
     }
   ],
   "sources": [

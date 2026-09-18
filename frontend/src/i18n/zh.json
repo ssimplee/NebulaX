@@ -33,7 +33,62 @@
     "title": "个人资料",
     "language": "语言",
     "textSize": "文字大小",
-    "highContrast": "高对比度"
+    "highContrast": "高对比度",
+    "accessibility": {
+      "title": "无障碍设置",
+      "textSizes": {
+        "normal": "正常",
+        "large": "大",
+        "extraLarge": "特大"
+      },
+      "highContrast": "高对比度",
+      "colourBlind": "色觉辅助标签",
+      "darkMode": "深色模式",
+      "reducedMotion": "减少动态效果",
+      "toggleHighContrast": "切换高对比度模式",
+      "toggleColourBlind": "切换色觉辅助标签",
+      "toggleDarkMode": "切换深色模式",
+      "toggleReducedMotion": "切换减少动态效果"
+    },
+    "privacy": {
+      "title": "隐私",
+      "allowLocation": "允许位置追踪",
+      "toggleLocation": "切换行程导航位置追踪",
+      "description": "启用后，应用可使用 GPS 查找最近车站并追踪行程进度。原始位置历史绝不会被储存；系统只会实时确定最近车站，并在使用后丢弃数据。"
+    },
+    "reporter": {
+      "title": "报告者统计",
+      "loadError": "无法加载报告者统计，请稍后重试。",
+      "reliability": "可靠度评分：{{score}} / 100",
+      "submitted": "已提交报告",
+      "confirmed": "已确认报告",
+      "badges": {
+        "regular": "标准",
+        "super_reporter": "超级报告者",
+        "trusted_commuter": "可信乘客"
+      }
+    },
+    "savedRoutes": {
+      "title": "已保存路线",
+      "emptyTitle": "没有已保存路线",
+      "emptyDescription": "保存常用路线以便快速使用。规划路线后，点击书签图标即可保存。",
+      "loadError": "无法加载已保存路线，请稍后重试。",
+      "count": "已保存路线（{{count}}）",
+      "plan": "规划从 {{from}} 到 {{to}} 的路线",
+      "delete": "删除前往 {{station}} 的已保存路线",
+      "saved": "已保存",
+      "saveThis": "保存此路线",
+      "save": "保存路线",
+      "preferences": {
+        "FASTEST": "最快",
+        "LEAST_CROWDED": "最不拥挤",
+        "FEWEST_TRANSFERS": "换乘最少",
+        "LEAST_WALKING": "步行最少",
+        "WHEELCHAIR": "无障碍通行",
+        "LAST_TRAIN_SAFE": "可赶上末班车"
+      }
+    },
+    "settings": "设置"
   },
   "common": {
     "loading": "加载中…",
@@ -41,12 +96,99 @@
     "cancel": "取消",
     "save": "保存"
   },
+  "rachel": {
+    "demoReplay": "演示回放",
+    "journeyUpdate": "行程更新",
+    "systemNotificationTitle": "您的行程有变化",
+    "recommendations": {
+      "normal": {
+        "action": "您的日常行程准时。",
+        "reason": "预计可在 {{deadline}} 截止时间前抵达，无需更改。"
+      },
+      "minor": {
+        "action": "继续原来的行程。",
+        "reason": "五分钟的影响仍可让您在 {{deadline}} 前抵达，无需打扰。"
+      },
+      "disrupted": {
+        "action": "改搭滨海市区线；预计 {{arrival}} 抵达，避免 {{minutes}} 分钟延误。",
+        "reason": "回放中的东西线中断可能影响您在 {{deadline}} 前抵达。所提供的替代路线预计可在截止时间前到达。"
+      },
+      "planned": {
+        "action": "提早出发并使用所提供的替代路线；预计 {{arrival}} 抵达。",
+        "reason": "计划工程可能影响您的日常行程，请在出发前查看替代路线。"
+      }
+    },
+    "scenarios": {
+      "normal": {
+        "label": "正常日",
+        "description": "无需打扰"
+      },
+      "minor": {
+        "label": "延误5分钟",
+        "description": "保持安静"
+      },
+      "disrupted": {
+        "label": "中断15分钟",
+        "description": "建议替代路线"
+      },
+      "planned": {
+        "label": "计划工程",
+        "description": "出发前提醒"
+      }
+    },
+    "inbox": {
+      "empty": "没有行程通知。轻微变化不会打扰您。",
+      "read": "已读",
+      "unread": "未读",
+      "markRead": "标为已读",
+      "dismiss": "关闭"
+    },
+    "feedback": {
+      "question": "这则通知有帮助吗？",
+      "yes": "有",
+      "no": "没有",
+      "thanks": "感谢您的反馈。"
+    },
+    "push": {
+      "title": "浏览器行程提醒",
+      "description": "重要的已保存行程有变化时，可选择在此设备接收提醒。提醒不会包含位置历史。",
+      "enable": "开启浏览器提醒",
+      "disable": "关闭提醒",
+      "test": "发送测试提醒",
+      "enableSuccess": "浏览器行程提醒已开启。",
+      "disableSuccess": "此设备的浏览器提醒已关闭。",
+      "testSuccess": "测试提醒已发送。",
+      "blocked": "浏览器设置已阻止通知。",
+      "failed": "无法设置浏览器提醒。请检查后端和 VAPID 密钥。",
+      "status": {
+        "unsupported": "不支持",
+        "off": "关闭",
+        "blocked": "已阻止",
+        "on": "开启"
+      }
+    },
+    "crowd": {
+      "low": "人流较少",
+      "moderate": "人流适中",
+      "high": "人流拥挤",
+      "unknown": "暂无人流信息"
+    },
+    "sources": {
+      "live": "实时",
+      "stale": "已过期",
+      "simulated": "演示回放"
+    }
+  },
   "alerts": {
     "majorTitle": "服务中断",
     "minorTitle": "服务延误",
     "towards": "往{{direction}}方向",
     "freeBus": "{{count}} 个受影响车站提供免费巴士服务",
     "freeShuttle": "{{count}} 个车站提供免费地铁接驳服务",
-    "dismiss": "关闭通知"
+    "dismiss": "关闭通知",
+    "messages": {
+      "noServiceSignalling": "由于信号故障，{{from}} 与 {{to}} 之间往 {{direction}} 方向没有列车服务。指定巴士站提供免费巴士服务。",
+      "slowerTrains": "{{from}} 与 {{to}} 之间的列车行驶比平时缓慢。请为行程额外预留 {{minutes}} 分钟。"
+    }
   }
 }

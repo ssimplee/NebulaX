@@ -65,7 +65,8 @@
       ],
       "sourceIds": [
         "demo-disrupted-source"
-      ]
+      ],
+      "crowdLevel": "high"
     },
     {
       "id": "disrupted-alternative",
@@ -93,7 +94,8 @@
       ],
       "sourceIds": [
         "demo-disrupted-source"
-      ]
+      ],
+      "crowdLevel": "moderate"
     }
   ],
   "sources": [

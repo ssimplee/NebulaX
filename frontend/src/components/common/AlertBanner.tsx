@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { AlertTriangle, Info, X } from "lucide-react";
 import { useServiceAlerts } from "@/features/alerts/useServiceAlerts";
 import { DataSourceLabel } from "./DataSourceLabel";
@@ -16,6 +17,32 @@ import type { ServiceAlert } from "@/services/alerts.api";
 /** Identity for a set of alerts, so dismissal resets when the alerts change. */
 function alertsSignature(alerts: ServiceAlert[]): string {
   return alerts.map((a) => `${a.lineCode}:${a.status}:${a.createdAt}`).join("|");
+}
+
+function translatedAlertMessage(message: string, t: TFunction): string {
+  const noService = message.match(
+    /^No train service between (.+?) and (.+?) stations towards (.+?) due to a signalling fault\. Free bus rides are available at designated bus stops\.$/,
+  );
+  if (noService) {
+    return t("alerts.messages.noServiceSignalling", {
+      from: noService[1],
+      to: noService[2],
+      direction: noService[3],
+    });
+  }
+
+  const slower = message.match(
+    /^Trains are moving slower than usual between (.+?) and (.+?)\. Please add (\d+) minutes? to your journey\.$/,
+  );
+  if (slower) {
+    return t("alerts.messages.slowerTrains", {
+      from: slower[1],
+      to: slower[2],
+      minutes: Number(slower[3]),
+    });
+  }
+
+  return message;
 }
 
 export function AlertBanner() {
@@ -61,7 +88,7 @@ export function AlertBanner() {
               {alert.direction && alert.direction !== "Both" && (
                 <span> · {t("alerts.towards", { direction: alert.direction })}</span>
               )}
-              <span> — {alert.message}</span>
+              <span> — {translatedAlertMessage(alert.message, t)}</span>
               {alert.freePublicBusStationIds.length > 0 && (
                 <span className="block opacity-80">
                   {t("alerts.freeBus", {

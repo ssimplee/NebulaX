@@ -9,6 +9,10 @@ const inboxItemSchema = z.object({
   key: z.string(), snapshotId: z.string(), action: z.string(),
   receivedAt: z.string(), read: z.boolean(), dismissed: z.boolean(),
   mode: z.enum(["demo", "live"]),
+  state: z.enum(["normal", "minor", "disrupted", "planned"]),
+  recommendationId: z.string(), recommendedArrival: z.string(),
+  delayMinutesAvoided: z.number(), arriveBy: z.string(),
+  feedback: z.enum(["useful", "not_useful"]).nullable(),
 });
 export type InboxItem = z.infer<typeof inboxItemSchema>;
 interface RachelState {
@@ -26,6 +30,7 @@ interface RachelState {
   resetReplay: () => void;
   markRead: (key: string) => void;
   dismiss: (key: string) => void;
+  setFeedback: (key: string, feedback: "useful" | "not_useful") => void;
   selectCandidate: (id: string) => void;
 }
 
@@ -58,6 +63,10 @@ export const useRachelStore = create<RachelState>()(persist((set, get) => ({
       const item: InboxItem = {
         key, snapshotId: snapshot.snapshotId, action: snapshot.recommendation.action,
         receivedAt: snapshot.evaluatedAt, read: false, dismissed: false, mode: snapshot.mode,
+        state: snapshot.state, recommendationId: snapshot.recommendation.id,
+        recommendedArrival: snapshot.recommendation.recommendedArrival,
+        delayMinutesAvoided: snapshot.recommendation.delayMinutesAvoided,
+        arriveBy: snapshot.journey.arriveBy, feedback: null,
       };
       const inbox = state.saved && snapshot.recommendation.shouldNotify && !state.inbox.some((n) => n.key === key)
         ? [item, ...state.inbox].slice(0, 20) : state.inbox;
@@ -75,12 +84,13 @@ export const useRachelStore = create<RachelState>()(persist((set, get) => ({
   },
   markRead: (key) => set((s) => ({ inbox: s.inbox.map((n) => n.key === key ? { ...n, read: true } : n) })),
   dismiss: (key) => set((s) => ({ inbox: s.inbox.map((n) => n.key === key ? { ...n, read: true, dismissed: true } : n) })),
+  setFeedback: (key, feedback) => set((s) => ({ inbox: s.inbox.map((n) => n.key === key ? { ...n, feedback } : n) })),
   selectCandidate: (id) => {
     if (get().snapshot?.candidates.some((c) => c.id === id)) set({ selectedCandidateId: id });
   },
 }), {
   name: "sgrail-rachel-v1",
-  version: 1,
+  version: 2,
   partialize: (s) => s.saved ? {
     saved: s.saved, routine: s.routine, snapshot: s.snapshot, inbox: s.inbox, mode: s.mode, scenario: s.scenario,
   } : { saved: false },

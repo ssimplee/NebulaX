@@ -33,7 +33,62 @@
     "title": "Profil",
     "language": "Bahasa",
     "textSize": "Saiz Teks",
-    "highContrast": "Kontras Tinggi"
+    "highContrast": "Kontras Tinggi",
+    "accessibility": {
+      "title": "Kebolehcapaian",
+      "textSizes": {
+        "normal": "Biasa",
+        "large": "Besar",
+        "extraLarge": "Sangat Besar"
+      },
+      "highContrast": "Kontras Tinggi",
+      "colourBlind": "Label Mesra Buta Warna",
+      "darkMode": "Mod Gelap",
+      "reducedMotion": "Kurangkan Gerakan",
+      "toggleHighContrast": "Tukar mod kontras tinggi",
+      "toggleColourBlind": "Tukar label mesra buta warna",
+      "toggleDarkMode": "Tukar mod gelap",
+      "toggleReducedMotion": "Tukar gerakan dikurangkan"
+    },
+    "privacy": {
+      "title": "Privasi",
+      "allowLocation": "Benarkan penjejakan lokasi",
+      "toggleLocation": "Tukar penjejakan lokasi untuk navigasi",
+      "description": "Apabila diaktifkan, aplikasi boleh menggunakan GPS untuk mengesan stesen terdekat dan menjejak kemajuan perjalanan. Sejarah lokasi mentah tidak pernah disimpan; hanya stesen terdekat ditentukan secara langsung dan data dibuang selepas digunakan."
+    },
+    "reporter": {
+      "title": "Statistik Pelapor",
+      "loadError": "Gagal memuatkan statistik pelapor. Cuba lagi kemudian.",
+      "reliability": "Skor kebolehpercayaan: {{score}} daripada 100",
+      "submitted": "laporan dihantar",
+      "confirmed": "laporan disahkan",
+      "badges": {
+        "regular": "Biasa",
+        "super_reporter": "Pelapor Super",
+        "trusted_commuter": "Penumpang Dipercayai"
+      }
+    },
+    "savedRoutes": {
+      "title": "Laluan Tersimpan",
+      "emptyTitle": "Tiada laluan tersimpan",
+      "emptyDescription": "Simpan laluan kerap anda untuk akses pantas. Selepas merancang laluan, tekan ikon penanda buku untuk menyimpannya.",
+      "loadError": "Gagal memuatkan laluan tersimpan. Cuba lagi kemudian.",
+      "count": "Laluan Tersimpan ({{count}})",
+      "plan": "Rancang laluan dari {{from}} ke {{to}}",
+      "delete": "Padam laluan tersimpan ke {{station}}",
+      "saved": "Disimpan",
+      "saveThis": "Simpan laluan ini",
+      "save": "Simpan Laluan",
+      "preferences": {
+        "FASTEST": "Terpantas",
+        "LEAST_CROWDED": "Paling kurang sesak",
+        "FEWEST_TRANSFERS": "Pertukaran paling sedikit",
+        "LEAST_WALKING": "Paling kurang berjalan",
+        "WHEELCHAIR": "Boleh diakses kerusi roda",
+        "LAST_TRAIN_SAFE": "Selamat untuk tren terakhir"
+      }
+    },
+    "settings": "Tetapan"
   },
   "common": {
     "loading": "Memuatkan…",
@@ -41,12 +96,99 @@
     "cancel": "Batal",
     "save": "Simpan"
   },
+  "rachel": {
+    "demoReplay": "Ulangan demo",
+    "journeyUpdate": "Kemas kini perjalanan",
+    "systemNotificationTitle": "Perjalanan anda telah berubah",
+    "recommendations": {
+      "normal": {
+        "action": "Perjalanan biasa anda mengikut jadual.",
+        "reason": "Anggaran ketibaan anda sebelum waktu akhir {{deadline}}. Tiada perubahan diperlukan."
+      },
+      "minor": {
+        "action": "Kekalkan perjalanan biasa anda.",
+        "reason": "Kesan lima minit ini masih membolehkan anda tiba sebelum {{deadline}}. Tiada gangguan diperlukan."
+      },
+      "disrupted": {
+        "action": "Gunakan alternatif DTL; tiba sekitar {{arrival}} dan elakkan kelewatan {{minutes}} minit.",
+        "reason": "Gangguan EWL dalam ulangan ini menjejaskan ketibaan {{deadline}} anda. Alternatif yang diberikan dianggarkan tiba sebelum waktu akhir."
+      },
+      "planned": {
+        "action": "Bertolak lebih awal dan gunakan alternatif yang diberikan; tiba sekitar {{arrival}}.",
+        "reason": "Kerja terancang mungkin menjejaskan perjalanan biasa anda. Semak alternatif sebelum bertolak."
+      }
+    },
+    "scenarios": {
+      "normal": {
+        "label": "Hari biasa",
+        "description": "Tiada gangguan"
+      },
+      "minor": {
+        "label": "Lewat 5 minit",
+        "description": "Kekal senyap"
+      },
+      "disrupted": {
+        "label": "Gangguan 15 minit",
+        "description": "Cadangkan alternatif"
+      },
+      "planned": {
+        "label": "Kerja terancang",
+        "description": "Nasihat sebelum bertolak"
+      }
+    },
+    "inbox": {
+      "empty": "Tiada pemberitahuan perjalanan. Perubahan kecil kekal senyap.",
+      "read": "Dibaca",
+      "unread": "Belum dibaca",
+      "markRead": "Tanda dibaca",
+      "dismiss": "Tutup"
+    },
+    "feedback": {
+      "question": "Adakah pemberitahuan ini berguna?",
+      "yes": "Ya",
+      "no": "Tidak",
+      "thanks": "Terima kasih atas maklum balas anda."
+    },
+    "push": {
+      "title": "Makluman perjalanan pelayar",
+      "description": "Makluman pilihan boleh sampai ke peranti ini apabila perjalanan tersimpan yang penting berubah. Sejarah lokasi tidak disertakan.",
+      "enable": "Aktifkan makluman pelayar",
+      "disable": "Matikan makluman",
+      "test": "Hantar makluman ujian",
+      "enableSuccess": "Makluman perjalanan pelayar diaktifkan.",
+      "disableSuccess": "Makluman pelayar dimatikan pada peranti ini.",
+      "testSuccess": "Makluman ujian dihantar.",
+      "blocked": "Pemberitahuan disekat dalam tetapan pelayar anda.",
+      "failed": "Makluman pelayar tidak dapat disediakan. Semak backend dan kunci VAPID.",
+      "status": {
+        "unsupported": "Tidak disokong",
+        "off": "Mati",
+        "blocked": "Disekat",
+        "on": "Hidup"
+      }
+    },
+    "crowd": {
+      "low": "Kurang sesak",
+      "moderate": "Kesesakan sederhana",
+      "high": "Sangat sesak",
+      "unknown": "Tahap kesesakan tidak tersedia"
+    },
+    "sources": {
+      "live": "Langsung",
+      "stale": "Sudah lama",
+      "simulated": "Ulangan demo"
+    }
+  },
   "alerts": {
     "majorTitle": "Gangguan perkhidmatan",
     "minorTitle": "Kelewatan perkhidmatan",
     "towards": "ke arah {{direction}}",
     "freeBus": "Perjalanan bas percuma di {{count}} stesen terjejas",
     "freeShuttle": "Perkhidmatan ulang-alik MRT percuma di {{count}} stesen",
-    "dismiss": "Tutup makluman"
+    "dismiss": "Tutup makluman",
+    "messages": {
+      "noServiceSignalling": "Tiada perkhidmatan tren antara {{from}} dan {{to}} menuju {{direction}} kerana kerosakan isyarat. Perjalanan bas percuma disediakan di perhentian yang ditetapkan.",
+      "slowerTrains": "Tren bergerak lebih perlahan daripada biasa antara {{from}} dan {{to}}. Tambah {{minutes}} minit pada perjalanan anda."
+    }
   }
 }

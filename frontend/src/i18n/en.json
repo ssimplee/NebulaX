@@ -33,7 +33,62 @@
     "title": "Profile",
     "language": "Language",
     "textSize": "Text Size",
-    "highContrast": "High Contrast"
+    "highContrast": "High Contrast",
+    "accessibility": {
+      "title": "Accessibility",
+      "textSizes": {
+        "normal": "Normal",
+        "large": "Large",
+        "extraLarge": "Extra Large"
+      },
+      "highContrast": "High Contrast",
+      "colourBlind": "Colour-blind Labels",
+      "darkMode": "Dark Mode",
+      "reducedMotion": "Reduced Motion",
+      "toggleHighContrast": "Toggle high contrast mode",
+      "toggleColourBlind": "Toggle colour-blind friendly labels",
+      "toggleDarkMode": "Toggle dark mode",
+      "toggleReducedMotion": "Toggle reduced motion"
+    },
+    "privacy": {
+      "title": "Privacy",
+      "allowLocation": "Allow location tracking",
+      "toggleLocation": "Toggle location tracking for journey navigation",
+      "description": "When enabled, the app can use GPS to detect your nearest station and track journey progress. Your raw location history is never stored — only the nearest station is determined in real time and discarded after use."
+    },
+    "reporter": {
+      "title": "Reporter Stats",
+      "loadError": "Failed to load reporter stats. Please try again later.",
+      "reliability": "Reliability score: {{score}} out of 100",
+      "submitted": "reports submitted",
+      "confirmed": "reports confirmed",
+      "badges": {
+        "regular": "Regular",
+        "super_reporter": "Super Reporter",
+        "trusted_commuter": "Trusted Commuter"
+      }
+    },
+    "savedRoutes": {
+      "title": "Saved Routes",
+      "emptyTitle": "No saved routes",
+      "emptyDescription": "Save your frequent routes for quick access. After planning a route, tap the bookmark icon to save it.",
+      "loadError": "Failed to load saved routes. Please try again later.",
+      "count": "Saved Routes ({{count}})",
+      "plan": "Plan route from {{from}} to {{to}}",
+      "delete": "Delete saved route to {{station}}",
+      "saved": "Saved",
+      "saveThis": "Save this route",
+      "save": "Save Route",
+      "preferences": {
+        "FASTEST": "Fastest",
+        "LEAST_CROWDED": "Least crowded",
+        "FEWEST_TRANSFERS": "Fewest transfers",
+        "LEAST_WALKING": "Least walking",
+        "WHEELCHAIR": "Wheelchair accessible",
+        "LAST_TRAIN_SAFE": "Last train safe"
+      }
+    },
+    "settings": "Settings"
   },
   "common": {
     "loading": "Loading…",
@@ -41,12 +96,99 @@
     "cancel": "Cancel",
     "save": "Save"
   },
+  "rachel": {
+    "demoReplay": "Demo replay",
+    "journeyUpdate": "Journey update",
+    "systemNotificationTitle": "Your journey has changed",
+    "recommendations": {
+      "normal": {
+        "action": "Your usual journey is on schedule.",
+        "reason": "Your estimated arrival is before your {{deadline}} deadline. No change is needed."
+      },
+      "minor": {
+        "action": "Keep your usual journey.",
+        "reason": "This five-minute impact still leaves you on time for {{deadline}}. No interruption is needed."
+      },
+      "disrupted": {
+        "action": "Use the DTL alternative; arrive around {{arrival}} and avoid {{minutes}} minutes of delay.",
+        "reason": "The replayed EWL disruption puts your {{deadline}} arrival at risk. The supplied alternative is estimated to arrive before your deadline."
+      },
+      "planned": {
+        "action": "Leave earlier and use the supplied alternative; arrive around {{arrival}}.",
+        "reason": "The planned works may affect your usual journey. Review the supplied alternative before departure."
+      }
+    },
+    "scenarios": {
+      "normal": {
+        "label": "Normal day",
+        "description": "No interruption"
+      },
+      "minor": {
+        "label": "5-minute delay",
+        "description": "Stay quiet"
+      },
+      "disrupted": {
+        "label": "15-minute disruption",
+        "description": "Recommend an alternative"
+      },
+      "planned": {
+        "label": "Planned works",
+        "description": "Advice before departure"
+      }
+    },
+    "inbox": {
+      "empty": "No journey notifications. Minor changes stay quiet.",
+      "read": "Read",
+      "unread": "Unread",
+      "markRead": "Mark read",
+      "dismiss": "Dismiss"
+    },
+    "feedback": {
+      "question": "Was this notification useful?",
+      "yes": "Yes",
+      "no": "No",
+      "thanks": "Thanks for your feedback."
+    },
+    "push": {
+      "title": "Browser journey alerts",
+      "description": "Optional alerts can reach this device when an important saved journey changes. Location history is never included.",
+      "enable": "Enable browser alerts",
+      "disable": "Turn off alerts",
+      "test": "Send test alert",
+      "enableSuccess": "Browser journey alerts are enabled.",
+      "disableSuccess": "Browser journey alerts are off on this device.",
+      "testSuccess": "Test alert sent.",
+      "blocked": "Notifications are blocked in your browser settings.",
+      "failed": "Browser alerts could not be configured. Check that the backend and VAPID key are available.",
+      "status": {
+        "unsupported": "Not supported",
+        "off": "Off",
+        "blocked": "Blocked",
+        "on": "On"
+      }
+    },
+    "crowd": {
+      "low": "Low crowd",
+      "moderate": "Moderate crowd",
+      "high": "High crowd",
+      "unknown": "Crowd level unavailable"
+    },
+    "sources": {
+      "live": "Live",
+      "stale": "Stale",
+      "simulated": "Demo replay"
+    }
+  },
   "alerts": {
     "majorTitle": "Service disruption",
     "minorTitle": "Service delay",
     "towards": "towards {{direction}}",
     "freeBus": "Free bus rides at {{count}} affected stations",
     "freeShuttle": "Free MRT shuttle at {{count}} stations",
-    "dismiss": "Dismiss alert"
+    "dismiss": "Dismiss alert",
+    "messages": {
+      "noServiceSignalling": "No train service between {{from}} and {{to}} stations towards {{direction}} due to a signalling fault. Free bus rides are available at designated bus stops.",
+      "slowerTrains": "Trains are moving slower than usual between {{from}} and {{to}}. Please add {{minutes}} minutes to your journey."
+    }
   }
 }

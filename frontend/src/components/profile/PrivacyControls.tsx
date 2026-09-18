@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -13,6 +14,7 @@ import { usePreferencesStore } from "@/store/preferencesStore";
  * Validates: Requirements 25.5, 29.5
  */
 export function PrivacyControls() {
+  const { t } = useTranslation();
   const locationTracking = usePreferencesStore((s) => s.locationTracking);
   const toggleLocationTracking = usePreferencesStore(
     (s) => s.toggleLocationTracking
@@ -20,29 +22,27 @@ export function PrivacyControls() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-sm font-medium text-muted-foreground">Privacy</h3>
+      <h3 className="text-sm font-medium text-muted-foreground">{t("profile.privacy.title")}</h3>
 
       {/* Location tracking toggle */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MapPin className="size-4 text-muted-foreground" />
           <Label htmlFor="location-tracking" className="text-sm font-medium">
-            Allow location tracking
+            {t("profile.privacy.allowLocation")}
           </Label>
         </div>
         <Switch
           id="location-tracking"
           checked={locationTracking}
           onCheckedChange={toggleLocationTracking}
-          aria-label="Toggle location tracking for journey navigation"
+          aria-label={t("profile.privacy.toggleLocation")}
         />
       </div>
 
       {/* Explanatory note */}
       <p className="text-xs leading-relaxed text-muted-foreground">
-        When enabled, the app can use GPS to detect your nearest station and
-        track journey progress. Your raw location history is never stored — only
-        the nearest station is determined in real time and discarded after use.
+        {t("profile.privacy.description")}
       </p>
     </div>
   );

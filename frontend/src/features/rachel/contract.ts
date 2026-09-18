@@ -35,6 +35,7 @@ const candidateSchema = z.object({
   arrivalRange: z.object({ earliest: timestamp, latest: timestamp }).strict(),
   walkingMinutes: z.number().nonnegative(),
   transfers: z.number().int().nonnegative(),
+  crowdLevel: z.enum(["low", "moderate", "high", "unknown"]),
   steps: z.array(z.object({
     mode: z.enum(["walk", "rail", "bus"]),
     instruction: text.max(240),
