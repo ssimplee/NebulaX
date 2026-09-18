@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@govtechsg/sgds-web-component": "^3.28.0"
+  }
+}
