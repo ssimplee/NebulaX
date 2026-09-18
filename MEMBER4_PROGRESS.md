@@ -39,10 +39,12 @@ The replay is complete and testable, but these items require the other members'
 final interfaces before this can be called a live commuter recommendation:
 
 - [ ] Member 1: replace the labelled replay events and source metadata with the
-  agreed planned/unplanned fixtures or live operational data.
+  agreed planned/unplanned fixtures or live operational data, including the
+  agreed crowd-level input where available.
 - [ ] Member 2: provide a live impact/routing endpoint that returns the snapshot
   contract in `frontend/src/features/rachel/contract.ts`, including candidate
-  IDs, `shouldNotify`, confidence semantics and the deterministic reason. Set
+  IDs, `crowdLevel`, arrival ranges, `shouldNotify`, confidence semantics,
+  source observation/freshness fields and the deterministic reason. Set
   `VITE_RACHEL_IMPACT_URL` to that endpoint after integration.
 - [ ] Member 3: pass the geographic `JourneyMap` into `JourneyComparison` using
   the same candidate IDs and selected candidate ID.
@@ -55,11 +57,12 @@ labelled demo mode and never presents the replay as live information.
 
 ## Automated verification completed on 18 September 2026
 
-- Frontend unit/component tests: **89 passed** in 13 test files.
+- Frontend unit/component tests: **96 passed** in 15 test files.
 - Production TypeScript/Vite build: **passed** (one existing bundle-size warning).
-- Playwright end-to-end tests: **4 passed** — the full normal → disruption →
-  recommendation flow and the quiet five-minute flow on mobile and desktop.
-- Backend tests: **247 passed**. Existing SQLAlchemy/datetime deprecation
+- Playwright end-to-end tests: **6 passed** — the full normal → disruption →
+  recommendation flow, quiet five-minute flow and Chinese recommendation
+  template on mobile and desktop.
+- Backend tests: **251 passed**. Existing SQLAlchemy/datetime deprecation
   warnings remain; no test failed.
 - Visual check: normal and disrupted states inspected at desktop and 393 × 851
   mobile viewport. The action appears first, controls remain reachable, and the
@@ -73,6 +76,8 @@ Terminal 1 — backend:
 
 ```powershell
 cd backend
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe scripts\generate_vapid_key.py
 .\.venv\Scripts\python.exe run.py
 ```
 
@@ -129,8 +134,59 @@ cd C:\Users\aless\NebulaX_Project\backend
 .\.venv\Scripts\python.exe -m pytest -q --basetemp=.pytest-tmp
 ```
 
-## P1 scope not started
+## P1 implementation status
 
-- [ ] Web push after the in-app flow is accepted.
-- [ ] Concise multilingual recommendation templates.
-- [ ] Notification-usefulness analytics without raw location history.
+- [x] Optional Web Push opt-in, anonymous Push API subscription, backend VAPID
+  delivery, test notification, unsubscribe, service-worker display and click
+  handling. The development VAPID private key is generated locally and ignored
+  by Git.
+- [x] Concise normal, minor, disrupted and planned recommendation templates in
+  English, Chinese, Malay and Tamil, including interpolated arrival/deadline
+  times and delay avoided. The same language selection now also covers static
+  interface copy across Journey, Map, Route, Community, Assistant, Profile,
+  station details, forms, status/error states and accessibility labels. Station
+  names, line codes and user reports remain in their supplied source language.
+  Profile settings use direct i18next keys, and the known signalling-fault and
+  slower-train alert formats are translated while preserving station names.
+  Unrecognised free-text alerts remain in their source language rather than
+  being inaccurately machine-translated.
+- [x] Notification-usefulness feedback and analytics for shown, opened,
+  dismissed, useful and not-useful events. The strict payload contains only
+  event/recommendation identifiers, event type, mode, language and timestamp;
+  location and journey history fields are rejected.
+- [x] Original-versus-alternative cards include a written crowd level and a
+  matching people icon, so crowd information does not depend on colour. The
+  validated candidate contract requires `crowdLevel`.
+- [x] Source provenance is explicitly labelled **Live**, **Stale**, or
+  **Demo replay** based on mode, observation time and the source freshness
+  threshold.
+
+## P1 team handoff
+
+- Member 2 must call `send_journey_push(action, recommendation_id)` from
+  `backend/app/services/notification_service.py` after a validated live
+  recommendation with `shouldNotify: true` is produced. Demo mode can still
+  show a local service-worker notification to a browser that opted in.
+- The deployment owner must provide a persistent production VAPID private key
+  and a real `VAPID_SUBJECT` contact. Every deployed backend instance must use
+  the same key. The private key must never be committed.
+- No Member 1 or Member 3 input is needed for the P1 code itself. Member 1's
+  source data and Member 3's map remain inputs to the wider live journey flow.
+
+## P1 manual acceptance check
+
+Restart the backend after pulling these changes so the new notification tables
+and routes are loaded.
+
+1. Save Rachel's morning routine. Confirm **Browser journey alerts** appears.
+2. Select **Enable browser alerts** and allow notifications when the browser
+   asks. Confirm the status becomes **On**.
+3. Select **Send test alert**. Confirm the operating-system notification opens
+   the Journey page when selected. Then test **Turn off alerts**.
+4. In Profile, switch among English, Chinese, Malay and Tamil. Return to Journey
+   and replay the disruption. Confirm the action and reason use the chosen
+   language while preserving 08:42, 08:45 and 10 minutes.
+5. In the journey inbox, answer **Was this notification useful?** Confirm a
+   thank-you message appears and the choice cannot be submitted twice.
+6. Browser-alert permission may be reset from the browser's site settings when
+   repeating the opt-in test.

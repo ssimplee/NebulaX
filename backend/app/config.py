@@ -36,6 +36,14 @@ class BaseConfig:
     # Explicit opt-in for optional Rachel explanation calls; demo needs no key.
     RACHEL_AI_ENABLED = os.getenv("RACHEL_AI_ENABLED", "false").lower() == "true"
 
+    # Web Push. Generate the ignored development key with scripts/generate_vapid_key.py.
+    VAPID_PRIVATE_KEY = os.getenv(
+        "VAPID_PRIVATE_KEY",
+        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "instance", "vapid_private.pem"),
+    )
+    VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "")
+    VAPID_SUBJECT = os.getenv("VAPID_SUBJECT", "mailto:sgrail@example.invalid")
+
     # Upload settings
     UPLOAD_PROVIDER = os.getenv("UPLOAD_PROVIDER", "local")
     UPLOAD_MAX_MB = int(os.getenv("UPLOAD_MAX_MB", "5"))

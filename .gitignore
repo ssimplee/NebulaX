@@ -48,3 +48,4 @@ htmlcov/
 frontend/test-results/
 frontend/playwright-report/
 backend/.pytest-tmp/
+backend/instance/*.pem
