@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "rachel-normal-v1",
+  "revision": 1,
+  "mode": "demo",
+  "evaluatedAt": "2026-09-21T07:25:00+08:00",
+  "state": "normal",
+  "persona": {
+    "id": "rachel",
+    "priorities": [
+      "arrive-by-08:45",
+      "avoid-unnecessary-interruptions",
+      "receive-one-clear-action"
+    ]
+  },
+  "journey": {
+    "routineId": "rachel-morning",
+    "origin": {
+      "label": "Demo home area, Tampines",
+      "coordinates": null
+    },
+    "destination": {
+      "label": "Demo workplace, Raffles Place",
+      "coordinates": null
+    },
+    "departAt": "2026-09-21T07:40:00+08:00",
+    "arriveBy": "2026-09-21T08:45:00+08:00",
+    "timeZone": "Asia/Singapore"
+  },
+  "conditions": {
+    "observedAt": "2026-09-21T07:24:00+08:00",
+    "events": []
+  },
+  "candidates": [
+    {
+      "id": "normal-usual",
+      "label": "Usual EWL journey",
+      "arrivalAt": "2026-09-21T08:37:00+08:00",
+      "arrivalRange": {
+        "earliest": "2026-09-21T08:34:00+08:00",
+        "latest": "2026-09-21T08:40:00+08:00"
+      },
+      "walkingMinutes": 14,
+      "transfers": 0,
+      "steps": [
+        {
+          "mode": "walk",
+          "instruction": "Walk from the demo origin in Tampines to Tampines MRT."
+        },
+        {
+          "mode": "rail",
+          "instruction": "Take the EWL towards Raffles Place."
+        },
+        {
+          "mode": "walk",
+          "instruction": "Walk from Raffles Place MRT to the demo workplace."
+        }
+      ],
+      "sourceIds": [
+        "demo-normal-source"
+      ],
+      "crowdLevel": "moderate"
+    }
+  ],
+  "sources": [
+    {
+      "id": "demo-normal-source",
+      "label": "Rachel journey replay",
+      "type": "simulated",
+      "observedAt": "2026-09-21T07:24:00+08:00",
+      "staleAfterSeconds": 300
+    }
+  ],
+  "recommendation": {
+    "id": "recommendation-normal",
+    "version": 1,
+    "shouldNotify": false,
+    "action": "Your usual journey is on schedule.",
+    "reason": "Your estimated arrival is before your 08:45 deadline. No change is needed.",
+    "originalCandidateId": "normal-usual",
+    "recommendedCandidateId": "normal-usual",
+    "originalArrival": "2026-09-21T08:37:00+08:00",
+    "recommendedArrival": "2026-09-21T08:37:00+08:00",
+    "delayMinutesAvoided": 0,
+    "confidence": null,
+    "confidenceDescription": "Confidence has not been assessed for this illustrative replay.",
+    "sourceIds": [
+      "demo-normal-source"
+    ],
+    "warnings": [
+      "Illustrative routes and travel times; not validated for navigation."
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { BottomNav } from "@/components/common/BottomNav";
 import { SideNav } from "@/components/common/SideNav";
 import { AlertBanner } from "@/components/common/AlertBanner";
+import { RachelShell } from "@/features/rachel/RachelShell";
 
 /**
  * App layout shell that renders navigation and route content.
@@ -15,8 +16,10 @@ import { AlertBanner } from "@/components/common/AlertBanner";
  */
 function AppLayout() {
   const { isMobile } = useResponsive();
-  // The map shows alerts as an overlay button, so nothing pushes its controls down.
-  const onMap = useLocation().pathname === "/";
+  const { pathname } = useLocation();
+  // The map shows alerts as an overlay button, so nothing pushes its controls
+  // down; Rachel's journey uses the personalised decision, not network-wide alerts.
+  const showAlertStrip = pathname !== "/" && !pathname.startsWith("/journey");
 
   return (
     <div className="flex h-dvh w-full overflow-hidden">
@@ -29,9 +32,9 @@ function AppLayout() {
           isMobile ? "pb-16" : "pl-20"
         }`}
       >
-        {!onMap && <AlertBanner />}
+        {showAlertStrip && <AlertBanner />}
         <div className="flex-1 overflow-hidden">
-          <AppRoutes />
+          <RachelShell><AppRoutes /></RachelShell>
         </div>
       </main>
 

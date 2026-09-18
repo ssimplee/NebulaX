@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Eye, Moon, MonitorSmartphone, Palette, Type } from "lucide-react";
 
 import { Label } from "@/components/ui/label";
@@ -7,9 +8,9 @@ import { Switch } from "@/components/ui/switch";
 import { usePreferencesStore } from "@/store/preferencesStore";
 
 const TEXT_SCALE_OPTIONS = [
-  { value: "1", label: "Normal", scale: 1.0 },
-  { value: "1.25", label: "Large", scale: 1.25 },
-  { value: "1.5", label: "Extra Large", scale: 1.5 },
+  { value: "1", key: "normal", scale: 1.0 },
+  { value: "1.25", key: "large", scale: 1.25 },
+  { value: "1.5", key: "extraLarge", scale: 1.5 },
 ] as const;
 
 /**
@@ -26,6 +27,7 @@ const TEXT_SCALE_OPTIONS = [
  * Validates: Requirements 26.1, 26.2, 26.3, 26.7
  */
 export function AccessibilitySettings() {
+  const { t } = useTranslation();
   const {
     textScale,
     highContrast,
@@ -66,20 +68,20 @@ export function AccessibilitySettings() {
   return (
     <div className="flex flex-col gap-6">
       <h3 className="text-sm font-medium text-muted-foreground">
-        Accessibility
+        {t("profile.accessibility.title")}
       </h3>
 
       {/* Text Size */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Type className="size-4 text-muted-foreground" />
-          <Label className="text-sm font-medium">Text Size</Label>
+          <Label className="text-sm font-medium">{t("profile.textSize")}</Label>
         </div>
         <RadioGroup
           value={String(textScale)}
           onValueChange={(val) => setTextScale(Number(val))}
           className="flex gap-3"
-          aria-label="Text size"
+          aria-label={t("profile.textSize")}
         >
           {TEXT_SCALE_OPTIONS.map((option) => (
             <div key={option.value} className="flex items-center gap-2">
@@ -91,7 +93,7 @@ export function AccessibilitySettings() {
                 htmlFor={`text-size-${option.value}`}
                 className="cursor-pointer text-sm"
               >
-                {option.label}
+                {t(`profile.accessibility.textSizes.${option.key}`)}
               </Label>
             </div>
           ))}
@@ -103,14 +105,14 @@ export function AccessibilitySettings() {
         <div className="flex items-center gap-2">
           <Eye className="size-4 text-muted-foreground" />
           <Label htmlFor="high-contrast" className="text-sm font-medium">
-            High Contrast
+            {t("profile.accessibility.highContrast")}
           </Label>
         </div>
         <Switch
           id="high-contrast"
           checked={highContrast}
           onCheckedChange={toggleHighContrast}
-          aria-label="Toggle high contrast mode"
+          aria-label={t("profile.accessibility.toggleHighContrast")}
         />
       </div>
 
@@ -119,14 +121,14 @@ export function AccessibilitySettings() {
         <div className="flex items-center gap-2">
           <Palette className="size-4 text-muted-foreground" />
           <Label htmlFor="colour-blind-labels" className="text-sm font-medium">
-            Colour-blind Labels
+            {t("profile.accessibility.colourBlind")}
           </Label>
         </div>
         <Switch
           id="colour-blind-labels"
           checked={colourBlindLabels}
           onCheckedChange={toggleColourBlindLabels}
-          aria-label="Toggle colour-blind friendly labels"
+          aria-label={t("profile.accessibility.toggleColourBlind")}
         />
       </div>
 
@@ -135,14 +137,14 @@ export function AccessibilitySettings() {
         <div className="flex items-center gap-2">
           <Moon className="size-4 text-muted-foreground" />
           <Label htmlFor="dark-mode" className="text-sm font-medium">
-            Dark Mode
+            {t("profile.accessibility.darkMode")}
           </Label>
         </div>
         <Switch
           id="dark-mode"
           checked={darkMode}
           onCheckedChange={toggleDarkMode}
-          aria-label="Toggle dark mode"
+          aria-label={t("profile.accessibility.toggleDarkMode")}
         />
       </div>
 
@@ -151,14 +153,14 @@ export function AccessibilitySettings() {
         <div className="flex items-center gap-2">
           <MonitorSmartphone className="size-4 text-muted-foreground" />
           <Label htmlFor="reduced-motion" className="text-sm font-medium">
-            Reduced Motion
+            {t("profile.accessibility.reducedMotion")}
           </Label>
         </div>
         <Switch
           id="reduced-motion"
           checked={reducedMotion}
           onCheckedChange={toggleReducedMotion}
-          aria-label="Toggle reduced motion"
+          aria-label={t("profile.accessibility.toggleReducedMotion")}
         />
       </div>
     </div>

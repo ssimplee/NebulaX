@@ -66,6 +66,7 @@ def _register_blueprints(app: Flask) -> None:
     from .routes.health import health_bp
     from .routes.incidents import incidents_bp
     from .routes.operations import operations_bp
+    from .routes.notifications import notifications_bp
     from .routes.routes import routes_bp
     from .routes.stations import stations_bp
     from .routes.users import users_bp
@@ -75,6 +76,7 @@ def _register_blueprints(app: Flask) -> None:
     app.register_blueprint(routes_bp, url_prefix="/api/v1")
     app.register_blueprint(crowd_bp, url_prefix="/api/v1")
     app.register_blueprint(incidents_bp, url_prefix="/api/v1")
+    app.register_blueprint(notifications_bp, url_prefix="/api/v1")
     app.register_blueprint(assistant_bp, url_prefix="/api/v1")
     app.register_blueprint(buses_bp, url_prefix="/api/v1")
     app.register_blueprint(alerts_bp, url_prefix="/api/v1")

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import {
   ArrowRight,
   Bookmark,
@@ -30,16 +32,8 @@ function getStationName(stationId: string): string {
 /**
  * Format a preference code to a human-friendly label.
  */
-function formatPreference(preference: string): string {
-  const labels: Record<string, string> = {
-    FASTEST: "Fastest",
-    LEAST_CROWDED: "Least crowded",
-    FEWEST_TRANSFERS: "Fewest transfers",
-    LEAST_WALKING: "Least walking",
-    WHEELCHAIR: "Wheelchair accessible",
-    LAST_TRAIN_SAFE: "Last train safe",
-  };
-  return labels[preference] ?? preference;
+function formatPreference(preference: string, t: TFunction): string {
+  return t(`profile.savedRoutes.preferences.${preference}`, { defaultValue: preference });
 }
 
 /**
@@ -62,6 +56,7 @@ export interface SavedRoutesProps {
  * Validates: Requirements 11.5, 25.3
  */
 export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const {
@@ -102,7 +97,7 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
   if (error) {
     return (
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-center text-sm text-destructive">
-        Failed to load saved routes. Please try again later.
+        {t("profile.savedRoutes.loadError")}
       </div>
     );
   }
@@ -112,10 +107,9 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
       <div className="flex flex-col items-center gap-3 py-8 text-center">
         <Bookmark className="size-8 text-muted-foreground opacity-50" />
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium">No saved routes</p>
+          <p className="text-sm font-medium">{t("profile.savedRoutes.emptyTitle")}</p>
           <p className="text-xs text-muted-foreground">
-            Save your frequent routes for quick access. After planning a route,
-            tap the bookmark icon to save it.
+            {t("profile.savedRoutes.emptyDescription")}
           </p>
         </div>
       </div>
@@ -125,7 +119,7 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
   return (
     <div className="flex flex-col gap-3">
       <h3 className="text-sm font-medium text-muted-foreground">
-        Saved Routes ({routes.length})
+        {t("profile.savedRoutes.count", { count: routes.length })}
       </h3>
       {routes.map((route) => (
         <Card key={route.id} className="p-3">
@@ -134,7 +128,7 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
             <button
               className="flex flex-1 flex-col gap-1 text-left hover:opacity-80 transition-opacity"
               onClick={() => handlePlan(route)}
-              aria-label={`Plan route from ${getStationName(route.originStationId)} to ${getStationName(route.destinationStationId)}`}
+              aria-label={t("profile.savedRoutes.plan", { from: getStationName(route.originStationId), to: getStationName(route.destinationStationId) })}
             >
               <div className="flex items-center gap-1.5 text-sm font-medium">
                 <span>{getStationName(route.originStationId)}</span>
@@ -142,7 +136,7 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
                 <span>{getStationName(route.destinationStationId)}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{formatPreference(route.preference)}</span>
+                <span>{formatPreference(route.preference, t)}</span>
                 {route.label && (
                   <>
                     <span>•</span>
@@ -159,7 +153,7 @@ export function SavedRoutes({ onPlanRoute }: SavedRoutesProps) {
               className="shrink-0 text-muted-foreground hover:text-destructive"
               onClick={() => handleDelete(route.id)}
               disabled={deleteMutation.isPending}
-              aria-label={`Delete saved route to ${getStationName(route.destinationStationId)}`}
+              aria-label={t("profile.savedRoutes.delete", { station: getStationName(route.destinationStationId) })}
             >
               <Trash2 className="size-4" />
             </Button>
@@ -192,6 +186,7 @@ export function SaveRouteButton({
   preference,
   label,
 }: SaveRouteButtonProps) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [isSaved, setIsSaved] = useState(false);
 
@@ -219,14 +214,14 @@ export function SaveRouteButton({
       size="sm"
       onClick={handleSave}
       disabled={saveMutation.isPending || isSaved}
-      aria-label={isSaved ? "Route saved" : "Save this route"}
+      aria-label={isSaved ? t("profile.savedRoutes.saved") : t("profile.savedRoutes.saveThis")}
     >
       {saveMutation.isPending ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (
         <Bookmark className={isSaved ? "size-4 fill-primary" : "size-4"} />
       )}
-      {isSaved ? "Saved" : "Save Route"}
+      {isSaved ? t("profile.savedRoutes.saved") : t("profile.savedRoutes.save")}
     </Button>
   );
 }

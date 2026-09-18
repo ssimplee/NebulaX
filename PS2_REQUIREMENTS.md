@@ -517,32 +517,36 @@ through typed props; it must not independently call LTA APIs.
 
 ### Member 4 — Rachel UX, proactive notification and AI explanation
 
+- [x] **Member 4 delivery complete:** all P0 and P1 tasks below are implemented
+      and verified. Live operational data, routing and geographic-map handoffs
+      remain integration inputs owned by Members 1–3.
+
 Primary ownership: Rachel journey screens, recommendation components, state,
 accessibility, AI prompt/context integration and end-to-end frontend tests.
 
 #### P0 tasks
 
-- [ ] Create Rachel's saved-journey state: Tampines → Raffles Place, 07:40,
+- [x] Create Rachel's saved-journey state: Tampines → Raffles Place, 07:40,
       arrive by 08:45.
-- [ ] Build the normal-day state with no unnecessary interruption.
-- [ ] Build the disrupted state with a one-line action first.
-- [ ] Show original/recommended arrival, delay avoided, confidence and source
+- [x] Build the normal-day state with no unnecessary interruption.
+- [x] Build the disrupted state with a one-line action first.
+- [x] Show original/recommended arrival, delay avoided, confidence and source
       freshness beneath the action.
-- [ ] Add a replay control for the labelled judging scenario.
-- [ ] Build an in-app proactive notification/inbox flow.
-- [ ] Ensure the UI respects `shouldNotify: false` for minor impact.
-- [ ] Pass only the frozen structured context to the AI assistant.
-- [ ] Validate AI output against the response schema and fall back to Member
+- [x] Add a replay control for the labelled judging scenario.
+- [x] Build an in-app proactive notification/inbox flow.
+- [x] Ensure the UI respects `shouldNotify: false` for minor impact.
+- [x] Pass only the frozen structured context to the AI assistant.
+- [x] Validate AI output against the response schema and fall back to Member
       2's deterministic reason when unavailable or invalid.
-- [ ] Make the flow usable one-handed with adequate type, contrast and touch
+- [x] Make the flow usable one-handed with adequate type, contrast and touch
       targets.
-- [ ] Add an end-to-end test for normal day → disruption → recommendation.
+- [x] Add an end-to-end test for normal day → disruption → recommendation.
 
 #### P1 tasks
 
-- [ ] Add web push only after the in-app flow is reliable.
-- [ ] Add concise multilingual recommendation templates.
-- [ ] Add analytics for notification usefulness without storing raw location
+- [x] Add web push only after the in-app flow is reliable.
+- [x] Add concise multilingual recommendation templates.
+- [x] Add analytics for notification usefulness without storing raw location
       history.
 
 #### Handoff

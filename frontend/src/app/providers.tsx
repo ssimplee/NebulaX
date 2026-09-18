@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { usePreferencesStore } from "@/store/preferencesStore";
+import { CompleteUiTranslator } from "@/i18n/CompleteUiTranslator";
 
 /**
  * Global query client instance shared across the app.
@@ -50,6 +51,7 @@ export function AppProviders({ children }: AppProvidersProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
+      <CompleteUiTranslator />
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   );
