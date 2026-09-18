@@ -28,6 +28,8 @@ class BaseConfig:
     # OneMap integration
     ONEMAP_EMAIL = os.getenv("ONEMAP_EMAIL", "")
     ONEMAP_PASSWORD = os.getenv("ONEMAP_PASSWORD", "")
+    ONEMAP_TOKEN = os.getenv("ONEMAP_TOKEN", "")
+    OSRM_BASE_URL = os.getenv("OSRM_BASE_URL", "")
 
     # LTA DataMall integration
     LTA_ACCOUNT_KEY = os.getenv("LTA_ACCOUNT_KEY", "")

@@ -139,14 +139,20 @@ def get_location_provider() -> LocationProvider:
     """Return the configured LocationProvider implementation.
 
     Returns OneMapClient when DATA_PROVIDER is "live" and OneMap
-    credentials (ONEMAP_EMAIL, ONEMAP_PASSWORD) are configured.
+    credentials or an ONEMAP_TOKEN are configured.
     Falls back to MockLocationProvider otherwise.
     """
     if _config_value("DATA_PROVIDER") == "live":
-        if _config_value("ONEMAP_EMAIL") and _config_value("ONEMAP_PASSWORD"):
+        if _config_value("ONEMAP_TOKEN") or (
+            _config_value("ONEMAP_EMAIL") and _config_value("ONEMAP_PASSWORD")
+        ):
             from app.integrations.onemap_client import OneMapClient
 
-            return OneMapClient()
+            return OneMapClient(
+                email=_config_value("ONEMAP_EMAIL"),
+                password=_config_value("ONEMAP_PASSWORD"),
+                token=_config_value("ONEMAP_TOKEN"),
+            )
 
     from app.integrations.mock_adapter import MockLocationProvider
 

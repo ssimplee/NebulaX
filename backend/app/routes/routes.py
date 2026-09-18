@@ -29,6 +29,39 @@ _request_schema = RoutePlanRequestSchema()
 _response_schema = RoutePlanResponseSchema()
 
 
+@routes_bp.route("/routes/rachel/plan", methods=["POST"])
+@routes_bp.route("/routes/rachel/recalculate", methods=["POST"])
+def plan_rachel_route():
+    """Plan Rachel's fixed door-to-door commute with optional demo conditions."""
+    from app.integrations import get_location_provider
+    from app.services.operational_conditions import load_rachel_scenario
+    from app.services.rachel_routing import plan_rachel_journey
+
+    body = request.get_json(silent=True) or {}
+    scenario = None
+    departure = None
+    scenario_id = body.get("scenarioId")
+    if scenario_id:
+        try:
+            scenario = load_rachel_scenario(scenario_id)
+        except ValueError as exc:
+            return jsonify({"error": "unknown_scenario", "message": str(exc)}), 404
+    if body.get("departureTime"):
+        try:
+            departure = datetime.fromisoformat(str(body["departureTime"]).replace("Z", "+00:00"))
+        except ValueError:
+            return jsonify(
+                {"error": "validation_error", "message": "departureTime must be ISO-8601"}
+            ), 422
+    try:
+        result = plan_rachel_journey(
+            get_location_provider(), scenario=scenario, departure=departure
+        )
+    except (LookupError, ValueError) as exc:
+        return jsonify({"error": "route_input_unavailable", "message": str(exc)}), 422
+    return jsonify(result)
+
+
 @routes_bp.route("/routes/plan", methods=["POST"])
 def plan_route():
     """Plan route(s) between two MRT stations.
@@ -144,7 +177,9 @@ def recalculate_route():
     Returns:
         JSON response matching RoutePlanResponseSchema, or 400/422 on error.
     """
-    # Recalculate uses the same logic as plan, reusing the handler
+    body = request.get_json(silent=True) or {}
+    if body.get("personaId") == "rachel" or body.get("scenarioId"):
+        return plan_rachel_route()
     return plan_route()
 
 
