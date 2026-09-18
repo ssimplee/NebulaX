@@ -80,6 +80,7 @@ class CandidateSchema(Schema):
     arrivalRange = fields.Nested(RangeSchema, required=True)
     walkingMinutes = fields.Float(required=True, validate=validate.Range(min=0))
     transfers = fields.Integer(required=True, strict=True, validate=validate.Range(min=0))
+    crowdLevel = fields.String(required=True, validate=validate.OneOf(["low", "moderate", "high", "unknown"]))
     steps = fields.List(fields.Nested(StepSchema), required=True, validate=validate.Length(min=1, max=30))
     sourceIds = fields.List(text(120), required=True, validate=validate.Length(min=1, max=30))
 
