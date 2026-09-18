@@ -78,11 +78,13 @@ do not automatically require cycling, but still require door-to-door routing.
 **OpenStreetMap is the required geospatial base.** OneMap may supplement it,
 but must not replace it as the base required by the brief.
 
-- [ ] Render the geographic Journey Map using OSM data.
-- [ ] Display `© OpenStreetMap contributors` wherever the map or derived OSM
+- [x] Render the geographic Journey Map using OSM data.
+- [x] Display `© OpenStreetMap contributors` wherever the map or derived OSM
       data appears.
-- [ ] Do not use the public OSM tile server for heavy application traffic.
-- [ ] Use a suitable tile provider, self-hosted tiles, or a static extract.
+- [x] Do not use the public OSM tile server for heavy application traffic.
+      (`basemap.ts` refuses `tile.openstreetmap.org`.)
+- [x] Use a suitable tile provider, self-hosted tiles, or a static extract.
+      (OpenFreeMap vector tiles: free, no key; overridable by env.)
 - [ ] Cache Overpass results rather than repeatedly querying the public API.
 - [ ] Add authoritative LTA layers on top where useful.
 
@@ -95,12 +97,12 @@ Recommended choices:
 
 ### 3. Visualisation
 
-- [ ] Show the route on the geographic map.
-- [ ] Distinguish affected and unaffected route portions.
-- [ ] Show the alternative against the original.
-- [ ] Show crowding with an immediate three-level scale.
-- [ ] Make time and delay trade-offs obvious.
-- [ ] Do not rely on colour alone.
+- [x] Show the route on the geographic map.
+- [x] Distinguish affected and unaffected route portions.
+- [x] Show the alternative against the original.
+- [x] Show crowding with an immediate three-level scale.
+- [x] Make time and delay trade-offs obvious.
+- [x] Do not rely on colour alone.
 - [ ] Use readable type, sufficient contrast and real mobile touch targets.
 - [ ] Test in a real phone browser, one-handed and in motion.
 
@@ -319,9 +321,10 @@ decision and must be documented as such, not presented as an official fact.
 
 - [x] Select Rachel as the primary persona.
 - [ ] Finalise Rachel's exact door-to-door endpoints and demo journey.
-- [ ] Add OSM geographic Journey Map with attribution.
-- [ ] Keep the schematic map as a secondary Network Map.
-- [ ] Import and validate the supplied station GeoJSON and its CRS.
+- [x] Add OSM geographic Journey Map with attribution.
+- [x] Keep the schematic map as a secondary Network Map.
+- [x] Import and validate the supplied station GeoJSON and its CRS.
+      (WGS84 lon/lat confirmed; see README "Station Footprints".)
 - [ ] Add door-to-door access legs.
 - [ ] Ingest `TrainServiceAlerts` and normalise identifiers.
 - [ ] Make affected graph edges unavailable or more costly.
@@ -445,18 +448,22 @@ view switch.
 
 #### P0 tasks
 
-- [ ] Add MapLibre GL JS or Leaflet with an approved OSM-based tile source.
-- [ ] Show visible `© OpenStreetMap contributors` attribution.
-- [ ] Import/normalise the supplied station GeoJSON and confirm its CRS.
-- [ ] Render Rachel's full door-to-door route.
-- [ ] Visually distinguish affected and unaffected portions.
-- [ ] Overlay the original and recommended alternatives together.
-- [ ] Show walking legs and rail legs with text/icon differences, not colour
+- [x] Add MapLibre GL JS or Leaflet with an approved OSM-based tile source.
+- [x] Show visible `© OpenStreetMap contributors` attribution.
+- [x] Import/normalise the supplied station GeoJSON and confirm its CRS.
+- [x] Render Rachel's full door-to-door route. (Walk legs are labelled
+      straight-line approximations until Member 2 supplies OSM-routed paths;
+      see `docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md`.)
+- [x] Visually distinguish affected and unaffected portions.
+- [x] Overlay the original and recommended alternatives together.
+- [x] Show walking legs and rail legs with text/icon differences, not colour
       alone.
-- [ ] Add the three-level crowd visual treatment.
-- [ ] Add a clear Network Map/Journey Map switch and preserve the old map.
-- [ ] Fit the route cleanly on a phone without hiding the recommendation card.
-- [ ] Add map loading, failure and offline/stale states.
+- [x] Add the three-level crowd visual treatment.
+- [x] Add a clear Network Map/Journey Map switch and preserve the old map.
+- [x] Fit the route cleanly on a phone without hiding the recommendation card.
+      (`insets` prop pads the fit around overlays; checked at 375×812 in a
+      browser, real-phone check still pending.)
+- [x] Add map loading, failure and offline/stale states.
 
 #### P1 tasks
 

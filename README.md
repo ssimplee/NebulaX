@@ -12,7 +12,7 @@ Built with a **React + TypeScript + Vite** frontend and a **Python Flask** REST 
 
 ## Features
 
-- **Digital Network and Journey Maps** — Validated station-to-station SVG network, geographic OpenStreetMap view, route highlighting, and simulated train movement
+- **Network and Journey Maps** — Schematic MRT Network Map plus a geographic OpenStreetMap Journey Map that overlays the recommended and original routes, the disrupted stretch, walking legs and three-level crowding
 - **GPS Nearest Station** — Detect current location and find the closest MRT stations with walking distance
 - **Journey Tracking** — Real-time progress tracking along a route with transfer and alighting reminders
 - **Multi-Preference Route Planning** — Dijkstra-based engine supporting fastest, least crowded, fewest transfers, least walking, wheelchair-accessible, and last-train-safe modes
@@ -37,7 +37,7 @@ Browser (React + Vite)
                                   └── Data Layer (SQLAlchemy + SQLite)
 ```
 
-Transit APIs are called through the backend. The Journey Map loads OSM-compatible raster tiles directly in the browser; set `VITE_OSM_TILE_URL` to a project-approved provider or self-hosted endpoint for deployed traffic.
+Transit APIs are called through the backend. The Journey Map loads its OpenStreetMap basemap directly in the browser from [OpenFreeMap](https://openfreemap.org) (free, no key, no request limit) and never uses the public `tile.openstreetmap.org` server.
 
 ---
 
@@ -87,11 +87,42 @@ The frontend dev server runs at **http://localhost:5173**.
 |----------|---------|-------------|
 | `VITE_API_BASE_URL` | `http://localhost:5000/api/v1` | Base URL for the Flask backend API |
 | `VITE_ENABLE_MOCK_FALLBACK` | `true` | Enable client-side mock data fallback when backend is unavailable |
-| `VITE_OSM_TILE_URL` | Public OpenStreetMap tile URL for low-volume local demos | OSM-compatible `{z}/{x}/{y}` raster tile template; configure a project-approved provider for deployment |
+| `VITE_MAP_STYLE_URL` | OpenFreeMap Positron | Optional MapLibre vector style URL (self-hosted or keyed OSM-based provider) |
+| `VITE_MAP_TILE_URL` | *(unset)* | Optional OSM-based `{z}/{x}/{y}` raster template; `tile.openstreetmap.org` is refused (usage policy) |
+| `VITE_MAP_ATTRIBUTION` | *(unset)* | Extra provider credit shown beside `© OpenStreetMap contributors` |
+| `VITE_MAP_BASEMAP` | *(unset)* | `none` draws routes without a street map (used by tests) |
 
-Network uses the original MRT map image with interactive station, crowd, location, and zoom controls. Journey uses checked-in MRT topology derived from canonical station IDs. Its geographic line segments join station coordinates and approximate the route; they are not surveyed railway tracks. Journey train dots and the Network crowd overlay are labelled demo data and do not represent live positions or occupancy.
+### Journey Map
 
-The current route API supplies ordered station steps but no door-to-door leg geometry. `routeAdapter.ts` resolves those station IDs and codes at the frontend boundary. To draw walking, bus, cycling, or surveyed rail paths later, the route API should supply each ordered leg's mode, GeoJSON LineString coordinates in `[longitude, latitude]` order, and geometry source/freshness metadata. The map does not infer those missing legs.
+The Map tab has a **Network Map** (the schematic MRT diagram) and a **Journey
+Map** (geographic, on OpenStreetMap). The Journey Map is
+`frontend/src/components/journey-map/JourneyMap.tsx`. It takes route
+candidates and conditions only through typed props and never calls transit
+APIs. The Network Map keeps the original MRT map image with station, crowd,
+location and zoom controls; its crowd overlay is labelled demo data. The
+Journey Map shows:
+
+- the recommended route (solid, in its line colour) and the original route
+  (grey, dashed), with a legend card comparing arrival, range, walking time
+  and minutes saved;
+- the disrupted stretch as a broken line with a `⚠ Disrupted EWL · +15 min`
+  label; only the affected station pairs are marked;
+- door-to-door walking legs (dotted, with minutes), start and end markers,
+  station outlines at street zoom, and crowding as 1–3 bars plus a word,
+  labelled with its signal (platform now or forecast);
+- a `Demo replay · not live` label for simulated data, an offline banner,
+  a stale-data banner, and a warning when the street map fails. The route
+  itself still draws in every case.
+
+Data enters through `features/journey-map/fromJourneySnapshot.ts` (the shared
+Rachel snapshot) or `fromRoutePlan.ts` (Route tab results). Until the live
+impact endpoint is connected, the Journey Map shows Rachel's labelled demo
+replay (`features/journey-map/fixtures/rachel-disrupted.geometry.json`).
+
+**Approximations:** rail lines join station coordinates and are not surveyed
+track. Walks without a routed path are straight lines and are labelled
+approximate. The route geometry fields the map needs are proposed in
+[docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md](docs/contracts/JOURNEY_MAP_GEOMETRY_PROPOSAL.md).
 
 ---
 
@@ -265,6 +296,23 @@ The MRT map image is stored locally in `frontend/public/mrt/`. The application d
 - Update `frontend/public/mrt/attribution.txt` with the appropriate licence or attribution for the map image you use
 - Ensure the image is optimised for web delivery (compressed; the current asset is a 2000×1332 PNG)
 - The SVG overlay coordinates in the Station Coordinate Dataset are calibrated to the specific map image — if you replace the map, you must recalibrate
+
+### Station Footprints
+
+`frontend/src/data/stationFootprints.json` is generated from the supplied
+`data/AmendmenttoMP2014RailStation.geojson` (URA Master Plan 2014 rail station
+footprints, 208 polygons). Regenerate it with `npm run data:footprints` in
+`frontend/`; `npm run data:footprints -- --check` fails if the checked-in file is stale.
+
+- **CRS:** the file declares none. It is confirmed as WGS84 (EPSG:4326),
+  longitude/latitude order: every vertex lies inside Singapore, and areas
+  recomputed from those coordinates match the recorded SVY21 `SHAPE_1.AREA`
+  within 0.46%. `stationFootprints.test.ts` enforces both checks.
+- **Join:** 159 footprints are matched to `stations.json` IDs by name, by a
+  reviewed alias for planning-stage names, or by position (within 200 m) for
+  unnamed footprints. Every join must lie near the station point.
+- **Limits:** the 2014 data predates 14 stations (mostly TEL stages 4–5 and
+  CCL6), which have no footprint. LRT-only stations are not joined.
 
 ---
 

@@ -5,18 +5,74 @@
 
 @import "tw-animate-css";
 
-.mrt-train-marker span {
-  display: grid;
-  width: 22px;
-  height: 22px;
-  place-items: center;
-  border: 2px solid #111827;
-  border-radius: 50%;
-  background: var(--train-color);
-  color: white;
-  font-size: 9px;
-  box-shadow: 0 0 0 3px white;
+/* Journey Map text chips (Leaflet divIcons). Text carries the meaning;
+   colour and shape only reinforce it. */
+.jm-chip-anchor {
+  background: none;
+  border: 0;
 }
+.jm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  border: 2px solid #0f172a;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 2px 8px;
+  font: 600 12px/1.25 Inter, system-ui, sans-serif;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+}
+button.jm-chip {
+  min-height: 32px;
+  cursor: pointer;
+}
+button.jm-chip:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+.jm-chip--origin::before { content: "⌂"; }
+.jm-chip--destination::before { content: "⚑"; }
+.jm-chip--origin,
+.jm-chip--destination {
+  background: #0f172a;
+  color: #ffffff;
+}
+.jm-chip--disruption {
+  border-color: #7f1d1d;
+  background: #fef2f2;
+  color: #7f1d1d;
+  font-size: 13px;
+}
+.jm-chip--disruption::before { content: "⚠"; }
+/* Disruption sits above its point and the other route's tag below, so the two never stack. */
+.jm-chip--disruption { transform: translate(-50%, calc(-100% - 8px)); }
+.jm-chip--route-tag { transform: translate(-50%, 10px); }
+.jm-far .jm-chip--leg-walk { display: none; }
+.jm-far .jm-chip--crowd .jm-chip-text { display: none; }
+.jm-chip--leg { border-width: 1px; font-weight: 500; }
+.jm-chip--route-tag { border-style: dashed; background: #f8fafc; }
+.jm-chip--crowd { transform: translate(-50%, calc(-100% - 10px)); border-width: 1px; }
+.jm-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.jm-bars i {
+  width: 4px;
+  border: 1px solid #0f172a;
+  background: transparent;
+}
+.jm-bars i:nth-child(1) { height: 5px; }
+.jm-bars i:nth-child(2) { height: 8px; }
+.jm-bars i:nth-child(3) { height: 11px; }
+.jm-bars i.is-on { background: #0f172a; }
+.jm-chip--crowd-low .jm-bars i.is-on { background: #15803d; }
+.jm-chip--crowd-moderate .jm-bars i.is-on { background: #a16207; }
+.jm-chip--crowd-high .jm-bars i.is-on { background: #b91c1c; }
 
 @custom-variant dark (&:is(.dark *));
 

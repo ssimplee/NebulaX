@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "rachel-disrupted-geometry-proposal",
+  "revision": 1,
+  "mode": "demo",
+  "evaluatedAt": "2026-09-21T07:25:00+08:00",
+  "state": "disrupted",
+  "persona": { "id": "rachel", "priorities": ["arrive-by-08:45", "avoid-unnecessary-interruptions", "receive-one-clear-action"] },
+  "journey": {
+    "routineId": "rachel-morning",
+    "origin": { "label": "Demo origin near Our Tampines Hub", "coordinates": [103.9406, 1.353059] },
+    "destination": { "label": "Demo workplace, One Raffles Place", "coordinates": [103.851062, 1.284298] },
+    "departAt": "2026-09-21T07:40:00+08:00",
+    "arriveBy": "2026-09-21T08:45:00+08:00",
+    "timeZone": "Asia/Singapore"
+  },
+  "conditions": {
+    "observedAt": "2026-09-21T07:24:00+08:00",
+    "events": [
+      {
+        "id": "demo-disrupted-event",
+        "kind": "unplanned",
+        "title": "Illustrative EWL signalling fault between Bedok and Paya Lebar",
+        "sourceId": "demo-disrupted-source",
+        "affectedSegment": { "lineCode": "EW", "fromStationId": "bedok", "toStationId": "paya-lebar" },
+        "delayMinutes": 15
+      }
+    ],
+    "crowd": [
+      { "stationId": "tampines", "level": "high", "signal": "platform-realtime", "sourceId": "demo-disrupted-source", "observedAt": "2026-09-21T07:24:00+08:00" },
+      { "stationId": "downtown", "level": "low", "signal": "platform-forecast", "sourceId": "demo-disrupted-source", "observedAt": "2026-09-21T07:24:00+08:00" }
+    ]
+  },
+  "candidates": [
+    {
+      "id": "disrupted-usual",
+      "label": "Usual EWL journey",
+      "arrivalAt": "2026-09-21T08:52:00+08:00",
+      "arrivalRange": { "earliest": "2026-09-21T08:49:00+08:00", "latest": "2026-09-21T08:55:00+08:00" },
+      "walkingMinutes": 14,
+      "transfers": 0,
+      "steps": [
+        { "mode": "walk", "instruction": "Walk from the demo origin in Tampines to Tampines MRT.", "minutes": 9 },
+        {
+          "mode": "rail", "instruction": "Take the EWL towards Raffles Place.", "minutes": 58, "lineCode": "EW",
+          "stationIds": ["tampines", "simei", "tanah-merah", "bedok", "kembangan", "eunos", "paya-lebar", "aljunied", "kallang", "lavender", "bugis", "city-hall", "raffles-place"],
+          "affectedEventIds": ["demo-disrupted-event"]
+        },
+        { "mode": "walk", "instruction": "Walk from Raffles Place MRT to the demo workplace.", "minutes": 5 }
+      ],
+      "sourceIds": ["demo-disrupted-source"]
+    },
+    {
+      "id": "disrupted-alternative",
+      "label": "DTL via Downtown — illustrative",
+      "arrivalAt": "2026-09-21T08:42:00+08:00",
+      "arrivalRange": { "earliest": "2026-09-21T08:39:00+08:00", "latest": "2026-09-21T08:45:00+08:00" },
+      "walkingMinutes": 18,
+      "transfers": 0,
+      "steps": [
+        { "mode": "walk", "instruction": "Walk from the demo origin to Tampines DTL station.", "minutes": 10 },
+        { "mode": "rail", "instruction": "Use the supplied DTL alternative towards Downtown.", "minutes": 44, "lineCode": "DT", "stationIds": ["tampines", "downtown"] },
+        { "mode": "walk", "instruction": "Walk to the demo workplace near Raffles Place.", "minutes": 8 }
+      ],
+      "sourceIds": ["demo-disrupted-source"]
+    }
+  ],
+  "sources": [
+    { "id": "demo-disrupted-source", "label": "Rachel journey replay", "type": "simulated", "observedAt": "2026-09-21T07:24:00+08:00", "staleAfterSeconds": 300 }
+  ],
+  "recommendation": {
+    "id": "recommendation-disrupted",
+    "version": 1,
+    "shouldNotify": true,
+    "action": "Use the DTL alternative; arrive around 08:42 and avoid 10 minutes of delay.",
+    "reason": "The replayed EWL disruption puts your 08:45 arrival at risk. The supplied alternative is estimated to arrive before your deadline.",
+    "originalCandidateId": "disrupted-usual",
+    "recommendedCandidateId": "disrupted-alternative",
+    "originalArrival": "2026-09-21T08:52:00+08:00",
+    "recommendedArrival": "2026-09-21T08:42:00+08:00",
+    "delayMinutesAvoided": 10,
+    "confidence": null,
+    "confidenceDescription": "Confidence has not been assessed for this illustrative replay.",
+    "sourceIds": ["demo-disrupted-source"],
+    "warnings": ["Illustrative routes and travel times; not validated for navigation."]
+  }
+}
