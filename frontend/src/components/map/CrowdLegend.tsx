@@ -22,7 +22,7 @@ export function CrowdLegend() {
       role="region"
       aria-label="Crowd density legend"
     >
-      <p className="mb-2 text-xs font-semibold text-foreground">Crowd Density</p>
+      <p className="mb-2 text-xs font-semibold text-foreground">Crowd density · Demo data</p>
       <ul className="flex flex-col gap-1.5">
         {CROWD_LEVELS.map(({ key, label }) => (
           <li key={key} className="flex items-center gap-2">

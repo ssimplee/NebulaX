@@ -12,7 +12,7 @@ Built with a **React + TypeScript + Vite** frontend and a **Python Flask** REST 
 
 ## Features
 
-- **Interactive MRT Map** — Zoomable/pannable map with SVG overlay for station selection, crowd markers, and route highlights
+- **Digital Network and Journey Maps** — Validated station-to-station SVG network, geographic OpenStreetMap view, route highlighting, and simulated train movement
 - **GPS Nearest Station** — Detect current location and find the closest MRT stations with walking distance
 - **Journey Tracking** — Real-time progress tracking along a route with transfer and alighting reminders
 - **Multi-Preference Route Planning** — Dijkstra-based engine supporting fastest, least crowded, fewest transfers, least walking, wheelchair-accessible, and last-train-safe modes
@@ -37,7 +37,7 @@ Browser (React + Vite)
                                   └── Data Layer (SQLAlchemy + SQLite)
 ```
 
-External APIs are never called directly from the frontend. The backend wraps each integration behind a provider interface with automatic mock fallback so the app is fully functional without any API keys.
+Transit APIs are called through the backend. The Journey Map loads OSM-compatible raster tiles directly in the browser; set `VITE_OSM_TILE_URL` to a project-approved provider or self-hosted endpoint for deployed traffic.
 
 ---
 
@@ -87,6 +87,11 @@ The frontend dev server runs at **http://localhost:5173**.
 |----------|---------|-------------|
 | `VITE_API_BASE_URL` | `http://localhost:5000/api/v1` | Base URL for the Flask backend API |
 | `VITE_ENABLE_MOCK_FALLBACK` | `true` | Enable client-side mock data fallback when backend is unavailable |
+| `VITE_OSM_TILE_URL` | Public OpenStreetMap tile URL for low-volume local demos | OSM-compatible `{z}/{x}/{y}` raster tile template; configure a project-approved provider for deployment |
+
+Network uses the original MRT map image with interactive station, crowd, location, and zoom controls. Journey uses checked-in MRT topology derived from canonical station IDs. Its geographic line segments join station coordinates and approximate the route; they are not surveyed railway tracks. Journey train dots and the Network crowd overlay are labelled demo data and do not represent live positions or occupancy.
+
+The current route API supplies ordered station steps but no door-to-door leg geometry. `routeAdapter.ts` resolves those station IDs and codes at the frontend boundary. To draw walking, bus, cycling, or surveyed rail paths later, the route API should supply each ordered leg's mode, GeoJSON LineString coordinates in `[longitude, latitude]` order, and geometry source/freshness metadata. The map does not infer those missing legs.
 
 ---
 
@@ -343,7 +348,10 @@ This tool is excluded from production builds.
 ## License
 
 See individual asset attribution files for third-party resources.
-#   N e b u l a X  
- #   N e b u l a X  
- #   N e b u l a X  
+#   N e b u l a X 
+ 
+ #   N e b u l a X 
+ 
+ #   N e b u l a X 
+ 
  "# NebulaX" 

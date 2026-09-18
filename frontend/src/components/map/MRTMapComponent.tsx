@@ -13,9 +13,6 @@ import { useCurrentLocation } from "@/features/geolocation/useCurrentLocation";
 import { findNearestStations } from "@/features/geolocation/geolocation.utils";
 import type { NearestStation } from "@/features/geolocation/geolocation.types";
 
-const MAP_VIEWBOX_WIDTH = 1600;
-const MAP_VIEWBOX_HEIGHT = 1000;
-
 /**
  * Vertical offset for the floating location cards. The map fills the page and
  * MapPage puts the search bar at top-4, so cards start below it.
@@ -107,22 +104,10 @@ export function MRTMapComponent() {
         <div
           className="relative w-[1600px] h-[1000px]"
         >
-          {/* Real Singapore MRT map image as background */}
-          <img
-            src="/mrt/singapore-mrt-map.png"
-            alt="Singapore MRT network map"
-            className="absolute inset-0 h-full w-full select-none object-contain"
-            draggable={false}
-          />
-          {/* SVG interaction overlay with station hit targets */}
-          <SVGOverlay
-            onStationSelect={handleStationSelect}
-            selectedStationId={selectedStation?.id ?? null}
-            crowdLayerActive={crowdLayerActive}
-            crowdData={crowdLayerActive ? demoCrowdData : undefined}
-            nearestStationId={nearest?.station.id ?? null}
-            showStationLabels={showStationLabels}
-          />
+          <img src="/mrt/singapore-mrt-map.png" alt="Singapore MRT network map" className="absolute inset-0 h-full w-full select-none object-contain" draggable={false} />
+          <SVGOverlay onStationSelect={handleStationSelect} selectedStationId={selectedStation?.id ?? null}
+            crowdLayerActive={crowdLayerActive} crowdData={crowdLayerActive ? demoCrowdData : undefined}
+            nearestStationId={nearest?.station.id ?? null} showStationLabels={showStationLabels} />
         </div>
       </TransformContainer>
 

@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { MRTMapComponent } from "@/components/map/MRTMapComponent";
+import { MapViewToolbar } from "@/components/map/MapViewToolbar";
 import { SearchBar } from "@/components/map/SearchBar";
 import { MapIntroDialog } from "@/components/map/MapIntroDialog";
 import { StationPanel } from "@/components/station/StationPanel";
 import { useFirstRunHint } from "@/hooks/useFirstRunHint";
 import { useMapStore } from "@/store/mapStore";
 import { useJourneyStore } from "@/store/journeyStore";
+import { useRouteStore } from "@/store/routeStore";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { MRT_LINES } from "@/features/mrt-map/topology";
 import { JourneyTrackingOverlay } from "@/components/map/JourneyTrackingOverlay";
 import { useJourneyTracker } from "@/features/journey-tracking/useJourneyTracker";
 import { estimateTrainHeadway } from "@/utils/trainHeadway";
@@ -18,6 +22,7 @@ import type { TimingEntry } from "@/components/station/TimingsSection";
 
 /** localStorage key remembering that the map intro dialog has been seen */
 const MAP_INTRO_KEY = "sgrail.map-intro-seen";
+const GeographicJourneyMap = lazy(() => import("@/components/map/GeographicJourneyMap").then((module) => ({ default: module.GeographicJourneyMap })));
 
 function currentServiceDayType(): TimingEntry["dayType"] {
   const weekday = new Intl.DateTimeFormat("en-SG", {
@@ -41,11 +46,23 @@ function normalise(value?: string | null): string {
  * Validates: Requirements 1, 2, 3, 9, 28.1, 29.1, 34.5, 35.2, 35.3
  */
 export function MapPage() {
+  const [view, setView] = useState<"network" | "journey">("network");
+  const [paused, setPaused] = useState(false);
+  const [visibleLines, setVisibleLines] = useState<ReadonlySet<string>>(() => new Set(MRT_LINES.map((line) => line.id)));
+  const reducedMotion = usePrefersReducedMotion();
+  const plannedRoutes = useRouteStore((state) => state.lastResult?.routes);
+  const selectedRouteIndex = useRouteStore((state) => state.selectedRouteIndex);
   const navigate = useNavigate();
   const selectedStation = useMapStore((state) => state.selectedStation);
   const selectStation = useMapStore((state) => state.selectStation);
+  const highlightedRoute = useMapStore((state) => state.highlightedRoute);
 
   const { activeRoute, routeStops, clearRoute } = useJourneyStore();
+  const toggleLine = useCallback((lineId: string) => setVisibleLines((current) => {
+    const next = new Set(current);
+    if (next.has(lineId)) next.delete(lineId); else next.add(lineId);
+    return next;
+  }), []);
   const { journeyState, startTracking, stopTracking } = useJourneyTracker(routeStops);
   const boardStep = useMemo(
     () => activeRoute?.steps.find((step) => step.type === "board") ?? null,
@@ -126,12 +143,22 @@ export function MapPage() {
       {/* Search bar overlay */}
       {/* Full width on mobile; a fixed, roomier width on desktop so the
           wrapper does not shrink to fit and squash the input. */}
-      <div className="absolute top-4 left-4 right-4 z-10 md:left-4 md:right-auto md:w-[30rem]">
+      <div className="absolute top-4 left-4 right-4 z-[700] md:left-4 md:right-auto md:w-[30rem]">
         <SearchBar onStationSelect={handleSearchSelect} />
       </div>
 
-      {/* MRT Map */}
-      <MRTMapComponent />
+      {/* Both views share the same selected station and journey stores. */}
+      {view === "network"
+        ? <MRTMapComponent />
+        : <Suspense fallback={<div role="status" className="flex h-full items-center justify-center">Loading Journey Map…</div>}>
+            <GeographicJourneyMap visibleLines={visibleLines} paused={paused} />
+          </Suspense>}
+
+      <MapViewToolbar view={view} onViewChange={setView}
+        visibleLines={visibleLines} onToggleLine={toggleLine} paused={paused} onTogglePause={() => setPaused((current) => !current)}
+        reducedMotion={reducedMotion} hasSelectedRoute={Boolean(activeRoute || plannedRoutes?.[selectedRouteIndex] || highlightedRoute?.length)}
+        hasOriginalRoute={selectedRouteIndex > 0 && Boolean(plannedRoutes?.[0])}
+        routeFreshness={(activeRoute ?? plannedRoutes?.[selectedRouteIndex])?.dataFreshness} />
 
       {/* First-run intro. Suppressed mid-journey, where a modal over the map
           would be actively unhelpful. */}

@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
 
+// Leaflet checks this browser SVG API while choosing a vector renderer.
+// jsdom omits it even though its SVG DOM is sufficient for component tests.
+if (typeof SVGSVGElement !== "undefined" && !SVGSVGElement.prototype.createSVGRect) {
+  SVGSVGElement.prototype.createSVGRect = () => ({} as SVGRect);
+}
+
 /**
  * jsdom implements neither ResizeObserver nor scrollIntoView, both of which are
  * used by libraries we render in component tests (react-zoom-pan-pinch measures
