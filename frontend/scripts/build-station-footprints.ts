@@ -26,7 +26,8 @@ for (const item of unmatched.filter((entry) => entry.type !== "LRT")) console.lo
 console.log(`Stations without a footprint (${stationsWithoutFootprint.length}): ${stationsWithoutFootprint.join(", ")}`);
 
 if (process.argv.includes("--check")) {
-  if (readFileSync(outputPath, "utf8") !== output) {
+  // Ignore line endings: Git may check the file out with CRLF on Windows.
+  if (readFileSync(outputPath, "utf8").replaceAll("\r\n", "\n") !== output) {
     console.error("src/data/stationFootprints.json is out of date; run npm run data:footprints");
     process.exit(1);
   }
