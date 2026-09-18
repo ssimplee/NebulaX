@@ -29,8 +29,8 @@ export const useJourneyFeedStore = create<JourneyFeedState>((set) => ({
   choose: (feed) => set({ choice: feed }),
 }));
 
-/** The explicit choice, else the planned journey when there is one, else live. */
+/** Rachel's live commute is always the normal default. Other feeds require an explicit choice. */
 export function effectiveFeed(choice: JourneyFeed | null, hasPlannedJourney: boolean): JourneyFeed {
   if (choice === "planned" && !hasPlannedJourney) return "live";
-  return choice ?? (hasPlannedJourney ? "planned" : "live");
+  return choice ?? "live";
 }

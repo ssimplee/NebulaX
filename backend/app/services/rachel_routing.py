@@ -16,6 +16,12 @@ ORIGIN_STATION_ID = "tampines"
 DESTINATION_STATION_ID = "raffles-place"
 ARRIVAL_HOUR = 8
 ARRIVAL_MINUTE = 45
+# The route graph currently under-counts Rachel's familiar EWL journey because
+# it models the rail path but not the full observed door-to-door baseline.  The
+# PS2 persona fixes that routine at 07:40 -> 08:35 (55 minutes).  Disruption
+# impact must be added to this baseline, otherwise a "15-minute delay" merely
+# produces the normal 08:35 arrival and can recommend a slower alternative.
+RACHEL_USUAL_TOTAL_MINUTES = 55
 _STATIONS_PATH = Path(__file__).resolve().parents[1] / "data" / "stations.json"
 
 
@@ -69,10 +75,18 @@ def _walking_route(provider, origin: tuple, dest: tuple) -> dict:
     return provider.get_walking_route(origin, dest)
 
 
-def _candidate(path, access: dict, egress: dict, departure: datetime, delay: int = 0) -> dict:
+def _candidate(
+    path,
+    access: dict,
+    egress: dict,
+    departure: datetime,
+    delay: int = 0,
+    minimum_base_minutes: int = 0,
+) -> dict:
     steps = format_route_steps(path)
     rail = compute_route_summary(path, steps)
-    total = access["durationMinutes"] + rail["totalMinutes"] + egress["durationMinutes"] + delay
+    calculated_base = access["durationMinutes"] + rail["totalMinutes"] + egress["durationMinutes"]
+    total = max(calculated_base, minimum_base_minutes) + delay
     arrival = departure + timedelta(minutes=total)
     uncertainty = max(3, round(total * 0.1))
     return {
@@ -90,9 +104,11 @@ def _candidate(path, access: dict, egress: dict, departure: datetime, delay: int
         "delayMinutes": delay,
         "steps": steps,
         "geometry": {
+            "accessWalkMinutes": access["durationMinutes"],
             "accessWalkEncoded": access.get("geometry", ""),
             "accessWalkGeoJson": access.get("geometryGeoJson"),
             "rail": _geometry_for_path(path),
+            "egressWalkMinutes": egress["durationMinutes"],
             "egressWalkEncoded": egress.get("geometry", ""),
             "egressWalkGeoJson": egress.get("geometryGeoJson"),
         },
@@ -189,7 +205,14 @@ def plan_rachel_journey(provider, scenario: dict | None = None, departure: datet
     original_path = find_routes(
         ROUTE_GRAPH, ORIGIN_STATION_ID, DESTINATION_STATION_ID, "FASTEST", max_routes=1
     )[0][0]
-    original = _candidate(original_path, access, egress, departure, delay)
+    original = _candidate(
+        original_path,
+        access,
+        egress,
+        departure,
+        delay,
+        minimum_base_minutes=RACHEL_USUAL_TOTAL_MINUTES,
+    )
     alternative_paths = find_routes(
         ROUTE_GRAPH,
         ORIGIN_STATION_ID,
@@ -213,7 +236,9 @@ def plan_rachel_journey(provider, scenario: dict | None = None, departure: datet
 
     alternatives.extend(_bus_candidates(provider, home, work, departure))
 
-    candidates = alternatives if affected_lines and alternatives else [original, *alternatives]
+    # Always rank the original alongside alternatives.  This prevents the app
+    # from recommending a reroute that is worse than simply staying put.
+    candidates = [original, *alternatives]
     def rank_key(item):
         latest = datetime.fromisoformat(item["arrivalRange"]["latest"])
         late_minutes = max(0, (latest - arrival_goal).total_seconds() / 60)
@@ -227,12 +252,35 @@ def plan_rachel_journey(provider, scenario: dict | None = None, departure: datet
 
     candidates.sort(key=rank_key)
     recommended = candidates[0]
-    should_notify = delay >= 15 or datetime.fromisoformat(original["arrivalRange"]["latest"]) > arrival_goal
+    original_arrival = datetime.fromisoformat(original["estimatedArrival"])
+    should_notify = original_arrival > arrival_goal
+    if not should_notify:
+        # Rachel checks no app on an ordinary day.  A route that ranks slightly
+        # better is not a recommendation unless her usual journey is at risk.
+        recommended = original
+    recommended_arrival = datetime.fromisoformat(recommended["estimatedArrival"])
+    minutes_avoided = max(
+        0,
+        round((original_arrival - recommended_arrival).total_seconds() / 60),
+    )
     action = (
-        f"Use {recommended['id']} now; estimated arrival {datetime.fromisoformat(recommended['estimatedArrival']).astimezone(SGT).strftime('%H:%M')}."
+        f"Use {recommended['id']} now; estimated arrival {recommended_arrival.astimezone(SGT).strftime('%H:%M')}."
+        if should_notify and recommended["id"] != original["id"]
+        else "Stay on your usual route; no alternative improves the projected arrival."
         if should_notify
         else "Stay on your usual route; the current impact is within Rachel's tolerance."
     )
+
+    if should_notify:
+        reason = (
+            f"The disruption moves Rachel's projected arrival to "
+            f"{original_arrival.astimezone(SGT).strftime('%H:%M')}, after her 08:45 deadline."
+        )
+    else:
+        reason = (
+            f"The estimated {delay}-minute impact keeps Rachel's projected arrival at "
+            f"{original_arrival.astimezone(SGT).strftime('%H:%M')}, within her 08:45 deadline."
+        )
 
     return {
         "personaId": "rachel",
@@ -250,10 +298,10 @@ def plan_rachel_journey(provider, scenario: dict | None = None, departure: datet
         "decision": {
             "shouldNotify": should_notify,
             "action": action,
-            "reason": f"Estimated disruption impact is {delay} minutes; Rachel protects her 08:45 arrival.",
+            "reason": reason,
             "originalArrival": original["estimatedArrival"],
             "recommendedArrival": recommended["estimatedArrival"],
-            "delayMinutesAvoided": original["totalMinutes"] - recommended["totalMinutes"],
+            "delayMinutesAvoided": minutes_avoided,
             "tradeOffs": {
                 "extraMinutes": recommended["totalMinutes"] - original["totalMinutes"],
                 "extraTransfers": recommended["transfers"] - original["transfers"],

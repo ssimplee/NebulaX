@@ -26,16 +26,16 @@
     },
     "original": {
       "id": "EW",
-      "totalMinutes": 40,
+      "totalMinutes": 55,
       "railMinutes": 26,
       "walkingMinutes": 14,
       "transfers": 0,
-      "estimatedArrival": "2026-09-21T08:20:00+08:00",
+      "estimatedArrival": "2026-09-21T08:35:00+08:00",
       "arrivalRange": {
-        "earliest": "2026-09-21T08:16:00+08:00",
-        "latest": "2026-09-21T08:24:00+08:00"
+        "earliest": "2026-09-21T08:29:00+08:00",
+        "latest": "2026-09-21T08:41:00+08:00"
       },
-      "uncertaintyMinutes": 4,
+      "uncertaintyMinutes": 6,
       "delayMinutes": 0,
       "steps": [
         {
@@ -68,6 +68,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -103,6 +104,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -221,6 +223,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -292,6 +295,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -410,6 +414,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -485,6 +490,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -604,6 +610,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -683,6 +690,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -699,15 +707,15 @@
       }
     ],
     "recommended": {
-      "id": "DT-CC-NS",
-      "totalMinutes": 57,
-      "railMinutes": 43,
+      "id": "EW",
+      "totalMinutes": 55,
+      "railMinutes": 26,
       "walkingMinutes": 14,
-      "transfers": 2,
-      "estimatedArrival": "2026-09-21T08:37:00+08:00",
+      "transfers": 0,
+      "estimatedArrival": "2026-09-21T08:35:00+08:00",
       "arrivalRange": {
-        "earliest": "2026-09-21T08:31:00+08:00",
-        "latest": "2026-09-21T08:43:00+08:00"
+        "earliest": "2026-09-21T08:29:00+08:00",
+        "latest": "2026-09-21T08:41:00+08:00"
       },
       "uncertaintyMinutes": 6,
       "delayMinutes": 0,
@@ -716,82 +724,23 @@
           "type": "board",
           "station": "Tampines",
           "stationId": "tampines",
-          "line": "DT",
-          "lineColour": "#005EC4",
-          "direction": "Bukit Panjang",
-          "instruction": "Board DT Line towards Bukit Panjang"
+          "line": "EW",
+          "lineColour": "#009645",
+          "direction": "Tuas Link",
+          "instruction": "Board EW Line towards Tuas Link"
         },
         {
           "type": "ride",
           "stations": [
-            "DT31",
-            "DT30",
-            "DT29",
-            "DT28",
-            "DT27",
-            "DT26"
+            "EW4",
+            "EW5",
+            "EW8",
+            "EW12",
+            "EW13",
+            "EW14"
           ],
           "stops": 6,
-          "minutes": 16
-        },
-        {
-          "type": "transfer",
-          "station": "MacPherson",
-          "stationId": "macpherson",
-          "fromLine": "DT",
-          "toLine": "CC",
-          "walkMinutes": 3,
-          "instruction": "Transfer to CC Line (#FA9E0D)"
-        },
-        {
-          "type": "board",
-          "station": "MacPherson",
-          "stationId": "macpherson",
-          "line": "CC",
-          "lineColour": "#FA9E0D",
-          "direction": "Clockwise Loop",
-          "instruction": "Board CC Line towards Clockwise Loop"
-        },
-        {
-          "type": "ride",
-          "stations": [
-            "CC9",
-            "CC8",
-            "CC7",
-            "CC6",
-            "CC5",
-            "CC4",
-            "CC34",
-            "CC33"
-          ],
-          "stops": 8,
-          "minutes": 18
-        },
-        {
-          "type": "transfer",
-          "station": "Marina Bay",
-          "stationId": "marina-bay",
-          "fromLine": "CC",
-          "toLine": "NS",
-          "walkMinutes": 4,
-          "instruction": "Transfer to NS Line (#D42E12)"
-        },
-        {
-          "type": "board",
-          "station": "Marina Bay",
-          "stationId": "marina-bay",
-          "line": "NS",
-          "lineColour": "#D42E12",
-          "direction": "Jurong East",
-          "instruction": "Board NS Line towards Jurong East"
-        },
-        {
-          "type": "ride",
-          "stations": [
-            "NS26"
-          ],
-          "stops": 1,
-          "minutes": 2
+          "minutes": 26
         },
         {
           "type": "alight",
@@ -801,6 +750,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -811,60 +761,24 @@
               1.3545
             ],
             [
-              103.9384,
-              1.3455
+              103.9464,
+              1.3272
             ],
             [
-              103.9323,
-              1.3366
-            ],
-            [
-              103.9179,
-              1.3348
-            ],
-            [
-              103.9085,
-              1.335
-            ],
-            [
-              103.8992,
-              1.33
-            ],
-            [
-              103.89,
-              1.3265
+              103.93,
+              1.324
             ],
             [
               103.8932,
               1.3174
             ],
             [
-              103.8886,
-              1.3085
+              103.8558,
+              1.3009
             ],
             [
-              103.8824,
-              1.3064
-            ],
-            [
-              103.8753,
-              1.3029
-            ],
-            [
-              103.8637,
-              1.2997
-            ],
-            [
-              103.861,
-              1.293
-            ],
-            [
-              103.859,
-              1.2815
-            ],
-            [
-              103.8546,
-              1.2764
+              103.852,
+              1.2931
             ],
             [
               103.8513,
@@ -872,6 +786,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -889,13 +804,13 @@
     "decision": {
       "shouldNotify": false,
       "action": "Stay on your usual route; the current impact is within Rachel's tolerance.",
-      "reason": "Estimated disruption impact is 0 minutes; Rachel protects her 08:45 arrival.",
-      "originalArrival": "2026-09-21T08:20:00+08:00",
-      "recommendedArrival": "2026-09-21T08:37:00+08:00",
-      "delayMinutesAvoided": -17,
+      "reason": "The estimated 0-minute impact keeps Rachel's projected arrival at 08:35, within her 08:45 deadline.",
+      "originalArrival": "2026-09-21T08:35:00+08:00",
+      "recommendedArrival": "2026-09-21T08:35:00+08:00",
+      "delayMinutesAvoided": 0,
       "tradeOffs": {
-        "extraMinutes": 17,
-        "extraTransfers": 2
+        "extraMinutes": 0,
+        "extraTransfers": 0
       },
       "provenanceIds": [
         "internal:mrt-graph",

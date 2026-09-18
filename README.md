@@ -62,6 +62,34 @@ git clone <repository-url>
 cd SGRail
 ```
 
+### Windows PowerShell quick start
+
+Open two PowerShell terminals from the repository root.
+
+Backend terminal:
+
+```powershell
+cd backend
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item .env.example .env -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe seed.py
+.\.venv\Scripts\python.exe run.py
+```
+
+Frontend terminal:
+
+```powershell
+cd frontend
+npm install
+Copy-Item .env.example .env -ErrorAction SilentlyContinue
+npm run dev
+```
+
+Open `http://localhost:5173`. The rule-based assistant works without a paid AI
+key. Live Rachel routing needs OneMap credentials. Live operational conditions
+need an LTA DataMall AccountKey. The labelled recorded demo needs neither key.
+
 ---
 
 ## Frontend Setup
@@ -128,8 +156,8 @@ GeoJSON first, then OneMap's encoded polyline.
 
 | Mode | Plan | Conditions | Label shown |
 |---|---|---|---|
-| Your planned route (default when one exists) | Route tab or tracked journey | Route alerts | Estimated times |
-| **Live** (default otherwise) | `POST /routes/rachel/plan` | `GET /operational-conditions` | `Live conditions · updated HH:MM` |
+| **Live** (default) | `POST /routes/rachel/plan` | `GET /operational-conditions` | `Live conditions · updated HH:MM` |
+| Your planned route (explicit selection only) | A previously planned or tracked journey | Route alerts | Estimated times |
 | Demo: 5-minute delay / 15-minute disruption / planned change | `POST /routes/rachel/recalculate` with the scenario | `GET /demo/rachel/<scenario>` | `Demo scenario · simulated` |
 | Demo: recorded replay (offline) | Recorded fixture | Recorded scenario | `Demo replay · simulated disruption` |
 
@@ -143,6 +171,9 @@ credentials (mock geocoding).
 The card leads with the backend's decision (the action, or "stay on your usual
 route"), then the recommended and usual routes with arrival range and minutes
 gained or lost. It also labels live, estimated, stale and simulated inputs.
+Every rail candidate begins with the walk from 858C Tampines Walk to Tampines
+MRT and ends with the walk from Raffles Place MRT to 1 George Street. Both
+steps show their estimated duration.
 
 The recorded replay is the backend's plan for the team's fifteen-minute EWL
 scenario, stored in `fixtures/rachel-plan.fifteen-minute-disruption.json`

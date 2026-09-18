@@ -63,7 +63,11 @@ describe("fromRachelPlan with the recorded fifteen-minute scenario", () => {
     for (const candidate of model.candidates) {
       const [first, last] = [candidate.legs[0], candidate.legs[candidate.legs.length - 1]];
       expect(first).toMatchObject({ mode: "walk", geometrySource: "straight-line" });
+      expect(first.instruction).toBe("Walk from 858C Tampines Walk to Tampines MRT.");
+      expect(first.minutes).toBeGreaterThan(0);
       expect(first.path![0]).toEqual(model.origin.coordinates);
+      expect(last.instruction).toBe("Walk from Raffles Place MRT to 1 George Street.");
+      expect(last.minutes).toBeGreaterThan(0);
       expect(last.path![last.path!.length - 1]).toEqual(model.destination.coordinates);
     }
   });

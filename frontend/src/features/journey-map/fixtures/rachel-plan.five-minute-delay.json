@@ -26,16 +26,16 @@
     },
     "original": {
       "id": "EW",
-      "totalMinutes": 45,
+      "totalMinutes": 60,
       "railMinutes": 26,
       "walkingMinutes": 14,
       "transfers": 0,
-      "estimatedArrival": "2026-09-21T08:25:00+08:00",
+      "estimatedArrival": "2026-09-21T08:40:00+08:00",
       "arrivalRange": {
-        "earliest": "2026-09-21T08:21:00+08:00",
-        "latest": "2026-09-21T08:29:00+08:00"
+        "earliest": "2026-09-21T08:34:00+08:00",
+        "latest": "2026-09-21T08:46:00+08:00"
       },
-      "uncertaintyMinutes": 4,
+      "uncertaintyMinutes": 6,
       "delayMinutes": 5,
       "steps": [
         {
@@ -68,6 +68,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -103,6 +104,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -193,6 +195,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -252,6 +255,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -369,6 +373,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -440,6 +445,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -457,16 +463,16 @@
     ],
     "recommended": {
       "id": "EW",
-      "totalMinutes": 45,
+      "totalMinutes": 60,
       "railMinutes": 26,
       "walkingMinutes": 14,
       "transfers": 0,
-      "estimatedArrival": "2026-09-21T08:25:00+08:00",
+      "estimatedArrival": "2026-09-21T08:40:00+08:00",
       "arrivalRange": {
-        "earliest": "2026-09-21T08:21:00+08:00",
-        "latest": "2026-09-21T08:29:00+08:00"
+        "earliest": "2026-09-21T08:34:00+08:00",
+        "latest": "2026-09-21T08:46:00+08:00"
       },
-      "uncertaintyMinutes": 4,
+      "uncertaintyMinutes": 6,
       "delayMinutes": 5,
       "steps": [
         {
@@ -499,6 +505,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -534,6 +541,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -551,9 +559,9 @@
     "decision": {
       "shouldNotify": false,
       "action": "Stay on your usual route; the current impact is within Rachel's tolerance.",
-      "reason": "Estimated disruption impact is 5 minutes; Rachel protects her 08:45 arrival.",
-      "originalArrival": "2026-09-21T08:25:00+08:00",
-      "recommendedArrival": "2026-09-21T08:25:00+08:00",
+      "reason": "The estimated 5-minute impact keeps Rachel's projected arrival at 08:40, within her 08:45 deadline.",
+      "originalArrival": "2026-09-21T08:40:00+08:00",
+      "recommendedArrival": "2026-09-21T08:40:00+08:00",
       "delayMinutesAvoided": 0,
       "tradeOffs": {
         "extraMinutes": 0,

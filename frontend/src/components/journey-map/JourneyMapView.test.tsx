@@ -60,7 +60,7 @@ describe("JourneyMapView data modes", () => {
     expect(screen.getByText("Times are estimates")).toBeInTheDocument();
     expect(screen.getByText(/Stay on your usual route/)).toBeInTheDocument();
     expect(screen.queryByText(/simulated/i)).not.toBeInTheDocument();
-    expect(routes()).toHaveTextContent("Recommended · arrive 08:20");
+    expect(routes()).toHaveTextContent("Recommended · arrive 08:35");
   });
 
   it("keeps a five-minute delay quiet", async () => {
@@ -80,7 +80,8 @@ describe("JourneyMapView data modes", () => {
     chooseFeed("fifteen-minute-disruption");
     expect(await screen.findByText(/Use DT-CC-NS now/)).toBeInTheDocument();
     expect(routes()).toHaveTextContent("Recommended · arrive 08:37");
-    expect(routes()).toHaveTextContent("Usual · arrive 08:35");
+    expect(routes()).toHaveTextContent("Usual · arrive 08:50");
+    expect(routes()).toHaveTextContent("13 min earlier than usual");
     expect(routes()).toHaveTextContent("Passes the disrupted EWL stretch");
     expect(screen.getByText("Demo scenario · simulated")).toBeInTheDocument();
   });
@@ -107,7 +108,7 @@ describe("JourneyMapView data modes", () => {
     api.getOperationalConditions.mockRejectedValue(new Error("Network Error"));
     renderView();
     expect(await screen.findByText("Live conditions unavailable", {}, { timeout: 5000 })).toBeInTheDocument();
-    expect(routes()).toHaveTextContent("Recommended · arrive 08:20");
+    expect(routes()).toHaveTextContent("Recommended · arrive 08:35");
   });
 
   it("flags simulated inputs inside a live response", async () => {
@@ -117,14 +118,13 @@ describe("JourneyMapView data modes", () => {
     expect(screen.getByText("Stale: weather")).toBeInTheDocument();
   });
 
-  it("prefers the commuter's planned journey when there is one, and can switch to Rachel", async () => {
+  it("keeps Rachel live as the default even when an old planned journey exists", async () => {
     act(() => useMapStore.getState().setHighlightedRoute(["tampines", "simei", "tanah-merah"]));
     renderView();
     const select = screen.getByRole("combobox", { name: "Journey data" });
-    expect(select).toHaveValue("planned");
-    expect(routes()).toHaveTextContent("Highlighted route");
-    expect(api.getRachelPlan).not.toHaveBeenCalled();
-    chooseFeed("live");
+    expect(select).toHaveValue("live");
     await waitFor(() => expect(api.getRachelPlan).toHaveBeenCalled());
+    chooseFeed("planned");
+    expect(routes()).toHaveTextContent("Highlighted route");
   });
 });

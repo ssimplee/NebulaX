@@ -36,6 +36,9 @@ def test_rachel_plan_is_door_to_door_and_map_ready():
     assert result["journey"]["home"]["postalCode"] == "523858"
     assert result["journey"]["work"]["postalCode"] == "049145"
     assert result["original"]["geometry"]["rail"]["type"] == "LineString"
+    assert result["original"]["geometry"]["accessWalkMinutes"] == 8
+    assert result["original"]["geometry"]["egressWalkMinutes"] == 8
+    assert result["original"]["walkingMinutes"] == 16
     assert result["alternatives"]
 
 
@@ -45,6 +48,8 @@ def test_five_minutes_stays_quiet():
     result = plan_rachel_journey(LocationProvider(), scenario)
 
     assert result["decision"]["shouldNotify"] is False
+    assert result["decision"]["originalArrival"].endswith("08:40:00+08:00")
+    assert result["recommended"]["id"] == "EW"
 
 
 def test_fifteen_minutes_notifies_and_avoids_affected_ewl():
@@ -55,6 +60,10 @@ def test_fifteen_minutes_notifies_and_avoids_affected_ewl():
     assert result["decision"]["shouldNotify"] is True
     assert result["recommended"]["id"] != "EW"
     assert "EW" not in result["recommended"]["id"].split("-")
+    assert result["decision"]["originalArrival"].endswith("08:50:00+08:00")
+    assert result["decision"]["recommendedArrival"] < result["decision"]["originalArrival"]
+    assert result["decision"]["delayMinutesAvoided"] > 0
+    assert result["decision"]["tradeOffs"]["extraMinutes"] < 0
 
 
 def test_rachel_endpoint_uses_shared_contract(client, monkeypatch):

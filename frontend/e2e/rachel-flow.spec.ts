@@ -6,6 +6,17 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
+test("Journey Map shows the labelled door-to-door replay on mobile and desktop", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Journey Map" }).click();
+  await page.getByRole("combobox", { name: "Journey data" }).selectOption("recorded");
+
+  await expect(page.getByText("Demo replay · simulated disruption")).toBeVisible();
+  await expect(page.getByRole("link", { name: "© OpenStreetMap contributors" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Routes on the map" })).toContainText("13 min earlier than usual");
+  await expect(page.getByText("14 min walking").first()).toBeVisible();
+});
+
 test("normal day stays quiet, disruption recommends an action, and reset clears it", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Rachel’s journey" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Your usual journey is on schedule." })).toBeVisible();

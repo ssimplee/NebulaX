@@ -1,10 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Map, Navigation, Users, MessageSquare, User, CalendarClock, type LucideIcon } from "lucide-react";
+import { Map, Users, MessageSquare, User, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 /**
  * Mobile bottom navigation bar (< 768px viewport).
- * Displays 6 nav items with icons and labels: Journey, Map, Route, Community, AI, Profile.
+ * Displays the production navigation items with icons and labels.
+ * The legacy MRT route planner and Rachel test page remain routable for
+ * development, but are intentionally not exposed in the main navigation.
  * Uses react-router-dom NavLink for navigation with active route highlighting.
  *
  * Validates: Requirements 28.1, 28.6
@@ -17,9 +19,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: "/journey", labelKey: "nav.journey", icon: CalendarClock },
   { to: "/", labelKey: "nav.map", icon: Map },
-  { to: "/route", labelKey: "nav.route", icon: Navigation },
   { to: "/community", labelKey: "nav.community", icon: Users },
   { to: "/assistant", labelKey: "nav.ai", icon: MessageSquare },
   { to: "/profile", labelKey: "nav.profile", icon: User },

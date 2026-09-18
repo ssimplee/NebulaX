@@ -16,8 +16,10 @@ interface GeoJsonLine {
 }
 
 interface RachelRailGeometry {
+  accessWalkMinutes?: number;
   accessWalkEncoded?: string;
   accessWalkGeoJson?: GeoJsonLine | null;
+  egressWalkMinutes?: number;
   egressWalkEncoded?: string;
   egressWalkGeoJson?: GeoJsonLine | null;
 }
@@ -102,21 +104,22 @@ const sameCandidate = (a: RachelPlanCandidate, b: RachelPlanCandidate) =>
 const withOffset = (value: string | undefined) => (value && /([+-]\d{2}:\d{2}|Z)$/.test(value) ? value : undefined);
 
 /** Prefer an OSM-routed GeoJSON walk, then OneMap's encoded path, else leave it to the straight-line fallback. */
-function walkStep(instruction: string, geoJson: GeoJsonLine | null | undefined, encoded: string | undefined): SnapshotStep {
+function walkStep(instruction: string, minutes: number | undefined, geoJson: GeoJsonLine | null | undefined, encoded: string | undefined): SnapshotStep {
+  const duration = minutes != null ? { minutes } : {};
   if (geoJson?.type === "LineString" && geoJson.coordinates.length >= 2) {
-    return { mode: "walk", instruction, path: geoJson.coordinates, pathSource: "osm-routed" };
+    return { mode: "walk", instruction, ...duration, path: geoJson.coordinates, pathSource: "osm-routed" };
   }
   const decoded = encoded ? decodePolyline(encoded) : null;
-  if (decoded && decoded.length >= 2) return { mode: "walk", instruction, path: decoded, pathSource: "onemap-routed" };
-  return { mode: "walk", instruction };
+  if (decoded && decoded.length >= 2) return { mode: "walk", instruction, ...duration, path: decoded, pathSource: "onemap-routed" };
+  return { mode: "walk", instruction, ...duration };
 }
 
 function railCandidateSteps(candidate: RachelPlanCandidate, alertIdsByLine: ReadonlyMap<string, string[]>): SnapshotStep[] {
   const geometry = candidate.geometry as RachelRailGeometry;
   return [
-    walkStep("Walk from home to the station.", geometry.accessWalkGeoJson, geometry.accessWalkEncoded),
+    walkStep("Walk from 858C Tampines Walk to Tampines MRT.", geometry.accessWalkMinutes, geometry.accessWalkGeoJson, geometry.accessWalkEncoded),
     ...plannerSteps(candidate.steps as PlannedRoute["steps"], alertIdsByLine),
-    walkStep("Walk from the station to work.", geometry.egressWalkGeoJson, geometry.egressWalkEncoded),
+    walkStep("Walk from Raffles Place MRT to 1 George Street.", geometry.egressWalkMinutes, geometry.egressWalkGeoJson, geometry.egressWalkEncoded),
   ];
 }
 

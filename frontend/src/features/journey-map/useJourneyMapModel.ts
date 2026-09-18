@@ -99,8 +99,8 @@ function useRachelJourney(feed: JourneyFeed): RachelResult {
 
 /**
  * What the Journey Map shows. The commuter picks a feed; by default that is the
- * journey tracked or planned on the Route tab when there is one, otherwise
- * Rachel's live commute. A failed live request is reported, never silently
+ * Rachel's live commute. A planned route is shown only when explicitly chosen.
+ * A failed live request is reported, never silently
  * replaced by simulated data.
  */
 export function useJourneyMapModel(): JourneyMapSelection {

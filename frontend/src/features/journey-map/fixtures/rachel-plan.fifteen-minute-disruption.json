@@ -26,16 +26,16 @@
     },
     "original": {
       "id": "EW",
-      "totalMinutes": 55,
+      "totalMinutes": 70,
       "railMinutes": 26,
       "walkingMinutes": 14,
       "transfers": 0,
-      "estimatedArrival": "2026-09-21T08:35:00+08:00",
+      "estimatedArrival": "2026-09-21T08:50:00+08:00",
       "arrivalRange": {
-        "earliest": "2026-09-21T08:29:00+08:00",
-        "latest": "2026-09-21T08:41:00+08:00"
+        "earliest": "2026-09-21T08:43:00+08:00",
+        "latest": "2026-09-21T08:57:00+08:00"
       },
-      "uncertaintyMinutes": 6,
+      "uncertaintyMinutes": 7,
       "delayMinutes": 15,
       "steps": [
         {
@@ -68,6 +68,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -103,6 +104,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -221,6 +223,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -292,6 +295,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -410,6 +414,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -485,6 +490,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -604,6 +610,7 @@
           }
         ],
         "geometry": {
+          "accessWalkMinutes": 8,
           "accessWalkEncoded": "",
           "accessWalkGeoJson": null,
           "rail": {
@@ -683,6 +690,7 @@
               ]
             ]
           },
+          "egressWalkMinutes": 6,
           "egressWalkEncoded": "",
           "egressWalkGeoJson": null
         },
@@ -801,6 +809,7 @@
         }
       ],
       "geometry": {
+        "accessWalkMinutes": 8,
         "accessWalkEncoded": "",
         "accessWalkGeoJson": null,
         "rail": {
@@ -872,6 +881,7 @@
             ]
           ]
         },
+        "egressWalkMinutes": 6,
         "egressWalkEncoded": "",
         "egressWalkGeoJson": null
       },
@@ -889,12 +899,12 @@
     "decision": {
       "shouldNotify": true,
       "action": "Use DT-CC-NS now; estimated arrival 08:37.",
-      "reason": "Estimated disruption impact is 15 minutes; Rachel protects her 08:45 arrival.",
-      "originalArrival": "2026-09-21T08:35:00+08:00",
+      "reason": "The disruption moves Rachel's projected arrival to 08:50, after her 08:45 deadline.",
+      "originalArrival": "2026-09-21T08:50:00+08:00",
       "recommendedArrival": "2026-09-21T08:37:00+08:00",
-      "delayMinutesAvoided": -2,
+      "delayMinutesAvoided": 13,
       "tradeOffs": {
-        "extraMinutes": 2,
+        "extraMinutes": -13,
         "extraTransfers": 2
       },
       "provenanceIds": [

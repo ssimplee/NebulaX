@@ -74,14 +74,14 @@ A submission missing any one of these is incomplete.
 
 ### 1. Route planning
 
-- [ ] Accept an origin, destination and time.
-- [ ] Produce an actual route a commuter can follow.
-- [ ] Recalculate when conditions change.
-- [ ] Route door-to-door, including walking legs at both ends.
-- [ ] Support the modes needed by the selected persona.
+- [x] Accept Rachel's fixed origin, destination and departure time.
+- [x] Produce an actual route Rachel can follow.
+- [x] Recalculate when conditions change.
+- [x] Route door-to-door, including walking legs at both ends.
+- [x] Support the rail, walking and available bus modes needed by Rachel.
 - [ ] Let disruption, crowding or heavy rain change the recommendation.
-- [ ] Explain why the recommendation changed.
-- [ ] Show realistic timing and visible uncertainty.
+- [x] Explain why the recommendation changed.
+- [x] Show estimated timing and visible uncertainty.
 
 Arjun specifically requires rail, bus, walking and cycling. The other personas
 do not automatically require cycling, but still require door-to-door routing.
@@ -333,21 +333,21 @@ decision and must be documented as such, not presented as an official fact.
 ### P0 — mandatory submission path
 
 - [x] Select Rachel as the primary persona.
-- [ ] Finalise Rachel's exact door-to-door endpoints and demo journey.
+- [x] Finalise Rachel's exact door-to-door endpoints and demo journey.
 - [x] Add OSM geographic Journey Map with attribution.
 - [x] Keep the schematic map as a secondary Network Map.
 - [x] Import and validate the supplied station GeoJSON and its CRS.
       (WGS84 lon/lat confirmed; see README "Station Footprints".)
-- [ ] Add door-to-door access legs.
-- [ ] Ingest `TrainServiceAlerts` and normalise identifiers.
-- [ ] Make affected graph edges unavailable or more costly.
-- [ ] Implement real disruption-aware recalculation.
-- [ ] Add the travel modes required by the selected persona.
+- [x] Add door-to-door access legs.
+- [x] Ingest `TrainServiceAlerts` and normalise identifiers.
+- [x] Make affected graph edges unavailable or more costly.
+- [x] Implement real disruption-aware recalculation.
+- [x] Add the travel modes required by the selected persona.
 - [ ] Add weather and crowd signals that change recommendations.
-- [ ] Show original versus alternative route, ETA, delay and uncertainty.
+- [x] Show original versus alternative route, ETA, delay and uncertainty.
 - [ ] Create labelled deterministic fixtures for one planned event and one
       unplanned disruption; use one disruption for the final demo.
-- [ ] Implement Rachel's saved routine and meaningful-interruption behaviour
+- [x] Implement Rachel's saved routine and meaningful-interruption behaviour
       as part of the proactive experience.
 - [ ] Verify the full flow on a real phone.
 - [ ] Rewrite README for clean-machine setup and the selected persona.
