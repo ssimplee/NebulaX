@@ -60,7 +60,7 @@ def seed_stations(stations_data: list) -> dict:
         station_map[s["id"]] = station
 
     db.session.flush()
-    print(f"  ✓ Inserted {len(stations_data)} stations")
+    print(f"  OK: Inserted {len(stations_data)} stations")
     return station_map
 
 
@@ -129,7 +129,7 @@ def seed_station_lines(stations_data: list) -> dict:
             count += 1
 
     db.session.flush()
-    print(f"  ✓ Inserted {count} station-line entries")
+    print(f"  OK: Inserted {count} station-line entries")
     return station_line_map
 
 
@@ -143,7 +143,7 @@ def seed_timings(timings_data: list, station_line_map: dict):
         station_line = station_line_map.get(key)
 
         if station_line is None:
-            print(f"  ⚠ Warning: No StationLine found for {key}, skipping")
+            print(f"  WARNING: No StationLine found for {key}, skipping")
             continue
 
         timing = TrainTiming(
@@ -159,7 +159,7 @@ def seed_timings(timings_data: list, station_line_map: dict):
         count += 1
 
     db.session.flush()
-    print(f"  ✓ Inserted {count} train timing entries")
+    print(f"  OK: Inserted {count} train timing entries")
 
 
 def main():
@@ -176,15 +176,15 @@ def main():
         StationLine.query.delete()
         Station.query.delete()
         db.session.commit()
-        print("  ✓ Cleared existing data")
+        print("  OK: Cleared existing data")
 
         print("\n2. Loading JSON data files...")
         stations_data = load_json("stations.json")
         timings_data = load_json("timings.json")
         graph_data = load_json("graph.json")
-        print(f"  ✓ Loaded {len(stations_data)} stations")
-        print(f"  ✓ Loaded {len(timings_data)} timing entries")
-        print(f"  ✓ Loaded {len(graph_data['edges'])} graph edges")
+        print(f"  OK: Loaded {len(stations_data)} stations")
+        print(f"  OK: Loaded {len(timings_data)} timing entries")
+        print(f"  OK: Loaded {len(graph_data['edges'])} graph edges")
 
         print("\n3. Seeding stations...")
         seed_stations(stations_data)
@@ -197,7 +197,7 @@ def main():
 
         print("\n6. Committing to database...")
         db.session.commit()
-        print("  ✓ All data committed successfully")
+        print("  OK: All data committed successfully")
 
         # Verify counts
         print("\n" + "=" * 60)
@@ -206,7 +206,7 @@ def main():
         print(f"  StationLines:  {StationLine.query.count()}")
         print(f"  TrainTimings:  {TrainTiming.query.count()}")
         print("=" * 60)
-        print("\n✅ Seed complete!")
+        print("\nSeed complete!")
 
 
 if __name__ == "__main__":

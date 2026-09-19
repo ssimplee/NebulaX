@@ -6,9 +6,19 @@ disruptions. It focuses on **Rachel**, who travels from 858C Tampines Walk to
 The app keeps a minor delay quiet and recommends an alternative when her usual
 journey risks missing that deadline.
 
-The main judging flow uses a **clearly labelled simulated EWL disruption** so
-it can be repeated even when there is no real service alert. It does not
-present replayed data as live.
+The main judging flow uses a **clearly labelled, historically grounded EWL
+replay** so it can be repeated even when there is no live service alert. Its
+affected corridor and Downtown Line alternative are based on the real
+[7–10 December 2024 EWL service adjustment between Tampines and Tanah Merah](https://www.lta.gov.sg/content/ltagov/en/newsroom/2024/12/news-releases/reminder_on_train_service_adjustments_along_EWL.html).
+For a concise and repeatable deadline decision, our fixture normalises the
+impact to 15 minutes; it is simulated scenario data, not an exact recording of
+that event and never presented as live.
+
+## Demo recording
+
+Watch the [five-minute mobile demo on YouTube](https://youtu.be/Ohc0VVrJZ-o).
+It follows Rachel's journey end to end, compares her affected usual route with
+the recommendation, and shows the map, crowding and notification experience.
 
 ## How this addresses Problem Statement 2
 
@@ -54,6 +64,8 @@ npm run dev
 Open `http://localhost:5173`. To check the mobile layout on a real phone,
 connect it to the same Wi-Fi network and open the **Network** URL printed by
 Vite. The Flask API runs on port 5000 and Vite proxies `/api` requests to it.
+The team has also completed this check on a real phone browser, rather than
+only through desktop-device emulation.
 
 On later runs, start `backend/run.py` with the virtual-environment Python and
 run `npm run dev` in `frontend`. **Do not copy `.env.example` over an existing
@@ -94,9 +106,13 @@ replay.
 
 - The default demo uses mock operational conditions and injected scenario
   alerts. Live LTA DataMall crowd and disruption data requires
-  `DATA_PROVIDER=live` and `LTA_ACCOUNT_KEY` in `backend/.env`; OneMap address
-  and walking services require OneMap credentials. Keep these keys out of Git.
-  Weather comes from data.gov.sg in live mode.
+  `DATA_PROVIDER=live` and `LTA_ACCOUNT_KEY` in `backend/.env`; register through
+  [LTA DataMall](https://datamall.lta.gov.sg). OneMap address and walking
+  services require credentials obtained through the
+  [OneMap API portal](https://www.onemap.gov.sg/apidocs/). Keep all keys and
+  passwords out of Git. Weather comes from the keyless
+  [data.gov.sg real-time APIs](https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast)
+  in live mode.
 - The geographic basemap uses OpenFreeMap's OSM-based style by default and
   needs internet access for map tiles. If tiles cannot load, the route overlay
   and status message remain available.
@@ -122,3 +138,6 @@ installing Playwright's Chromium browser.
 The source brief is [Problem Statement 2](Problem_Statement_2_Specification.docx).
 The detailed requirement mapping and remaining work are in
 [PS2 requirements](PS2_REQUIREMENTS.md).
+
+These setup steps were also exercised from an isolated clean source checkout
+on Windows with Python 3.12 and Node.js 20+ before submission.
