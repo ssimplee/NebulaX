@@ -5,6 +5,18 @@
 
 @import "tw-animate-css";
 
+/* Network Map illustrative trains: a soft halo pulse (opacity only). */
+.mrt-train-halo {
+  animation: mrt-train-pulse 1.8s ease-in-out infinite;
+}
+@keyframes mrt-train-pulse {
+  0%, 100% { opacity: 0.16; }
+  50% { opacity: 0.38; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mrt-train-halo { animation: none; }
+}
+
 /* Journey Map text chips (Leaflet divIcons). Text carries the meaning;
    colour and shape only reinforce it. */
 .jm-chip-anchor {

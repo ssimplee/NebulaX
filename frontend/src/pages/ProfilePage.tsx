@@ -5,6 +5,8 @@ import { PrivacyControls } from "@/components/profile/PrivacyControls";
 import { ReporterStats } from "@/components/profile/ReporterStats";
 import { SavedRoutes } from "@/components/profile/SavedRoutes";
 import { useTranslation } from "react-i18next";
+import { UserRound } from "lucide-react";
+import { PageHeader } from "@/components/common/PageHeader";
 
 /**
  * ProfilePage — full profile page with reporter stats, saved routes,
@@ -21,8 +23,13 @@ import { useTranslation } from "react-i18next";
 export function ProfilePage() {
   const { t } = useTranslation();
   return (
+    <div className="flex h-full flex-col overflow-y-auto">
+      <PageHeader
+        icon={<UserRound />}
+        title={t("profile.title")}
+        subtitle="Saved routes, reporter stats, language and accessibility"
+      />
     <div className="mx-auto w-full max-w-4xl p-4 md:p-6">
-      <h1 className="mb-6 text-2xl font-bold text-foreground">{t("profile.title")}</h1>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {/* Left column: Stats + Saved Routes */}
@@ -61,6 +68,7 @@ export function ProfilePage() {
           </Card>
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -18,6 +18,11 @@ export interface MapStore {
   /** Toggle crowd layer on/off */
   toggleCrowdLayer: () => void;
 
+  /** Whether the illustrative trains on the Network Map are moving */
+  trainsRunning: boolean;
+  /** Pause or resume the illustrative trains */
+  toggleTrains: () => void;
+
   /** Whether station name labels are visible on the map */
   showStationLabels: boolean;
   /** Toggle station labels on/off */
@@ -48,6 +53,9 @@ export const useMapStore = create<MapStore>((set) => ({
   crowdLayerActive: false,
   toggleCrowdLayer: () =>
     set((state) => ({ crowdLayerActive: !state.crowdLayerActive })),
+
+  trainsRunning: true,
+  toggleTrains: () => set((state) => ({ trainsRunning: !state.trainsRunning })),
 
   showStationLabels: false,
   toggleStationLabels: () =>

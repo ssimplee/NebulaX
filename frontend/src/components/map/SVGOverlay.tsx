@@ -3,6 +3,7 @@ import { STATIONS } from "@/data/stations";
 import { StationHitTarget } from "./StationHitTarget";
 import { CrowdMarker } from "./CrowdMarker";
 import { NearestStationMarker } from "./NearestStationMarker";
+import { TrainFlowLayer } from "./TrainFlowLayer";
 
 /**
  * Crowd data for a single station, provided by the crowd layer.
@@ -19,6 +20,9 @@ interface SVGOverlayProps {
   crowdData?: StationCrowdData[];
   nearestStationId?: string | null;
   showStationLabels?: boolean;
+  /** Draw the illustrative trains; false hides them, running=false pauses them. */
+  showTrains?: boolean;
+  trainsRunning?: boolean;
 }
 
 const MAP_VIEWBOX_WIDTH = 1600;
@@ -44,6 +48,8 @@ export function SVGOverlay({
   crowdData,
   nearestStationId,
   showStationLabels,
+  showTrains = false,
+  trainsRunning = true,
 }: SVGOverlayProps) {
   const selectedStation = selectedStationId
     ? STATIONS.find((s) => s.id === selectedStationId) ?? null
@@ -77,6 +83,9 @@ export function SVGOverlay({
             );
           })}
       </g>
+
+      {/* Illustrative trains, under the station targets so taps still reach stations */}
+      {showTrains && <TrainFlowLayer running={trainsRunning} />}
 
       {/* Placeholder: Route highlight paths layer */}
       <g id="route-highlights-layer" aria-hidden="true">

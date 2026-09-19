@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/common/PageHeader";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -338,13 +339,11 @@ export function RoutePage() {
 
   return (
     <div className="flex h-full flex-col overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center gap-3 border-b px-4 py-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50">
-          <Navigation className="h-5 w-5 text-red-600" />
-        </div>
-        <h1 className="text-lg font-bold text-foreground">Route Planning</h1>
-      </div>
+      <PageHeader
+        icon={<Navigation />}
+        title="Route Planning"
+        subtitle="Plan a journey between any two MRT stations"
+      />
 
       {/* Route Input Form */}
       <RouteInputForm

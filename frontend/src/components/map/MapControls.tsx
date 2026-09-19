@@ -6,6 +6,7 @@ import {
   LocateFixed,
   Loader2,
   Type,
+  TrainFront,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,10 @@ interface MapControlsProps {
   isLocating?: boolean;
   stationLabelsActive?: boolean;
   onToggleStationLabels?: () => void;
+  trainsRunning?: boolean;
+  onToggleTrains?: () => void;
+  /** The system asks for reduced motion: trains are hidden and the toggle explains why. */
+  reducedMotion?: boolean;
   className?: string;
 }
 
@@ -33,6 +38,9 @@ export function MapControls({
   isLocating,
   stationLabelsActive,
   onToggleStationLabels,
+  trainsRunning,
+  onToggleTrains,
+  reducedMotion,
   className,
 }: MapControlsProps) {
   return (
@@ -103,6 +111,27 @@ export function MapControls({
           type="button"
         >
           <Type className="size-4" />
+        </button>
+      )}
+      {onToggleTrains && (
+        <button
+          onClick={onToggleTrains}
+          disabled={reducedMotion}
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-lg shadow-md border border-border transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50",
+            trainsRunning && !reducedMotion
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "bg-card text-foreground hover:bg-accent"
+          )}
+          aria-label={
+            reducedMotion
+              ? "Train animation off: your device asks for reduced motion"
+              : trainsRunning ? "Pause illustrative train movement" : "Play illustrative train movement"
+          }
+          aria-pressed={reducedMotion ? undefined : trainsRunning}
+          type="button"
+        >
+          <TrainFront className="size-4" />
         </button>
       )}
       {onToggleCrowd && (

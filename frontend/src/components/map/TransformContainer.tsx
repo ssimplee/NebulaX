@@ -19,6 +19,9 @@ interface TransformContainerProps {
   onToggleCrowd?: () => void;
   stationLabelsActive?: boolean;
   onToggleStationLabels?: () => void;
+  trainsRunning?: boolean;
+  onToggleTrains?: () => void;
+  reducedMotion?: boolean;
   onLocateMe?: () => void;
   isLocating?: boolean;
 }
@@ -71,6 +74,9 @@ export const TransformContainer = forwardRef<
     onToggleCrowd,
     stationLabelsActive,
     onToggleStationLabels,
+    trainsRunning,
+    onToggleTrains,
+    reducedMotion,
     onLocateMe,
     isLocating,
   },
@@ -165,6 +171,9 @@ export const TransformContainer = forwardRef<
             onToggleCrowd={onToggleCrowd}
             stationLabelsActive={stationLabelsActive}
             onToggleStationLabels={onToggleStationLabels}
+            trainsRunning={trainsRunning}
+            onToggleTrains={onToggleTrains}
+            reducedMotion={reducedMotion}
             onLocateMe={onLocateMe}
             isLocating={isLocating}
           />

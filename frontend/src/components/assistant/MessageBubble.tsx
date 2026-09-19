@@ -27,14 +27,14 @@ export function MessageBubble({
   return (
     <div
       className={cn(
-        "flex gap-2 w-full",
+        "flex w-full gap-2 animate-in fade-in slide-in-from-bottom-1 duration-200 motion-reduce:animate-none",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       {/* Assistant avatar */}
       {!isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-          <Bot className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+          <Bot className="w-4 h-4" aria-hidden="true" />
         </div>
       )}
 
@@ -50,10 +50,10 @@ export function MessageBubble({
         {/* Message bubble */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-2 text-sm leading-relaxed",
+            "rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed",
             isUser
-              ? "bg-primary text-primary-foreground rounded-br-md"
-              : "bg-muted text-foreground rounded-bl-md"
+              ? "bg-primary text-primary-foreground rounded-br-md shadow-sm shadow-primary/20"
+              : "border border-border bg-card text-card-foreground rounded-bl-md shadow-sm"
           )}
         >
           <p className="whitespace-pre-wrap">{message.content}</p>
@@ -88,7 +88,7 @@ export function MessageBubble({
                 onClick={() =>
                   onQuickReply?.(message.wizardStep!, reply.value, reply.label)
                 }
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-card-foreground hover:bg-accent hover:text-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="min-h-9 rounded-full border border-primary/30 bg-card px-3.5 py-1.5 text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {reply.label}
               </button>

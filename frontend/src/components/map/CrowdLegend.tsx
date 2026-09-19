@@ -35,7 +35,7 @@ export function CrowdLegend({ crowd }: { crowd: NetworkCrowd }) {
 
   return (
     <div
-      className="absolute bottom-4 left-4 z-10 rounded-lg bg-card/90 p-3 shadow-md border border-border backdrop-blur-sm"
+      className="pointer-events-auto rounded-lg bg-card/90 p-3 shadow-md border border-border backdrop-blur-sm"
       role="region"
       aria-label="Crowd density legend"
     >

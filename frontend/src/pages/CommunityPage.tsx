@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { AlertTriangle, Loader2, Plus } from "lucide-react";
+import { AlertTriangle, Loader2, Megaphone, Plus } from "lucide-react";
+import { PageHeader } from "@/components/common/PageHeader";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { IncidentFilters, type IncidentFilterValues } from "@/components/community/IncidentFilters";
@@ -74,25 +75,21 @@ export function CommunityPage() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {/* Page header */}
-      <header className="shrink-0 border-b px-4 py-3 md:px-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-bold text-foreground">
-            {t("community.title")}
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            View and report MRT incidents. Help fellow commuters stay informed.
-          </p>
-        </div>
-        <Button
-          onClick={() => setIsFormOpen(true)}
-          size="sm"
-          className="gap-1.5"
-        >
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">{t("community.newReport")}</span>
-        </Button>
-      </header>
+      <PageHeader
+        icon={<Megaphone />}
+        title={t("community.title")}
+        subtitle="View and report MRT incidents. Help fellow commuters stay informed."
+        actions={
+          <Button
+            onClick={() => setIsFormOpen(true)}
+            size="sm"
+            className="gap-1.5"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">{t("community.newReport")}</span>
+          </Button>
+        }
+      />
 
       {/* Main content area */}
       <div className="flex flex-1 overflow-hidden">

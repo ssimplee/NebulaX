@@ -301,6 +301,24 @@ const rows: Row[] = [
   ["transfer", "次换乘", "pertukaran", "மாற்றம்"],
   ["transfers", "次换乘", "pertukaran", "மாற்றங்கள்"],
   ["Started", "开始于", "Bermula", "தொடங்கியது"],
+  // Page headers, assistant welcome and Network Map trains.
+  ["Routes, last trains, crowds and station facilities", "路线、末班车、拥挤程度和车站设施", "Laluan, tren terakhir, kesesakan dan kemudahan stesen", "வழிகள், கடைசி ரயில்கள், நெரிசல் மற்றும் நிலைய வசதிகள்"],
+  ["New chat", "新对话", "Sembang baharu", "புதிய உரையாடல்"],
+  ["Where are you heading today?", "今天要去哪里？", "Anda hendak ke mana hari ini?", "இன்று எங்கே செல்கிறீர்கள்?"],
+  ["Suggested questions", "推荐问题", "Soalan dicadangkan", "பரிந்துரைக்கப்பட்ட கேள்விகள்"],
+  ["Plan a route", "规划路线", "Rancang laluan", "வழியைத் திட்டமிடு"],
+  ["Crowd levels", "拥挤程度", "Tahap kesesakan", "நெரிசல் நிலைகள்"],
+  ["Last trains", "末班车", "Tren terakhir", "கடைசி ரயில்கள்"],
+  ["Accessibility", "无障碍", "Kebolehcapaian", "அணுகல்தன்மை"],
+  ["Service alerts", "服务通告", "Makluman perkhidmatan", "சேவை அறிவிப்புகள்"],
+  ["Station facilities", "车站设施", "Kemudahan stesen", "நிலைய வசதிகள்"],
+  ["Thinking...", "思考中…", "Sedang berfikir...", "யோசிக்கிறது..."],
+  ["Plan a journey between any two MRT stations", "规划任意两个地铁站之间的行程", "Rancang perjalanan antara mana-mana dua stesen MRT", "எந்த இரண்டு MRT நிலையங்களுக்கும் இடையே பயணத்தைத் திட்டமிடுங்கள்"],
+  ["Saved routes, reporter stats, language and accessibility", "已保存路线、报告统计、语言和无障碍设置", "Laluan disimpan, statistik pelapor, bahasa dan kebolehcapaian", "சேமித்த வழிகள், புகாரளிப்பு புள்ளிவிவரம், மொழி மற்றும் அணுகல்தன்மை"],
+  ["Illustrative train movement · not live", "示意列车动态 · 非实时", "Pergerakan tren ilustrasi · bukan langsung", "விளக்க ரயில் இயக்கம் · நேரலை அல்ல"],
+  ["Pause illustrative train movement", "暂停示意列车动态", "Jeda pergerakan tren ilustrasi", "விளக்க ரயில் இயக்கத்தை இடைநிறுத்து"],
+  ["Play illustrative train movement", "播放示意列车动态", "Mainkan pergerakan tren ilustrasi", "விளக்க ரயில் இயக்கத்தை இயக்கு"],
+  ["Train animation off: your device asks for reduced motion", "列车动画已关闭：您的设备要求减少动态效果", "Animasi tren dimatikan: peranti anda meminta gerakan dikurangkan", "ரயில் அசைவூட்டம் அணைக்கப்பட்டது: உங்கள் சாதனம் குறைந்த இயக்கத்தைக் கோருகிறது"],
 ];
 
 export const uiCatalog = Object.fromEntries(

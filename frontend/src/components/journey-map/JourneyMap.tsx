@@ -34,6 +34,8 @@ export interface JourneyMapProps {
 
 const SINGAPORE_CENTRE: L.LatLngTuple = [1.3521, 103.8198];
 const EDGE_PADDING = 24;
+/** Side margin: text labels are centred on route points, so leave room for half a label. */
+const SIDE_PADDING = 64;
 /** Smallest height, in pixels, the route is fitted into however much the overlays cover. */
 const MIN_ROUTE_HEIGHT = 180;
 
@@ -134,8 +136,8 @@ export function JourneyMap({
       bottom *= scale;
     }
     map.fitBounds([[south, west], [north, east]], {
-      paddingTopLeft: [EDGE_PADDING, top],
-      paddingBottomRight: [EDGE_PADDING, bottom],
+      paddingTopLeft: [SIDE_PADDING, top],
+      paddingBottomRight: [SIDE_PADDING, bottom],
       maxZoom: 15,
       animate: false,
     });

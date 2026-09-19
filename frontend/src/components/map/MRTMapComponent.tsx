@@ -6,6 +6,7 @@ import { CalibrationMode } from "./CalibrationMode";
 import { NearestStationInfo } from "./NearestStationInfo";
 import { LocationErrorCard } from "./LocationErrorCard";
 import { useMapStore } from "@/store/mapStore";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { useNetworkCrowd } from "@/features/map/useNetworkCrowd";
 import { STATIONS } from "@/data/stations";
 import type { MapStation } from "@/data/stations";
@@ -28,6 +29,9 @@ export function MRTMapComponent() {
   const crowd = useNetworkCrowd(crowdLayerActive);
   const crowdData: StationCrowdData[] | undefined = crowdLayerActive && crowd.status === "ready" ? crowd.readings : undefined;
   const showStationLabels = useMapStore((state) => state.showStationLabels);
+  const trainsRunning = useMapStore((state) => state.trainsRunning);
+  const toggleTrains = useMapStore((state) => state.toggleTrains);
+  const reducedMotion = usePrefersReducedMotion();
   const toggleStationLabels = useMapStore((state) => state.toggleStationLabels);
 
   const {
@@ -82,6 +86,9 @@ export function MRTMapComponent() {
         onToggleCrowd={toggleCrowdLayer}
         stationLabelsActive={showStationLabels}
         onToggleStationLabels={toggleStationLabels}
+        trainsRunning={trainsRunning}
+        onToggleTrains={toggleTrains}
+        reducedMotion={reducedMotion}
         onLocateMe={requestLocation}
         isLocating={locationStatus === "requesting"}
       >
@@ -91,7 +98,8 @@ export function MRTMapComponent() {
           <img src="/mrt/singapore-mrt-map.png" alt="Singapore MRT network map" className="absolute inset-0 h-full w-full select-none object-contain" draggable={false} />
           <SVGOverlay onStationSelect={handleStationSelect} selectedStationId={selectedStation?.id ?? null}
             crowdLayerActive={crowdLayerActive} crowdData={crowdData}
-            nearestStationId={nearest?.station.id ?? null} showStationLabels={showStationLabels} />
+            nearestStationId={nearest?.station.id ?? null} showStationLabels={showStationLabels}
+            showTrains={!reducedMotion} trainsRunning={trainsRunning} />
         </div>
       </TransformContainer>
 
@@ -120,8 +128,19 @@ export function MRTMapComponent() {
         />
       )}
 
-      {/* Crowd legend — only visible when crowd layer is active */}
-      {crowdLayerActive && <CrowdLegend crowd={crowd} />}
+      {/* Bottom-left: what the moving trains are, and the crowd legend when shown */}
+      <div className="pointer-events-none absolute bottom-4 left-4 z-10 flex flex-col items-start gap-2">
+        {!reducedMotion && (
+          <p className="flex items-center gap-1.5 rounded-full border border-border bg-card/90 px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-sm backdrop-blur-sm">
+            <span className="relative flex size-2" aria-hidden="true">
+              <span className={trainsRunning ? "absolute inline-flex size-full animate-ping rounded-full bg-primary/60 motion-reduce:animate-none" : "hidden"} />
+              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+            </span>
+            Illustrative train movement · not live
+          </p>
+        )}
+        {crowdLayerActive && <CrowdLegend crowd={crowd} />}
+      </div>
 
       {/* Dev-only calibration overlay */}
       <CalibrationMode />
