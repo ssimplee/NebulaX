@@ -1,5 +1,6 @@
 """Door-to-door and decision-boundary tests for Rachel's commute."""
 
+from app.integrations.mock_adapter import MockLocationProvider
 from app.services.operational_conditions import load_rachel_scenario
 from app.services.rachel_routing import plan_rachel_journey
 
@@ -40,6 +41,13 @@ def test_rachel_plan_is_door_to_door_and_map_ready():
     assert result["original"]["geometry"]["egressWalkMinutes"] == 8
     assert result["original"]["walkingMinutes"] == 16
     assert result["alternatives"]
+
+
+def test_mock_provider_supports_rachel_demo_without_onemap_credentials():
+    result = plan_rachel_journey(MockLocationProvider())
+
+    assert result["journey"]["home"]["postalCode"] == "523858"
+    assert result["journey"]["work"]["postalCode"] == "049145"
 
 
 def test_five_minutes_stays_quiet():

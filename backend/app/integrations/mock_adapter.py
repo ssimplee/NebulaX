@@ -54,6 +54,20 @@ _MOCK_STATIONS = [
 # Realistic Singapore locations for address search
 _MOCK_LOCATIONS = [
     {
+        "address": "858C Tampines Walk, Singapore 523858",
+        "latitude": 1.35449039932647,
+        "longitude": 103.9396874423523,
+        "postalCode": "523858",
+        "buildingName": "Rachel's demo home",
+    },
+    {
+        "address": "1 George St, Singapore 049145",
+        "latitude": 1.285694084848462,
+        "longitude": 103.8478199704954,
+        "postalCode": "049145",
+        "buildingName": "Rachel's demo workplace",
+    },
+    {
         "address": "1 Orchard Road, Singapore 238824",
         "latitude": 1.3043,
         "longitude": 103.8318,
